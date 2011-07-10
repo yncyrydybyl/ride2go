@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"></meta>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script> 
+    <script type="text/javascript" src="js/jquery-1.5.1.min.js"></script> 
+    <script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js"></script>
+    <script type="text/javascript" src="js/ui.geo_autocomplete.js"></script> 
+    <script type="text/javascript">
+    $().ready(function() {
+      prepare();
+    });
+    function prepare() {
+              $('#wherebox').geo_autocomplete({
+                geocoder_region: 'de',
+                geocoder_types: 'locality',
+                mapheight: 100, mapwidth: 200, MapTypeIdaptype: 'hybrid'
+              });
+    }
+    </script>
+
+    <style type="text/css"> 
+      .ui-autocomplete { overflow-y: auto; width:300px; }
+      * html .ui-autocomplete { /* IE max- */height: expression( this.scrollHeight > 320 ? "320px" : "auto" ); }
+      .ui-autocomplete { max-height: 320px; }
+      .ui-autocomplete li { font-size:10pt; }
+    </style> 
+    <link type="text/css" href="css/smoothness/jquery-ui-1.8.14.custom.css" rel="stylesheet" /> 
+  </head>
+  <body>
+      <p>Where: <input type="text" id="wherebox" size="50" /></p> 
+  </body> 
+</html> 
