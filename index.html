@@ -8,14 +8,22 @@
     <script type="text/javascript" src="js/ui.geo_autocomplete.js"></script> 
     <script type="text/javascript">
     $().ready(function() {
-      prepare();
+      setwheretobox();
     });
-    function prepare() {
-              $('#wherebox').geo_autocomplete({
-                geocoder_region: 'de',
-                geocoder_types: 'locality',
-                mapheight: 100, mapwidth: 200, MapTypeIdaptype: 'hybrid'
-              });
+    
+    function setwheretobox(region,geotype) {
+      region = typeof(region) != 'undefined' ? region : "de";
+      geotype = typeof(geotype) != 'undefined' ? geotype : "locality";
+      $('#wherebox').geo_autocomplete({
+        geocoder_region: region,
+        geocoder_types: geotype,
+        mapheight: 100, mapwidth: 200, MapTypeIdaptype: 'hybrid'
+      });
+    }
+    // only for debugging
+    function l(msg){
+      console.log(msg);
+      //alert(msg);
     }
     </script>
 
@@ -28,6 +36,13 @@
     <link type="text/css" href="css/smoothness/jquery-ui-1.8.14.custom.css" rel="stylesheet" /> 
   </head>
   <body>
-      <p>Where: <input type="text" id="wherebox" size="50" /></p> 
+    <p>within:
+      <select onchange="setwheretobox(this.value);">
+        <option>de</option>
+        <option>us</option>
+      </select>
+      </p>
+      <p>what:</p>
+      <p>where: <input type="text" id="wherebox" size="50" /></p> 
   </body> 
 </html> 
