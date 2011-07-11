@@ -9,13 +9,22 @@
     <script type="text/javascript">
     $().ready(function() {
       setwheretobox();
-    });
+      $("#wheretodetails-switcher").toggle(
+        function() {
+          $("#wheretodetails-switcher").html("- hide options");
+          $("#wheretodetails").show(100);
+        },
+        function() {
+          $("#wheretodetails-switcher").html("+show options");
+          $("#wheretodetails").hide(200);
+      });
+    });         
     
     function setwheretobox(params) {
       params = typeof(params) != 'undefined' ? params : {region:"de",geotype: "locality"};
       params.region = typeof(params.region) != 'undefined' ? params.region : "de";
       params.geotype = typeof(params.geotype) != 'undefined' ? params.geotype : "locality";
-      $('#wherebox').geo_autocomplete({
+      $('#wheretobox').geo_autocomplete({
         geocoder_region: params.region,
         geocoder_types: params.geotype,
         mapheight: 100, mapwidth: 200, MapTypeIdaptype: 'hybrid'
@@ -27,6 +36,9 @@
       //alert(msg);
     }
     </script>
+    <link type="text/css" href="css/smoothness/jquery-ui-1.8.14.custom.css" rel="stylesheet" /> 
+    <link type="text/css" href="css/main.css" rel="stylesheet" /> 
+    <link href='http://fonts.googleapis.com/css?family=Corben:bold&v1' rel='stylesheet' type='text/css'>
 
     <style type="text/css"> 
       .ui-autocomplete { overflow-y: auto; width:300px; }
@@ -34,39 +46,43 @@
       .ui-autocomplete { max-height: 320px; }
       .ui-autocomplete li { font-size:10pt; }
     </style> 
-    <link type="text/css" href="css/smoothness/jquery-ui-1.8.14.custom.css" rel="stylesheet" /> 
-    <link type="text/css" href="css/main.css" rel="stylesheet" /> 
   </head>
   <body>
-    <p>within:
-      <select onchange="setwheretobox({region:this.value});">
-        <option>de</option>
-        <option>us</option>
-      </select>
+    <h1 id="logo">Ride2Go</h1>
+    <div id="wheretoinput">
+      <p id="wheretodetails-switcher" >
+        + show options
       </p>
-      <p>what:
-        <select onchange="setwheretobox({geotype:this.value});">
-	  <option value="street_address">street_address indicates a precise street address.</option>
-	  <option value="route">route indicates a named route (such as "US 101").</option>
-	  <option value="intersection">intersection indicates a major intersection, usually of two major roads.</option>
-	  <option value="political">political indicates a political entity. Usually, this type indicates a polygon of some civil administration.</option>
-	  <option value="country">country indicates the national political entity, and is typically the highest order type returned by the Geocoder.</option>
-	  <option value="administrative_area_level_1">administrative_area_level_1 indicates a first-order civil entity below the country level. US-states.</option>
-	  <option value="administrative_area_level_2">administrative_area_level_2 indicates a second-order civil entity below the country level. US-counties.</option>
-	  <option value="administrative_area_level_3">administrative_area_level_3 indicates a third-order civil entity below the country level. - minor civil division.</option>
-	  <option value="colloquial_area">colloquial_area indicates a commonly-used alternative name for the entity.</option>
-	  <option value="locality">locality indicates an incorporated city or town political entity.</option>
-	  <option value="sublocality">sublocality indicates an first-order civil entity below a locality</option>
-	  <option value="neighborhood">neighborhood indicates a named neighborhood</option>
-	  <option value="premise">premise indicates a named location, usually a building with a common name</option>
-	  <option value="subpremise">subpremise indicates a first-order entity below a named location, buildings with a common name</option>
-	  <option value="postal_code">postal_code indicates a postal code as used to address postal mail within the country.</option>
-	  <option value="natural_feature">natural_feature indicates a prominent natural feature.</option>
-	  <option value="airport">airport indicates an airport.</option>
-	  <option value="park">park indicates a named park.</option>
-		  
+      <p id="wheretodetails">within:
+        <select onchange="setwheretobox({region:this.value});">
+          <option>de</option>
+          <option>us</option>
         </select>
-      </p>
-      <p>where: <input type="text" id="wherebox" size="50" /></p> 
+        <br />
+        what:
+        <select onchange="setwheretobox({geotype:this.value});">
+     	  <option value="street_address">street_address indicates a precise street address.</option>
+        <option value="route">route indicates a named route (such as "US 101").</option>
+        <option value="intersection">intersection indicates a major intersection, usually of two major roads.</option>
+        <option value="political">political indicates a political entity. Usually, this type indicates a polygon of some civil administration.</option>
+        <option value="country">country indicates the national political entity, and is typically the highest order type returned by the Geocoder.</option>
+        <option value="administrative_area_level_1">administrative_area_level_1 indicates a first-order civil entity below the country level. US-states.</option>
+        <option value="administrative_area_level_2">administrative_area_level_2 indicates a second-order civil entity below the country level. US-counties.</option>
+        <option value="administrative_area_level_3">administrative_area_level_3 indicates a third-order civil entity below the country level. - minor civil division.</option>
+        <option value="colloquial_area">colloquial_area indicates a commonly-used alternative name for the entity.</option>
+        <option value="locality">locality indicates an incorporated city or town political entity.</option>
+        <option value="sublocality">sublocality indicates an first-order civil entity below a locality</option>
+        <option value="neighborhood">neighborhood indicates a named neighborhood</option>
+        <option value="premise">premise indicates a named location, usually a building with a common name</option>
+        <option value="subpremise">subpremise indicates a first-order entity below a named location, buildings with a common name</option>
+        <option value="postal_code">postal_code indicates a postal code as used to address postal mail within the country.</option>
+        <option value="natural_feature">natural_feature indicates a prominent natural feature.</option>
+        <option value="airport">airport indicates an airport.</option>
+        <option value="park">park indicates a named park.</option>
+	    
+      </select>
+    </p>
+    <p>where to: <input type="text" id="wheretobox" size="50" /></p>
+    </div> 
   </body> 
 </html> 
