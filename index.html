@@ -1,7 +1,8 @@
 <!doctype html>
 <html>
   <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8"></meta>
+		<title>ride2go</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script> 
     <script type="text/javascript" src="js/jquery-1.5.1.min.js"></script> 
     <script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js"></script>
@@ -9,6 +10,11 @@
     <script type="text/javascript">
     $().ready(function() {
       setwheretobox();
+      $.each($("input[name=whereto]"), function(_key, _result) {
+      	$(_result).change(function() {
+					setwheretobox();
+				});
+      });
       $("#wheretodetails-switcher").toggle(
         function() {
           $("#wheretodetails-switcher").html("- hide options");
@@ -19,16 +25,20 @@
           $("#wheretodetails").hide(200);
       });
     });         
-    
+		function geotypes() {
+			return $('input[name=whereto]:checked').map(function () {return this.value;}).get();
+		}
+   
     function setwheretobox(params) {
-      params = typeof(params) != 'undefined' ? params : {region:"de",geotype: "locality"};
+      params = typeof(params) != 'undefined' ? params : {region:"de"};
       params.region = typeof(params.region) != 'undefined' ? params.region : "de";
-      params.geotype = typeof(params.geotype) != 'undefined' ? params.geotype : "locality";
-      $('#wheretobox').geo_autocomplete({
+      var foo = $('#wheretobox').geo_autocomplete({
         geocoder_region: params.region,
-        geocoder_types: params.geotype,
+        geocoder_types: geotypes().join(","),
         mapheight: 100, mapwidth: 200, MapTypeIdaptype: 'hybrid'
       });
+			$(foo).autocomplete("search");
+			l(foo);
     }
     // only for debugging
     function l(msg){
@@ -38,7 +48,7 @@
     </script>
     <link type="text/css" href="css/smoothness/jquery-ui-1.8.14.custom.css" rel="stylesheet" /> 
     <link type="text/css" href="css/main.css" rel="stylesheet" /> 
-    <link href='http://fonts.googleapis.com/css?family=Corben:bold&v1' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Corben:bold' rel='stylesheet' type='text/css'>
 
     <style type="text/css"> 
       .ui-autocomplete { overflow-y: auto; width:300px; }
@@ -60,29 +70,26 @@
         </select>
         <br />
         what:
-        <select onchange="setwheretobox({geotype:this.value});">
-     	  <option value="street_address">street_address indicates a precise street address.</option>
-        <option value="route">route indicates a named route (such as "US 101").</option>
-        <option value="intersection">intersection indicates a major intersection, usually of two major roads.</option>
-        <option value="political">political indicates a political entity. Usually, this type indicates a polygon of some civil administration.</option>
-        <option value="country">country indicates the national political entity, and is typically the highest order type returned by the Geocoder.</option>
-        <option value="administrative_area_level_1">administrative_area_level_1 indicates a first-order civil entity below the country level. US-states.</option>
-        <option value="administrative_area_level_2">administrative_area_level_2 indicates a second-order civil entity below the country level. US-counties.</option>
-        <option value="administrative_area_level_3">administrative_area_level_3 indicates a third-order civil entity below the country level. - minor civil division.</option>
-        <option value="colloquial_area">colloquial_area indicates a commonly-used alternative name for the entity.</option>
-        <option value="locality">locality indicates an incorporated city or town political entity.</option>
-        <option value="sublocality">sublocality indicates an first-order civil entity below a locality</option>
-        <option value="neighborhood">neighborhood indicates a named neighborhood</option>
-        <option value="premise">premise indicates a named location, usually a building with a common name</option>
-        <option value="subpremise">subpremise indicates a first-order entity below a named location, buildings with a common name</option>
-        <option value="postal_code">postal_code indicates a postal code as used to address postal mail within the country.</option>
-        <option value="natural_feature">natural_feature indicates a prominent natural feature.</option>
-        <option value="airport">airport indicates an airport.</option>
-        <option value="park">park indicates a named park.</option>
-	    
-      </select>
-    </p>
-    <p>where to: <input type="text" id="wheretobox" size="50" /></p>
+     	<input type="checkbox" name="whereto" value="street_address"/>street_address 
+        <input type="checkbox" name="whereto" value="route"/>route
+        <input type="checkbox" name="whereto" value="intersection"/>intersection
+        <input type="checkbox" name="whereto" value="political"/>political
+        <input type="checkbox" name="whereto" value="country"/>country
+        <input type="checkbox" name="whereto" value="administrative_area_level_1"/>administrative_area_level_1
+        <input type="checkbox" name="whereto" value="administrative_area_level_2"/>administrative_area_level_2
+        <input type="checkbox" name="whereto" value="administrative_area_level_3"/>administrative_area_level_3
+        <input type="checkbox" name="whereto" value="colloquial_area"/>colloquial_area
+        <input type="checkbox" name="whereto" value="locality"/>locality 
+        <input type="checkbox" name="whereto" value="sublocality"/>sublocality 
+        <input type="checkbox" name="whereto" value="neighborhood"/>neighborhood
+        <input type="checkbox" name="whereto" value="premise"/>premise
+        <input type="checkbox" name="whereto" value="subpremise"/>subpremise
+        <input type="checkbox" name="whereto" value="postal_code"/>postal_code
+        <input type="checkbox" name="whereto" value="natural_feature"/>natural_feature
+        <input type="checkbox" name="whereto" value="airport"/>airport
+        <input type="checkbox" name="whereto" value="park"/>park
+      </p>
+      <p>where to: <input type="text" id="wheretobox" size="50" /></p>
     </div> 
   </body> 
 </html> 
