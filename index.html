@@ -8,43 +8,65 @@
     <script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js"></script>
     <script type="text/javascript" src="js/ui.geo_autocomplete.js"></script> 
     <script type="text/javascript">
-    $().ready(function() {
-      setwheretobox();
-      $.each($("input[name=whereto]"), function(_key, _result) {
-      	$(_result).change(function() {
-					setwheretobox();
-				});
-      });
-      $("#wheretodetails-switcher").toggle(
-        function() {
-          $("#wheretodetails-switcher").html("- hide options");
-          $("#wheretodetails").show(100);
-        },
-        function() {
-          $("#wheretodetails-switcher").html("+show options");
-          $("#wheretodetails").hide(200);
-      });
-    });         
-		function geotypes() {
-			return $('input[name=whereto]:checked').map(function () {return this.value;}).get();
-		}
-   
-    function setwheretobox(params) {
-      params = typeof(params) != 'undefined' ? params : {region:"de"};
-      params.region = typeof(params.region) != 'undefined' ? params.region : "de";
-      var foo = $('#wheretobox').geo_autocomplete({
+$().ready(function () {
+    initInputBox();
+    $.each($("input[name=whereto]"), function (_key, _result) {
+        $(_result).change(function () {
+            setwheretobox();
+        });
+    });
+    $("#wheretodetails-switcher").toggle(
+
+    function () {
+        $("#wheretodetails-switcher").html("- hide options");
+        $("#wheretodetails").show(100);
+    }, function () {
+        $("#wheretodetails-switcher").html("+show options");
+        $("#wheretodetails").hide(200);
+    });
+});
+
+function geotypes(direction) {
+    return $('input[name=where' + direction + 'to]:checked').map(function () {
+        return this.value;
+    }).get();
+}
+
+function initInputBox(params) {
+    // defining defaults 
+    params = typeof (params) != 'undefined' ? params : {
+        region: "de",
+        direction: "to"
+    };
+    params.region = typeof (params.region) != 'undefined' ? params.region : "de";
+    params.direction = typeof (params.direction) != 'undefined' ? params.direction : "to";
+
+    var inputbox = $('#where' + params.direction + 'box').geo_autocomplete({
         geocoder_region: params.region,
-        geocoder_types: geotypes().join(","),
-        mapheight: 100, mapwidth: 200, MapTypeIdaptype: 'hybrid'
-      });
-			$(foo).autocomplete("search");
-			l(foo);
-    }
-    // only for debugging
-    function l(msg){
-      console.log(msg);
-      //alert(msg);
-    }
+        geocoder_address: true,
+        geocoder_types: geotypes(params.direction).join(","),
+        mapheight: 100,
+        mapwidth: 200,
+        MapTypeIdaptype: 'hybrid',
+        select: function (event, ui) {
+            l(ui.item);
+        },
+        getItemHTML: function (_item) {
+            return "<a>yeah</a>";
+        }
+    });
+    // fire up a search
+    $(inputbox).autocomplete("search");
+    return inputbox;
+}
+
+// only for debugging
+
+
+function l(msg) {
+    console.log(msg);
+    //alert(msg);
+}
     </script>
     <link type="text/css" href="css/smoothness/jquery-ui-1.8.14.custom.css" rel="stylesheet" /> 
     <link type="text/css" href="css/main.css" rel="stylesheet" /> 
@@ -91,5 +113,38 @@
       </p>
       <p>where to: <input type="text" id="wheretobox" size="50" /></p>
     </div> 
+    <div id="wherefrominput">
+      <p id="wherefromdetails-switcher" >
+        + show options
+      </p>
+      <p id="wherefromdetails">within:
+        <select onchange="setwherefrombox({region:this.value});">
+          <option>de</option>
+          <option>us</option>
+        </select>
+        <br />
+        what:
+     	<input type="checkbox" name="wherefrom" value="street_address"/>street_address 
+        <input type="checkbox" name="wherefrom" value="route"/>route
+        <input type="checkbox" name="wherefrom" value="intersection"/>intersection
+        <input type="checkbox" name="wherefrom" value="political"/>political
+        <input type="checkbox" name="wherefrom" value="country"/>country
+        <input type="checkbox" name="wherefrom" value="administrative_area_level_1"/>administrative_area_level_1
+        <input type="checkbox" name="wherefrom" value="administrative_area_level_2"/>administrative_area_level_2
+        <input type="checkbox" name="wherefrom" value="administrative_area_level_3"/>administrative_area_level_3
+        <input type="checkbox" name="wherefrom" value="colloquial_area"/>colloquial_area
+        <input type="checkbox" name="wherefrom" value="locality"/>locality 
+        <input type="checkbox" name="wherefrom" value="sublocality"/>sublocality 
+        <input type="checkbox" name="wherefrom" value="neighborhood"/>neighborhood
+        <input type="checkbox" name="wherefrom" value="premise"/>premise
+        <input type="checkbox" name="wherefrom" value="subpremise"/>subpremise
+        <input type="checkbox" name="wherefrom" value="postal_code"/>postal_code
+        <input type="checkbox" name="wherefrom" value="natural_feature"/>natural_feature
+        <input type="checkbox" name="wherefrom" value="airport"/>airport
+        <input type="checkbox" name="wherefrom" value="park"/>park
+      </p>
+      <p>where from: <input type="text" id="wherefrombox" size="50" /></p>
+    </div> 
+
   </body> 
 </html> 

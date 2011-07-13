@@ -27,7 +27,7 @@ $.widget( "ui.geo_autocomplete", {
 	options: {
 		geocoder_region: '', // filter to a specific region, e.g. 'Europe'
 		geocoder_types: 'locality,political,sublocality,neighborhood,country', // array of acceptable location types, see http://code.google.com/apis/maps/documentation/javascript/services.html#GeocodingAddressTypes
-		geocoder_address: false, // true = use the full formatted address, false = use only the segment that matches the search term
+		geocoder_address: true, // true = use the full formatted address, false = use only the segment that matches the search term
 
 		mapwidth: 100, // width of static map thumbnail
 		mapheight: 100, // height of static map thumbnail
@@ -52,7 +52,7 @@ $.widget( "ui.geo_autocomplete", {
 							if ($.map(_result.types, function(_type) {
 								return $.inArray(_type, _types) != -1 ? _type : null;
 							}).length && _result.geometry && _result.geometry.viewport) {
-
+								l(self.options);
 								if (self.options.geocoder_address) {
 									_place = _result.formatted_address;
 								} else {
