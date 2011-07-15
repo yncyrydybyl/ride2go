@@ -1,150 +1,223 @@
 <!doctype html>
 <html>
-  <head>
-		<title>ride2go</title>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script> 
-    <script type="text/javascript" src="js/jquery-1.5.1.min.js"></script> 
-    <script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js"></script>
-    <script type="text/javascript" src="js/ui.geo_autocomplete.js"></script> 
-    <script type="text/javascript">
-$().ready(function () {
-    initInputBox();
-    $.each($("input[name=whereto]"), function (_key, _result) {
-        $(_result).change(function () {
-            setwheretobox();
-        });
-    });
-    $("#wheretodetails-switcher").toggle(
+    
+    <head>
+        <title>
+            ride2go
+        </title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false">
+        </script>
+        <script type="text/javascript" src="js/jquery-1.5.1.min.js">
+        </script>
+        <script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js">
+        </script>
+        <script type="text/javascript" src="js/ui.geo_autocomplete.js">
+        </script>
+        <script type="text/javascript">
+            $().ready(function() {
+                initInputBox();
+                setgeotypes("whereto", ["premise", "subpremise", "route"]);
+                setgeotypes("wherefrom", ["route", "premise", "subpremise", "route"]);
+                $.each(["to", "from"], function(i, d) {
+                    $("#where" + d + " input").change(function() {
+                        initInputBox({
+                            direction: d
+                        });
+                    });
+                    $("#where" + d + " .switcher").toggle(
 
-    function () {
-        $("#wheretodetails-switcher").html("- hide options");
-        $("#wheretodetails").show(100);
-    }, function () {
-        $("#wheretodetails-switcher").html("+show options");
-        $("#wheretodetails").hide(200);
-    });
-});
+                    function() {
+                        $(this).html("- hide options");
+                        $(this).parent().children(".details").show(100);
+                    }, function() {
+                        $(this).html("+ show options");
+                        $(this).parent().children(".details").hide(200);
+                    });
+                });
+            });
 
-function geotypes(direction) {
-    return $('input[name=where' + direction + 'to]:checked').map(function () {
-        return this.value;
-    }).get();
-}
+            function setgeotypes(boxname, types) {
+                $.each(types, function(i, b) {
 
-function initInputBox(params) {
-    // defining defaults 
-    params = typeof (params) != 'undefined' ? params : {
-        region: "de",
-        direction: "to"
-    };
-    params.region = typeof (params.region) != 'undefined' ? params.region : "de";
-    params.direction = typeof (params.direction) != 'undefined' ? params.direction : "to";
+                    $("input[name='" + boxname + "'][value='" + b + "']").attr('checked', true);
+                });
+            }
 
-    var inputbox = $('#where' + params.direction + 'box').geo_autocomplete({
-        geocoder_region: params.region,
-        geocoder_address: true,
-        geocoder_types: geotypes(params.direction).join(","),
-        mapheight: 100,
-        mapwidth: 200,
-        MapTypeIdaptype: 'hybrid',
-        select: function (event, ui) {
-            l(ui.item);
-        },
-        getItemHTML: function (_item) {
-            return "<a>yeah</a>";
-        }
-    });
-    // fire up a search
-    $(inputbox).autocomplete("search");
-    return inputbox;
-}
+            function geotypes(direction) {
+                return $('input[name=where' + direction + ']:checked').map(function() {
+                    return this.value;
+                }).get();
+            }
 
-// only for debugging
+            function initInputBox(params) {
+                // defining defaults 
+                params = typeof(params) != 'undefined' ? params : {
+                    region: "de",
+                    direction: "to"
+                };
+                params.region = typeof(params.region) != 'undefined' ? params.region : "de";
+                params.direction = typeof(params.direction) != 'undefined' ? params.direction : "to";
 
+                var inputbox = $('#where' + params.direction + 'box').geo_autocomplete({
+                    geocoder_region: params.region,
+                    geocoder_address: true,
+                    geocoder_types: geotypes(params.direction).join(","),
+                    mapheight: 100,
+                    mapwidth: 200,
+                    MapTypeIdaptype: 'hybrid',
+                    select: function(event, ui) {
+                        l(ui.item);
+                    },
+                    //getItemHTML: function (_item) {
+                    //    return "<a>yeah</a>";
+                    //}
+                });
+                // fire up a search
+                $(inputbox).autocomplete("search");
+                l(inputbox);
+                //return inputbox;
+            }
 
-function l(msg) {
-    console.log(msg);
-    //alert(msg);
-}
-    </script>
-    <link type="text/css" href="css/smoothness/jquery-ui-1.8.14.custom.css" rel="stylesheet" /> 
-    <link type="text/css" href="css/main.css" rel="stylesheet" /> 
-    <link href='http://fonts.googleapis.com/css?family=Corben:bold' rel='stylesheet' type='text/css'>
+            // only for debugging
 
-    <style type="text/css"> 
-      .ui-autocomplete { overflow-y: auto; width:300px; }
-      * html .ui-autocomplete { /* IE max- */height: expression( this.scrollHeight > 320 ? "320px" : "auto" ); }
-      .ui-autocomplete { max-height: 320px; }
-      .ui-autocomplete li { font-size:10pt; }
-    </style> 
-  </head>
-  <body>
-    <h1 id="logo">Ride2Go</h1>
-    <div id="wheretoinput">
-      <p id="wheretodetails-switcher" >
-        + show options
-      </p>
-      <p id="wheretodetails">within:
-        <select onchange="setwheretobox({region:this.value});">
-          <option>de</option>
-          <option>us</option>
-        </select>
-        <br />
-        what:
-     	<input type="checkbox" name="whereto" value="street_address"/>street_address 
-        <input type="checkbox" name="whereto" value="route"/>route
-        <input type="checkbox" name="whereto" value="intersection"/>intersection
-        <input type="checkbox" name="whereto" value="political"/>political
-        <input type="checkbox" name="whereto" value="country"/>country
-        <input type="checkbox" name="whereto" value="administrative_area_level_1"/>administrative_area_level_1
-        <input type="checkbox" name="whereto" value="administrative_area_level_2"/>administrative_area_level_2
-        <input type="checkbox" name="whereto" value="administrative_area_level_3"/>administrative_area_level_3
-        <input type="checkbox" name="whereto" value="colloquial_area"/>colloquial_area
-        <input type="checkbox" name="whereto" value="locality"/>locality 
-        <input type="checkbox" name="whereto" value="sublocality"/>sublocality 
-        <input type="checkbox" name="whereto" value="neighborhood"/>neighborhood
-        <input type="checkbox" name="whereto" value="premise"/>premise
-        <input type="checkbox" name="whereto" value="subpremise"/>subpremise
-        <input type="checkbox" name="whereto" value="postal_code"/>postal_code
-        <input type="checkbox" name="whereto" value="natural_feature"/>natural_feature
-        <input type="checkbox" name="whereto" value="airport"/>airport
-        <input type="checkbox" name="whereto" value="park"/>park
-      </p>
-      <p>where to: <input type="text" id="wheretobox" size="50" /></p>
-    </div> 
-    <div id="wherefrominput">
-      <p id="wherefromdetails-switcher" >
-        + show options
-      </p>
-      <p id="wherefromdetails">within:
-        <select onchange="setwherefrombox({region:this.value});">
-          <option>de</option>
-          <option>us</option>
-        </select>
-        <br />
-        what:
-     	<input type="checkbox" name="wherefrom" value="street_address"/>street_address 
-        <input type="checkbox" name="wherefrom" value="route"/>route
-        <input type="checkbox" name="wherefrom" value="intersection"/>intersection
-        <input type="checkbox" name="wherefrom" value="political"/>political
-        <input type="checkbox" name="wherefrom" value="country"/>country
-        <input type="checkbox" name="wherefrom" value="administrative_area_level_1"/>administrative_area_level_1
-        <input type="checkbox" name="wherefrom" value="administrative_area_level_2"/>administrative_area_level_2
-        <input type="checkbox" name="wherefrom" value="administrative_area_level_3"/>administrative_area_level_3
-        <input type="checkbox" name="wherefrom" value="colloquial_area"/>colloquial_area
-        <input type="checkbox" name="wherefrom" value="locality"/>locality 
-        <input type="checkbox" name="wherefrom" value="sublocality"/>sublocality 
-        <input type="checkbox" name="wherefrom" value="neighborhood"/>neighborhood
-        <input type="checkbox" name="wherefrom" value="premise"/>premise
-        <input type="checkbox" name="wherefrom" value="subpremise"/>subpremise
-        <input type="checkbox" name="wherefrom" value="postal_code"/>postal_code
-        <input type="checkbox" name="wherefrom" value="natural_feature"/>natural_feature
-        <input type="checkbox" name="wherefrom" value="airport"/>airport
-        <input type="checkbox" name="wherefrom" value="park"/>park
-      </p>
-      <p>where from: <input type="text" id="wherefrombox" size="50" /></p>
-    </div> 
+            function l(msg) {
+                console.log(msg);
+                //alert(msg);
+            }
+        </script>
+        <link type="text/css" href="css/smoothness/jquery-ui-1.8.14.custom.css" rel="stylesheet"
+        />
+        <link type="text/css" href="css/main.css" rel="stylesheet" />
+        <link href='http://fonts.googleapis.com/css?family=Corben:bold' rel='stylesheet'
+        type='text/css'>
+        <style type="text/css">
+            .ui-autocomplete { overflow-y: auto; width:300px; } * html .ui-autocomplete { /*
+            IE max- */height: expression( this.scrollHeight > 320 ? "320px" : "auto" ); } .ui-autocomplete
+            { max-height: 320px; } .ui-autocomplete li { font-size:10pt; }
+        </style>
+    </head>
+    
+    <body>
+        <h1 id="logo">
+            Ride2Go
+        </h1>
+        <div id="whereto">
+            <p class="switcher">
+                + show options
+            </p>
+            <p class="details">
+                within:
+                <select onchange="setwheretobox({region:this.value});">
+                    <option>
+                        de
+                    </option>
+                    <option>
+                        us
+                    </option>
+                </select>
+                <br />
+                what:
+                <input type="checkbox" name="whereto" value="street_address" />
+                street_address
+                <input type="checkbox" name="whereto" value="route" />
+                route
+                <input type="checkbox" name="whereto" value="intersection" />
+                intersection
+                <input type="checkbox" name="whereto" value="political" />
+                political
+                <input type="checkbox" name="whereto" value="country" />
+                country
+                <input type="checkbox" name="whereto" value="administrative_area_level_1" />
+                administrative_area_level_1
+                <input type="checkbox" name="whereto" value="administrative_area_level_2" />
+                administrative_area_level_2
+                <input type="checkbox" name="whereto" value="administrative_area_level_3" />
+                administrative_area_level_3
+                <input type="checkbox" name="whereto" value="colloquial_area" />
+                colloquial_area
+                <input type="checkbox" name="whereto" value="locality" />
+                locality
+                <input type="checkbox" name="whereto" value="sublocality" />
+                sublocality
+                <input type="checkbox" name="whereto" value="neighborhood" />
+                neighborhood
+                <input type="checkbox" name="whereto" value="premise" />
+                premise
+                <input type="checkbox" name="whereto" value="subpremise" />
+                subpremise
+                <input type="checkbox" name="whereto" value="postal_code" />
+                postal_code
+                <input type="checkbox" name="whereto" value="natural_feature" />
+                natural_feature
+                <input type="checkbox" name="whereto" value="airport" />
+                airport
+                <input type="checkbox" name="whereto" value="park" />
+                park
+            </p>
+            <p>
+                where to:
+                <input type="text" id="wheretobox" size="50" />
+            </p>
+        </div>
+        <div id="wherefrom">
+            <p class="switcher">
+                + show options
+            </p>
+            <p class="details">
+                within:
+                <select onchange="setwherefrombox({region:this.value});">
+                    <option>
+                        de
+                    </option>
+                    <option>
+                        us
+                    </option>
+                </select>
+                <br />
+                what:
+                <input type="checkbox" name="wherefrom" value="street_address" />
+                street_address
+                <input type="checkbox" name="wherefrom" value="route" />
+                route
+                <input type="checkbox" name="wherefrom" value="intersection" />
+                intersection
+                <input type="checkbox" name="wherefrom" value="political" />
+                political
+                <input type="checkbox" name="wherefrom" value="country" />
+                country
+                <input type="checkbox" name="wherefrom" value="administrative_area_level_1" />
+                administrative_area_level_1
+                <input type="checkbox" name="wherefrom" value="administrative_area_level_2" />
+                administrative_area_level_2
+                <input type="checkbox" name="wherefrom" value="administrative_area_level_3" />
+                administrative_area_level_3
+                <input type="checkbox" name="wherefrom" value="colloquial_area" />
+                colloquial_area
+                <input type="checkbox" name="wherefrom" value="locality" />
+                locality
+                <input type="checkbox" name="wherefrom" value="sublocality" />
+                sublocality
+                <input type="checkbox" name="wherefrom" value="neighborhood" />
+                neighborhood
+                <input type="checkbox" name="wherefrom" value="premise" />
+                premise
+                <input type="checkbox" name="wherefrom" value="subpremise" />
+                subpremise
+                <input type="checkbox" name="wherefrom" value="postal_code" />
+                postal_code
+                <input type="checkbox" name="wherefrom" value="natural_feature" />
+                natural_feature
+                <input type="checkbox" name="wherefrom" value="airport" />
+                airport
+                <input type="checkbox" name="wherefrom" value="park" />
+                park
+            </p>
+            <p>
+                where from:
+                <input type="text" id="wherefrombox" size="50" />
+            </p>
+        </div>
+    </body>
 
-  </body> 
-</html> 
+</html>

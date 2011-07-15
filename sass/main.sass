@@ -13,7 +13,7 @@ h1
   font-family: $defaultfnt
 
 	
-#wheretoinput, #wherefrominput
+#whereto, #wherefrom
   position: relative
   background-color: $wheretoboxclr
   width: 80%
@@ -21,20 +21,17 @@ h1
   text-align: left
   padding: 20px
   
-#wheretobox, #wherefrominput
-  font-size: 25px
+  .switcher,
+    font-size: 10px
+    position: absolute
+    top: 0px
+    right: 10px
   
-#wheretodetails-switcher, #wherefromdetails-switcher,
-  font-size: 10px
-  position: absolute
-  top: 0px
-  right: 10px
+  .details
+    font-size: 10px 
+    display: none 
+    * 
+      font-size: 10px
   
-#wheretodetails, #wherefromdetails,
-
-  font-size: 10px 
-  display: none 
-
-#wheretodetails *, #wherefromdetails *
-  font-size: 10px
-  
+  input
+    font-size: 25px
