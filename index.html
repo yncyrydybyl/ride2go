@@ -1,6 +1,5 @@
 <!doctype html>
 <html>
-    
     <head>
         <title>
             ride2go
@@ -16,9 +15,18 @@
         </script>
         <script type="text/javascript">
             $().ready(function() {
-                initInputBox();
                 setgeotypes("whereto", ["premise", "subpremise", "route"]);
-                setgeotypes("wherefrom", ["route", "premise", "subpremise", "route"]);
+                setgeotypes("wherefrom", ["route", "premise", "subpremise", "locality"]);
+                initInputBox({
+                    region: "de",
+                    direction: "to"
+                });
+                initInputBox({
+                    region: "de",
+                    direction: "from"
+                });
+
+
                 $.each(["to", "from"], function(i, d) {
                     $("#where" + d + " input").change(function() {
                         initInputBox({
@@ -68,6 +76,7 @@
                     MapTypeIdaptype: 'hybrid',
                     select: function(event, ui) {
                         l(ui.item);
+                        enableFrom(params.direction);
                     },
                     //getItemHTML: function (_item) {
                     //    return "<a>yeah</a>";
@@ -75,10 +84,11 @@
                 });
                 // fire up a search
                 $(inputbox).autocomplete("search");
-                l(inputbox);
                 //return inputbox;
             }
-
+            function enableFrom (d) { 
+                $("#where"+d).text(d+": "+$("#where"+d+"box").val());
+            }
             // only for debugging
 
             function l(msg) {
@@ -156,7 +166,7 @@
                 park
             </p>
             <p>
-                where to:
+                <span id="to">where to:</span>
                 <input type="text" id="wheretobox" size="50" />
             </p>
         </div>
