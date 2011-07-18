@@ -1,0 +1,17 @@
+!!! 5
+html
+  head
+    title Hookbox
+    script(src='/socket.io/socket.io.js')
+    script(src='http://code.jquery.com/jquery-1.6.1.min.js')
+    script
+      var socket = io.connect();
+      socket.on('ride', function(ride) {
+        $('#rides').append($('<div>uiuiuiui</div>'));
+      });
+      socket.on('connect', function () {
+        $('#rides').append($('<p>connected</p>'));
+      });
+  body
+    h2 rides from #{from} to #{to}
+    #rides
