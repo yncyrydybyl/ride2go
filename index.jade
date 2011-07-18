@@ -4,11 +4,11 @@ html
     title ride2go
     meta(http-equiv='content-type', content='text/html; charset=UTF-8')
     script(src='http://maps.google.com/maps/api/js?sensor=false')
-    script(src='js/jquery-1.6.2.min.js')
-    script(src='js/jquery-ui-1.8.14.custom.min.js')
+    script(src='/js/jquery-1.6.2.min.js')
+    script(src='/js/jquery-ui-1.8.14.custom.min.js')
     script(src='/socket.io/socket.io.js')
-    script(src='js/ui.geo_autocomplete.js')
-    script(src='js/ride2go.js')
+    script(src='/js/ui.geo_autocomplete.js')
+    script(src='/js/ride2go.js')
     script
       function setchannel() {
       var socket = io.connect();
@@ -21,8 +21,8 @@ html
       }
 
               
-    link(type='text/css', href='css/smoothness/jquery-ui-1.8.14.custom.css', rel='stylesheet')
-    link(type='text/css', href='css/main.css', rel='stylesheet')
+    link(type='text/css', href='/css/smoothness/jquery-ui-1.8.14.custom.css', rel='stylesheet')
+    link(type='text/css', href='/css/main.css', rel='stylesheet')
     link(href='http://fonts.googleapis.com/css?family=Corben:bold', rel='stylesheet', type='text/css')
     
     style(type='text/css')
@@ -31,8 +31,7 @@ html
                   { max-height: 320px; } .ui-autocomplete li { font-size:10pt; }
               
   body
-    h1#logo
-      | Ride2Go
+    h1#logo Ride2Go
     #whereto
       p.switcher
         | + show options
@@ -135,5 +134,5 @@ html
       p
         | where from:
         input#wherefrombox(type='text', size='50')
-      h2 rides
-      #rides
+    h2 rides
+    #rides
