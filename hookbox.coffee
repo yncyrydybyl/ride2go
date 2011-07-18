@@ -4,6 +4,7 @@ socket = require 'socket.io'
 app = express.createServer()
 app.set 'views', __dirname
 app.set 'view engine', 'jade'
+app.use express.bodyParser()
 app.use express.static __dirname+'/public'
 
 app.listen 3000
@@ -22,8 +23,8 @@ app.get "/rides/:from/:to", (req, res) ->
       from: req.params.from, to: req.params.to }}
 
 app.post "/rides", (req, res) ->
-  console.log 'posted ride'
-  browser.emit 'ride', {some: 'foobar'}
+  console.log 'posted ride '+req.body.ride
+  browser.emit 'ride', {some: req.body.ride}
   res.send "foo"
 
 f = () ->
