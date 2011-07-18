@@ -1,0 +1,8 @@
+{ "name" : "ride2go" ,
+    "version" : "0.0.2" ,
+    "dependencies" : { 
+        "express" : "2.4.3",
+        "jade": "0.13",
+        "socket.io" : "0.7.7",
+        "coffee-script" : "1.1.1"}
+}

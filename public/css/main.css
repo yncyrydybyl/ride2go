@@ -1,0 +1,30 @@
+body {
+  background-color: #e1e3d5;
+  margin: 50px 0px;
+  padding: 0px;
+  text-align: center;
+  color: #335d26;
+  font-family: "Corben", arial, serif; }
+
+h1 {
+  font-family: "Corben", arial, serif; }
+
+#whereto, #wherefrom {
+  position: relative;
+  background-color: #bfc2ae;
+  width: 80%;
+  margin: auto;
+  text-align: left;
+  padding: 20px; }
+  #whereto .switcher, #wherefrom .switcher {
+    font-size: 10px;
+    position: absolute;
+    top: 0px;
+    right: 10px; }
+  #whereto .details, #wherefrom .details {
+    font-size: 10px;
+    display: none; }
+    #whereto .details *, #wherefrom .details * {
+      font-size: 10px; }
+  #whereto input, #wherefrom input {
+    font-size: 25px; }
