@@ -1,6 +1,6 @@
            $().ready(function() {
-                setgeotypes("whereto", ["premise", "subpremise", "route"]);
-                setgeotypes("wherefrom", ["route", "premise", "subpremise", "locality"]);
+                setgeotypes("whereto", ["locality","premise", "subpremise", "route"]);
+                setgeotypes("wherefrom", ["locality", "route", "premise", "subpremise", "locality"]);
                 initInputBox({
                     region: "de",
                     direction: "to"
