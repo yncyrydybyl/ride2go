@@ -4,3 +4,17 @@ i am using sass for the css
  * install rvm (ruby version manager) https://rvm.beginrescueend.com/
  * run "bundle install" to get haml and sass
  * start "sass --watch sass/:css/" to convert sass files instant
+
+node setup
+==========
+follow https://github.com/joyent/node/wiki/Installation to install node
+then install npm
+
+   $ curl http://npmjs.org/install.sh | sh
+
+install via npm
+
+node install jade # template engine
+node install socket.io # async channel handling
+node install coffee # js on steroids
+node install express # rails for node.js
