@@ -1,17 +1,139 @@
 !!! 5
 html
   head
-    title Hookbox
+    title ride2go
+    meta(http-equiv='content-type', content='text/html; charset=UTF-8')
+    script(src='http://maps.google.com/maps/api/js?sensor=false')
+    script(src='js/jquery-1.6.2.min.js')
+    script(src='js/jquery-ui-1.8.14.custom.min.js')
     script(src='/socket.io/socket.io.js')
-    script(src='http://code.jquery.com/jquery-1.6.1.min.js')
+    script(src='js/ui.geo_autocomplete.js')
+    script(src='js/ride2go.js')
     script
-      var socket = io.connect();
-      socket.on('ride', function(ride) {
-        $('#rides').append($('<div>uiuiuiui</div>'));
-      });
-      socket.on('connect', function () {
+      function setchannel() {
+        var socket = io.connect();
+        socket.on('ride', function(ride) {
+            $('#rides').append($('<div>uiuiuiui</div>'));
+        });
+        socket.on('connect', function () {
         $('#rides').append($('<p>connected</p>'));
-      });
+        });
+      }
+
+              
+    link(type='text/css', href='css/smoothness/jquery-ui-1.8.14.custom.css', rel='stylesheet')
+    link(type='text/css', href='css/main.css', rel='stylesheet')
+    link(href='http://fonts.googleapis.com/css?family=Corben:bold', rel='stylesheet', type='text/css')
+    
+    style(type='text/css')
+                  .ui-autocomplete { overflow-y: auto; width:300px; } * html .ui-autocomplete { /*
+                  IE max- */height: expression( this.scrollHeight > 320 ? "320px" : "auto" ); } .ui-autocomplete
+                  { max-height: 320px; } .ui-autocomplete li { font-size:10pt; }
+              
   body
-    h2 rides from #{from} to #{to}
-    #rides
+    h1#logo
+      | Ride2Go
+    #whereto
+      p.switcher
+        | + show options
+      p.details
+        | within:
+        select(onchange='setwheretobox({region:this.value});')
+          option
+            | de
+          option
+            | us
+        br
+        | what:
+        input(type='checkbox', name='whereto', value='street_address')
+        | street_address
+        input(type='checkbox', name='whereto', value='route')
+        | route
+        input(type='checkbox', name='whereto', value='intersection')
+        | intersection
+        input(type='checkbox', name='whereto', value='political')
+        | political
+        input(type='checkbox', name='whereto', value='country')
+        | country
+        input(type='checkbox', name='whereto', value='administrative_area_level_1')
+        | administrative_area_level_1
+        input(type='checkbox', name='whereto', value='administrative_area_level_2')
+        | administrative_area_level_2
+        input(type='checkbox', name='whereto', value='administrative_area_level_3')
+        | administrative_area_level_3
+        input(type='checkbox', name='whereto', value='colloquial_area')
+        | colloquial_area
+        input(type='checkbox', name='whereto', value='locality')
+        | locality
+        input(type='checkbox', name='whereto', value='sublocality')
+        | sublocality
+        input(type='checkbox', name='whereto', value='neighborhood')
+        | neighborhood
+        input(type='checkbox', name='whereto', value='premise')
+        | premise
+        input(type='checkbox', name='whereto', value='subpremise')
+        | subpremise
+        input(type='checkbox', name='whereto', value='postal_code')
+        | postal_code
+        input(type='checkbox', name='whereto', value='natural_feature')
+        | natural_feature
+        input(type='checkbox', name='whereto', value='airport')
+        | airport
+        input(type='checkbox', name='whereto', value='park')
+        | park
+      p
+        span#to where to:
+        input#wheretobox(type='text', size='50')
+    #wherefrom
+      p.switcher
+        | + show options
+      p.details
+        | within:
+        select(onchange='setwherefrombox({region:this.value});')
+          option
+            | de
+          option
+            | us
+        br
+        | what:
+        input(type='checkbox', name='wherefrom', value='street_address')
+        | street_address
+        input(type='checkbox', name='wherefrom', value='route')
+        | route
+        input(type='checkbox', name='wherefrom', value='intersection')
+        | intersection
+        input(type='checkbox', name='wherefrom', value='political')
+        | political
+        input(type='checkbox', name='wherefrom', value='country')
+        | country
+        input(type='checkbox', name='wherefrom', value='administrative_area_level_1')
+        | administrative_area_level_1
+        input(type='checkbox', name='wherefrom', value='administrative_area_level_2')
+        | administrative_area_level_2
+        input(type='checkbox', name='wherefrom', value='administrative_area_level_3')
+        | administrative_area_level_3
+        input(type='checkbox', name='wherefrom', value='colloquial_area')
+        | colloquial_area
+        input(type='checkbox', name='wherefrom', value='locality')
+        | locality
+        input(type='checkbox', name='wherefrom', value='sublocality')
+        | sublocality
+        input(type='checkbox', name='wherefrom', value='neighborhood')
+        | neighborhood
+        input(type='checkbox', name='wherefrom', value='premise')
+        | premise
+        input(type='checkbox', name='wherefrom', value='subpremise')
+        | subpremise
+        input(type='checkbox', name='wherefrom', value='postal_code')
+        | postal_code
+        input(type='checkbox', name='wherefrom', value='natural_feature')
+        | natural_feature
+        input(type='checkbox', name='wherefrom', value='airport')
+        | airport
+        input(type='checkbox', name='wherefrom', value='park')
+        | park
+      p
+        | where from:
+        input#wherefrombox(type='text', size='50')
+      h2 rides
+      #rides

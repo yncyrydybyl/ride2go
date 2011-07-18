@@ -60,6 +60,7 @@
                     MapTypeIdaptype: 'hybrid',
                     select: function(event, ui) {
                         l(ui.item);
+                        setchannel();
                         enableFrom(params.direction);
                     },
                     //getItemHTML: function (_item) {
