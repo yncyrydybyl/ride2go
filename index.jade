@@ -11,11 +11,11 @@ html
     script(src='js/ride2go.js')
     script
       function setchannel() {
-        var socket = io.connect();
-        socket.on('ride', function(ride) {
-            $('#rides').append($('<div>uiuiuiui</div>'));
-        });
-        socket.on('connect', function () {
+      var socket = io.connect();
+      socket.on('ride', function(ride) {
+        $('#rides').append($('<div>'+ride.some+'</div>'));
+      });
+      socket.on('connect', function () {
         $('#rides').append($('<p>connected</p>'));
         });
       }
