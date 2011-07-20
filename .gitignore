@@ -2,3 +2,5 @@
 css/*
 .sass-cache
 *.swp
+client/*.js
+hookbox.js
