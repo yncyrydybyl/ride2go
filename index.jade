@@ -71,7 +71,7 @@ html
         | park
       p
         span#to where to:
-        input#wheretobox(type='text', size='50')
+        input#wheretobox(type='text', size='50', value='#{to}')
     #wherefrom
       p.switcher
         | + show options
@@ -122,6 +122,6 @@ html
         | park
       p
         | where from:
-        input#wherefrombox(type='text', size='50')
+        input#wherefrombox(type='text', size='50', value='#{from}')
     h2 rides
     #rides
