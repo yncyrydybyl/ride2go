@@ -14,9 +14,8 @@ l = console.log
 
 app.listen 3000, -> 
   addr = app.address()
-  l '   app listening on http://' + addr.address + ':' + addr.port
+  l '  app listening on http://' + addr.address + ':' + addr.port
 
-nodeio.start scrapers.raummobil, {timeout:100}, ((err, out) -> console.log out), true
 
 io = socketIO.listen app
 ridesearches = {}
@@ -24,11 +23,13 @@ ridesearches = {}
 
 io.sockets.on 'connection', (socket) ->
   l "connected"
-  socket.emit 'ride', {ride: 'foobar'}
-  browser = socket
-  #f()
-  socket.on 'ride query' ,  (query) ->
-    l "    [ride query ]:" + query
+  socket.on 'query', (query)->
+    nodeio.start scrapers.dummy, {timeout:100}, ((err, rides) -> 
+      socket.emit 'rides', rides
+      l rides
+    ), true
+
+
 
 app.get "/", (req,res) ->
   res.render 'index',  { layout: false, locals: {
@@ -39,11 +40,6 @@ app.get "/rides/:from/:to", (req, res) ->
       from: req.params.from , to: req.params.to }}
 
 app.post "/rides", (req, res) ->
-  console.log 'posted ride '+req.body.ride
+  l 'posted ride '+req.body.ride
   browser.emit 'ride', {some: req.body.ride}
   res.send "foo"
-
-
-
-f = () ->
-  setTimeout (() -> f(); browser.emit 'ride', 'foo'), 2000

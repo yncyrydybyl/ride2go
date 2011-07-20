@@ -29,16 +29,22 @@ inputdone = (d) ->
   $("#where" + d).text d + ": " + $("#where" + d + "box").val()
 setchannel = ->
   socket = io.connect()
-  socket.on_ "ride", (ride) ->
-    $("#rides").append $("<div>" + ride.some + "</div>")
+  socket.on "rides", (rides) ->
+    $("#rides").append $("<div>" + rides + "</div>")
+    l (ride: rides)
   
-  socket.on_ "connect", ->
+  socket.on "connect", ->
     $("#rides").append $("<p>connected</p>")
-l = (msg) ->
-  console.log msg
+    # only for debug we fire the query instantly
+    socket.emit "query", {origin:"hamburg", destination: "berlin"}
+#l = (msg) ->
+#  console.log msg
+`function l(msg) {console.log(msg)};`
+
 $().ready ->
   setgeotypes "whereto", [ "locality", "premise", "subpremise", "route" ]
   setgeotypes "wherefrom", [ "locality", "route", "premise", "subpremise", "locality" ]
+  setchannel()
   initInputBox 
     region: "de"
     direction: "to"
