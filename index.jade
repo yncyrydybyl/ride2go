@@ -9,17 +9,6 @@ html
     script(src='/socket.io/socket.io.js')
     script(src='/js/ui.geo_autocomplete.js')
     script(src='/js/ride2go.js')
-    script
-      function setchannel() {
-      var socket = io.connect();
-      socket.on('ride', function(ride) {
-        $('#rides').append($('<div>'+ride.some+'</div>'));
-      });
-      socket.on('connect', function () {
-        $('#rides').append($('<p>connected</p>'));
-        });
-      }
-
               
     link(type='text/css', href='/css/smoothness/jquery-ui-1.8.14.custom.css', rel='stylesheet')
     link(type='text/css', href='/css/main.css', rel='stylesheet')
@@ -82,7 +71,7 @@ html
         | park
       p
         span#to where to:
-        input#wheretobox(type='text', size='50')
+        input#wheretobox(type='text', size='50', value='#{to}')
     #wherefrom
       p.switcher
         | + show options
@@ -133,6 +122,6 @@ html
         | park
       p
         | where from:
-        input#wherefrombox(type='text', size='50')
+        input#wherefrombox(type='text', size='50', value='#{from}')
     h2 rides
     #rides
