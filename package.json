@@ -4,5 +4,6 @@
         "express" : "2.4.3",
         "jade": "0.13",
         "socket.io" : "0.7.7",
+        "node.io" : "0.3.6",
         "coffee-script" : "1.1.1"}
 }

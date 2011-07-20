@@ -52,7 +52,6 @@ $.widget( "ui.geo_autocomplete", {
 							if ($.map(_result.types, function(_type) {
 								return $.inArray(_type, _types) != -1 ? _type : null;
 							}).length && _result.geometry && _result.geometry.viewport) {
-								l(self.options);
 								if (self.options.geocoder_address) {
 									_place = _result.formatted_address;
 								} else {
