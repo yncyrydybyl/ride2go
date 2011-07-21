@@ -25,3 +25,8 @@ coffee setup
 
 to compile the client javascript files run
  $ coffee -w -o public/js -c client/*.coffee 
+
+run tests
+=========
+ $ npm install -g expresso
+ $ expresso test/*
