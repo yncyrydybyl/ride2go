@@ -3,4 +3,12 @@ css/*
 .sass-cache
 *.swp
 client/*.js
+scrapers/*.js
 hookbox.js
+.monitor
+node_modules/
+public/js/ride2go.js
+scrapers.js
+scrapers/dummy.js
+scrapers/raummobil.js
+server.js

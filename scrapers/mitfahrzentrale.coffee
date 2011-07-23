@@ -6,7 +6,7 @@ STARTLAND=D&START=#{query.origin}&
 ZIELLAND=D&ZIEL=#{query.destination}&
 abdat=#{query.date}"
 
-class Mitfahrzentrale extends nodeio.JobClass
+module.exports = new nodeio.Job
   input: false
   run: ->
     @getHtml url(@options), (err, $, data) =>
@@ -23,4 +23,3 @@ class Mitfahrzentrale extends nodeio.JobClass
       console.log "found #{rides.length} rides at mitfahrzentrale.de"
       @emit rides
 
-module.exports = new Mitfahrzentrale
