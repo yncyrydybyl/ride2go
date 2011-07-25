@@ -3,6 +3,7 @@ css/*
 .sass-cache
 *.swp
 client/*.js
+scrapers/*.js
 hookbox.js
 .monitor
 node_modules/
