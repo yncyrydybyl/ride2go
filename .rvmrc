@@ -3,6 +3,9 @@
 ruby_string="1.9.2"
 gemset_name="ride2go"
 
+export NODE_PATH=`pwd`/node_modules:$NODE_PATH
+export PATH=`pwd`/node_modules/.bin:$PATH
+
 if rvm list strings | grep -q "${ruby_string}" ; then
 
   # Load or create the specified environment
