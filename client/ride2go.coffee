@@ -8,7 +8,7 @@ geotypes = (direction) ->
   ).get()
 
 initInputBox = (params) ->
-  params ?= 
+  params ?=
     region: "de"
     direction: "to"
   params.region ?= "de"
@@ -48,9 +48,13 @@ toselected = (item) ->
     console.log "'to:' "+item.value+" selected"
     console.log item
     $("#whereto").hide()
-    $("#to").show()
+    console.log $("#wherefrom")
+    $("#wherefrom").show()
     socket.emit "query", {origin:$("#wherefrom").val(), destination: $("#wheretobox").val()}
-
+#    initInputBox
+#      region: "de"
+#      direction: "from"
+#
 fromselected = ->
     console.log "from selected"
 
@@ -66,10 +70,6 @@ $().ready ->
   initInputBox 
     region: "de"
     direction: "to"
-  
-  initInputBox 
-    region: "de"
-    direction: "from"
  
   $.each [ "to", "from" ], (i, d) ->
     $("#where" + d + " input").change ->

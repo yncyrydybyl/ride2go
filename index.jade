@@ -23,107 +23,108 @@ html
     h1#logo Ride2Go
     #to
     #from
-    #whereto
-      p.switcher
-        | + show options
-      p.details
-        | within:
-        select(onchange='setwheretobox({region:this.value});')
-          option
-            | de
-          option
-            | us
-        br
-        | what:
-        input(type='checkbox', name='whereto', value='street_address')
-        | street_address
-        input(type='checkbox', name='whereto', value='route')
-        | route
-        input(type='checkbox', name='whereto', value='intersection')
-        | intersection
-        input(type='checkbox', name='whereto', value='political')
-        | political
-        input(type='checkbox', name='whereto', value='country')
-        | country
-        input(type='checkbox', name='whereto', value='administrative_area_level_1')
-        | administrative_area_level_1
-        input(type='checkbox', name='whereto', value='administrative_area_level_2')
-        | administrative_area_level_2
-        input(type='checkbox', name='whereto', value='administrative_area_level_3')
-        | administrative_area_level_3
-        input(type='checkbox', name='whereto', value='colloquial_area')
-        | colloquial_area
-        input(type='checkbox', name='whereto', value='locality')
-        | locality
-        input(type='checkbox', name='whereto', value='sublocality')
-        | sublocality
-        input(type='checkbox', name='whereto', value='neighborhood')
-        | neighborhood
-        input(type='checkbox', name='whereto', value='premise')
-        | premise
-        input(type='checkbox', name='whereto', value='subpremise')
-        | subpremise
-        input(type='checkbox', name='whereto', value='postal_code')
-        | postal_code
-        input(type='checkbox', name='whereto', value='natural_feature')
-        | natural_feature
-        input(type='checkbox', name='whereto', value='airport')
-        | airport
-        input(type='checkbox', name='whereto', value='park')
-        | park
-      p
-        span#to where to:
-        input#wheretobox(type='text', size='50', value='#{to}')
-    #wherefrom
-      p.switcher
-        | + show options
-      p.details
-        | within:
-        select(onchange='setwherefrombox({region:this.value});')
-          option
-            | de
-          option
-            | us
-        br
-        | what:
-        input(type='checkbox', name='wherefrom', value='street_address')
-        | street_address
-        input(type='checkbox', name='wherefrom', value='route')
-        | route
-        input(type='checkbox', name='wherefrom', value='intersection')
-        | intersection
-        input(type='checkbox', name='wherefrom', value='political')
-        | political
-        input(type='checkbox', name='wherefrom', value='country')
-        | country
-        input(type='checkbox', name='wherefrom', value='administrative_area_level_1')
-        | administrative_area_level_1
-        input(type='checkbox', name='wherefrom', value='administrative_area_level_2')
-        | administrative_area_level_2
-        input(type='checkbox', name='wherefrom', value='administrative_area_level_3')
-        | administrative_area_level_3
-        input(type='checkbox', name='wherefrom', value='colloquial_area')
-        | colloquial_area
-        input(type='checkbox', name='wherefrom', value='locality')
-        | locality
-        input(type='checkbox', name='wherefrom', value='sublocality')
-        | sublocality
-        input(type='checkbox', name='wherefrom', value='neighborhood')
-        | neighborhood
-        input(type='checkbox', name='wherefrom', value='premise')
-        | premise
-        input(type='checkbox', name='wherefrom', value='subpremise')
-        | subpremise
-        input(type='checkbox', name='wherefrom', value='postal_code')
-        | postal_code
-        input(type='checkbox', name='wherefrom', value='natural_feature')
-        | natural_feature
-        input(type='checkbox', name='wherefrom', value='airport')
-        | airport
-        input(type='checkbox', name='wherefrom', value='park')
-        | park
-      p
-        | where from:
-        input#wherefrombox(type='text', size='50', value='#{from}')
+    #input
+      #whereto
+        p.switcher
+          | + show options
+        p.details
+          | within:
+          select(onchange='setwheretobox({region:this.value});')
+            option
+              | de
+            option
+              | us
+          br
+          | what:
+          input(type='checkbox', name='whereto', value='street_address')
+          | street_address
+          input(type='checkbox', name='whereto', value='route')
+          | route
+          input(type='checkbox', name='whereto', value='intersection')
+          | intersection
+          input(type='checkbox', name='whereto', value='political')
+          | political
+          input(type='checkbox', name='whereto', value='country')
+          | country
+          input(type='checkbox', name='whereto', value='administrative_area_level_1')
+          | administrative_area_level_1
+          input(type='checkbox', name='whereto', value='administrative_area_level_2')
+          | administrative_area_level_2
+          input(type='checkbox', name='whereto', value='administrative_area_level_3')
+          | administrative_area_level_3
+          input(type='checkbox', name='whereto', value='colloquial_area')
+          | colloquial_area
+          input(type='checkbox', name='whereto', value='locality')
+          | locality
+          input(type='checkbox', name='whereto', value='sublocality')
+          | sublocality
+          input(type='checkbox', name='whereto', value='neighborhood')
+          | neighborhood
+          input(type='checkbox', name='whereto', value='premise')
+          | premise
+          input(type='checkbox', name='whereto', value='subpremise')
+          | subpremise
+          input(type='checkbox', name='whereto', value='postal_code')
+          | postal_code
+          input(type='checkbox', name='whereto', value='natural_feature')
+          | natural_feature
+          input(type='checkbox', name='whereto', value='airport')
+          | airport
+          input(type='checkbox', name='whereto', value='park')
+          | park
+        p
+          span.to where to:
+          input#wheretobox(type='text', size='50', value='#{to}')
+      #wherefrom
+        p.switcher
+          | + show options
+        p.details
+          | within:
+          select(onchange='setwherefrombox({region:this.value});')
+            option
+              | de
+            option
+              | us
+          br
+          | what:
+          input(type='checkbox', name='wherefrom', value='street_address')
+          | street_address
+          input(type='checkbox', name='wherefrom', value='route')
+          | route
+          input(type='checkbox', name='wherefrom', value='intersection')
+          | intersection
+          input(type='checkbox', name='wherefrom', value='political')
+          | political
+          input(type='checkbox', name='wherefrom', value='country')
+          | country
+          input(type='checkbox', name='wherefrom', value='administrative_area_level_1')
+          | administrative_area_level_1
+          input(type='checkbox', name='wherefrom', value='administrative_area_level_2')
+          | administrative_area_level_2
+          input(type='checkbox', name='wherefrom', value='administrative_area_level_3')
+          | administrative_area_level_3
+          input(type='checkbox', name='wherefrom', value='colloquial_area')
+          | colloquial_area
+          input(type='checkbox', name='wherefrom', value='locality')
+          | locality
+          input(type='checkbox', name='wherefrom', value='sublocality')
+          | sublocality
+          input(type='checkbox', name='wherefrom', value='neighborhood')
+          | neighborhood
+          input(type='checkbox', name='wherefrom', value='premise')
+          | premise
+          input(type='checkbox', name='wherefrom', value='subpremise')
+          | subpremise
+          input(type='checkbox', name='wherefrom', value='postal_code')
+          | postal_code
+          input(type='checkbox', name='wherefrom', value='natural_feature')
+          | natural_feature
+          input(type='checkbox', name='wherefrom', value='airport')
+          | airport
+          input(type='checkbox', name='wherefrom', value='park')
+          | park
+        p
+          | where from:
+          input#wherefrombox(type='text', size='50', value='#{from}')
     h2 rides
     #rides

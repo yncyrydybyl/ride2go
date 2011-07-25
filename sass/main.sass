@@ -14,9 +14,10 @@ h1
 
 	
 #whereto, #wherefrom
-  position: relative
+  position: absolute
   background-color: $wheretoboxclr
   width: 80%
+  top: 100px
   margin: auto
   text-align: left
   padding: 20px
@@ -35,3 +36,21 @@ h1
   
   input
     font-size: 25px
+#input
+  position: relative 
+  margin-left: $panelwidth+40px
+#wherefrom
+  display: none
+#from, #to
+  position: absolute
+  width: $panelwidth
+  height: 500px
+#from
+  top: 10px
+  left: 10px
+  background-color: red
+#to
+  top: 10px
+  right: 10px
+  background-color: green
+
