@@ -1,6 +1,6 @@
 express = require 'express'
 nodeio = require 'node.io'
-scrapers = require './scrapers'
+connectors = require './connectors'
 socketIO = require 'socket.io'
 
 app = express.createServer()
@@ -25,12 +25,10 @@ ridesearches = {}
 io.sockets.on 'connection', (socket) ->
   l "connected"
   socket.on 'query', (query)->
-    nodeio.start scrapers.dummy, {timeout:100}, ((err, rides) -> 
+    nodeio.start connectors.dummy, {timeout:100}, ((err, rides) -> 
       socket.emit 'rides', rides
       l rides
     ), true
-
-
 
 app.get "/", (req,res) ->
   res.render 'index',  { layout: false, locals: {

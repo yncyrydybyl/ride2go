@@ -5,5 +5,7 @@
         "jade": "0.13",
         "socket.io" : "0.7.7",
         "node.io" : "0.3.6",
-        "coffee-script" : "1.1.1"}
+        "coffee-script" : "1.1.1",
+        "nodemon" : "0.5.3",
+        "expresso" : "0.8.1"}
 }
