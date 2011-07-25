@@ -20,7 +20,7 @@ $.fn.extend({
 			mapwidth: 100,
 			mapheight: 100,
 			maptype: 'terrain',
-			mapkey: 'ABQIAAAAbnvDoAoYOSW2iqoXiGTpYBT2yXp_ZAY8_ufC3CFXhHIE1NvwkxQNumU68AwGqjbSNF9YO8NokKst8w', // localhost
+			mapkey: 'ABQIAAAA07vZO9XnucVw6-XpcA_FjhRcn5FvT5UqJMt0rbtDrXDKZhg1nBSqZJUbSs4bzm6lQ0pkH02bQwhdTA', // localhost
 			mapsensor: false,
 			parse: function(_results, _status, _query) {
 				var _parsed = [];

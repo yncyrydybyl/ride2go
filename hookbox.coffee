@@ -6,6 +6,7 @@ socketIO = require 'socket.io'
 app = express.createServer()
 app.set 'views', __dirname
 app.set 'view engine', 'jade'
+app.set 'view options', {pretty:true}
 app.use express.bodyParser()
 app.use express.static __dirname+'/public'
 
@@ -33,7 +34,7 @@ io.sockets.on 'connection', (socket) ->
 
 app.get "/", (req,res) ->
   res.render 'index',  { layout: false, locals: {
-      from: req.params.from ? "unkown" , to: req.params.to ? "unkown" }}
+      from: req.params.from ? "rungestrasse berlin" , to: req.params.to ? "hauptstrasse 42 panketal" }}
 
 app.get "/rides/:from/:to", (req, res) ->
   res.render 'index',  { layout: false, locals: {
