@@ -24,8 +24,8 @@ coffee setup
 ============
 to compile the client javascript files run
  $ coffee -w -o public/js -c client/*.coffee 
- $ find . -not -path "./node_modules*" -not -path "./client*" -name "*coffee" -exec coffee -c -w {} \; &
- $ coffee -w -o public/js -c client/*.coffee &
+ $ find . -not -path "./node_modules*" -not -path "./test" \ 
+  -not -path "./client*" -name "*coffee" |xargs coffee -w -c
 
 run tests
 =========
