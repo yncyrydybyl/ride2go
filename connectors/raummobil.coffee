@@ -3,9 +3,9 @@ nodeio = require 'node.io'
 
 url = (query) -> "http://www.raumobil.de/index.php?
 commodities_type=supply&commodity_type=mobile
-&mobile_locations_country%5B0%5D=germany&mobile_locations_city%5B0%5D=#{query.origin}
-&mobile_locations_country%5B99%5D=germany&mobile_locations_city%5B99%5D=#{query.destination}
-&frequencies_start_date_na=0&search_start_date=#{query.date}&x=62&y=13&module=Search
+&mobile_locations_country%5B0%5D=germany&mobile_locations_city%5B0%5D=#{query.orig}
+&mobile_locations_country%5B99%5D=germany&mobile_locations_city%5B99%5D=#{query.dest}
+&frequencies_start_date_na=0&search_start_date=#{query.date || ''}&x=62&y=13&module=Search
 &action=Mobile&current_view=input&next_view=results&mobile_locations_radius%5B0%5D=10
 &mobile_locations_radius%5B99%5D=10&results_per_page=100"
 
