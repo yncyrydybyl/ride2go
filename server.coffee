@@ -25,14 +25,14 @@ ridesearches = {}
 io.sockets.on 'connection', (socket) ->
   l "connected"
   socket.on 'query', (query)->
-    nodeio.start connectors.dummy, {timeout:100}, ((err, rides) -> 
+    nodeio.start connectors.raummobil, query, ((err, rides) -> 
       socket.emit 'rides', rides
-      l rides
+      console.log(rides)
     ), true
 
 app.get "/", (req,res) ->
   res.render 'index',  { layout: false, locals: {
-      from: req.params.from ? "rungestrasse berlin" , to: req.params.to ? "hauptstrasse 42 panketal" }}
+      from: req.params.from ? "berlin" , to: req.params.to ? "hamburg" }}
 
 app.get "/rides/:from/:to", (req, res) ->
   res.render 'index',  { layout: false, locals: {

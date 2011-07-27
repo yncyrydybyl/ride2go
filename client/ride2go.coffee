@@ -1,3 +1,9 @@
+#global variables
+to = {cityname:"hamburg"}
+from = {cityname:"berlin"}
+socket = {}
+
+
 setgeotypes = (boxname, types) ->
   $.each types, (i, b) ->
     $("input[name='" + boxname + "'][value='" + b + "']").attr "checked", true
@@ -42,7 +48,6 @@ setupsocket = ->
   socket = io.connect()
   socket.on "rides", (rides) ->
     for ride in rides
-      alert ride.provider
       console.log(ride)
       $("#rides").append $("<div>provider: #{ride.provider} <a target='_blank' href='#{ride.link}'>visit</a></div>")
     
@@ -56,7 +61,7 @@ setupsocket = ->
     # socket.emit "query", {origin:"hamburg", destination: "berlin"}
   return socket
 
-toselected = (item) ->
+toselected = (item) =>
     fillto({cityname:item.value})
     $("#whereto").hide()
     $("#wherefrom").show()
@@ -74,15 +79,12 @@ fromselected = (item) ->
     fillfrom({cityname:from})
     console.log "from selected"
     sendquery()
-
+fuck = (msg) -> 
+    socket.emit "debug", msg 
 sendquery = ->
-    socket.emit "query", {origin:from, destination: to}
-    console.log("query"+ {origin:from, destination: to})
-
-#global variables
-to = {}
-from = {}
-socket = {}
+    fuck to
+    #socket.emit "query", {origin:from, destination: to}
+    socket.emit "query", {origin:"berlin", destination: "hamburg"}
 
 $().ready ->
   setgeotypes "whereto", [ "locality", "premise", "subpremise", "route", "street_address" ]
