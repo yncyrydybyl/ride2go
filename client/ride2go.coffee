@@ -44,7 +44,7 @@ setupsocket = ->
     for ride in rides
       alert ride.provider
       console.log(ride)
-      $("#rides").append $("<div>provider: #{ride.provider} <a target='_blank' href='#{ride.link}'>visit</a></div>")
+      displayRide ride
     
   socket.on "connect", ->
     $("#status").html("connected")
@@ -83,6 +83,9 @@ sendquery = ->
 to = {}
 from = {}
 socket = {}
+
+displayRide = (ride) ->
+      $("#rides").append $("<div>provider: #{ride.provider} <a target='_blank' href='#{ride.link}'>visit</a></div>")
 
 $().ready ->
   setgeotypes "whereto", [ "locality", "premise", "subpremise", "route", "street_address" ]
