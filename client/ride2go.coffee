@@ -87,6 +87,9 @@ sendquery = ->
     #socket.emit "query", {origin:from, destination: to}
     socket.emit "query", {origin:"berlin", destination: "hamburg"}
 
+displayRide = (ride) ->
+      $("#rides").append $("<div>provider: #{ride.provider} <a target='_blank' href='#{ride.link}'>visit</a></div>")
+
 $().ready ->
   setgeotypes "whereto", [ "locality", "premise", "subpremise", "route", "street_address" ]
   setgeotypes "wherefrom", [ "locality", "route", "premise", "subpremise", "locality" ]
