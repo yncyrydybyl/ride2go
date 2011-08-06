@@ -1,4 +1,4 @@
-module.exports.mitfahrzentrale = require './mitfahrzentrale'
+module.exports.mitfahrzentrale = require('./mitfahrzentrale')
 module.exports.raummobil = require './raummobil'
 module.exports.mapquest = require './mapquest'
 module.exports.citynetz = require './citynetz'

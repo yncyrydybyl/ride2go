@@ -43,22 +43,23 @@ inputdone = (d, item) ->
   if d is "from" then fromselected(item)
 
   #$("#where" + d).text d + ": " + $("#where" + d + "box").val()
+displayride = (ride) ->
+  ride = JSON.parse(ride)
+  $("#rides").append $("<div>provider: #{ride.provider} <a target='_blank' href='#{ride.link}'>visit</a></div>")
 
 setupsocket = ->
   socket = io.connect()
-  socket.on "rides", (rides) ->
-    for ride in rides
-      console.log(ride)
-      $("#rides").append $("<div>provider: #{ride.provider} <a target='_blank' href='#{ride.link}'>visit</a></div>")
-    
+  socket.on "ride", (ride) ->
+    displayride(ride)
+   
   socket.on "connect", ->
     $("#status").html("connected")
     $("#status").effect("pulsate")
+    #socket.emit "query", {origin:"hamburg", destination: "berlin"}
   socket.on "disconnect", ->
     $("#status").html("disconnected")
     $("#status").effect("pulsate")
     # only for debug we fire the query instantly
-    # socket.emit "query", {origin:"hamburg", destination: "berlin"}
   return socket
 
 toselected = (item) =>

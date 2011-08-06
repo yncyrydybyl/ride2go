@@ -22,8 +22,11 @@ io = socketIO.listen app
 io.sockets.on 'connection', (socket) ->
   l "connected"
   socket.on 'query', (query) ->
+    console.log "QUERY: "+query
     RDS.match new Ride(query), (matching_rides) ->
-      socket.emit 'rides', matching_rides
+      for ride in matching_rides
+        console.log ride
+        socket.emit 'ride', ride
 
 app.get "/", (req,res) ->
   res.render 'index',  { layout: false, locals: {

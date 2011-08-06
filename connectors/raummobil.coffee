@@ -18,11 +18,12 @@ regex = ///                   # HEREGEX:
       (\d+:\d+)               #6    time
       ///
 
-module.exports = nodeio.Job
+module.exports = new nodeio.Job
   input: false
   run: ->
     rides = []
     @getHtml url(@options), (err, $, data) =>
+      console.log url(@options)
       $('#mobile_search_result_data tr').has('td').each (tr) ->
         link =  $('a', tr).last?().attribs.href
         if (r = tr.fulltext.match regex) and r[1] == "Angebot"
@@ -32,6 +33,6 @@ module.exports = nodeio.Job
             date: r[5]
             time: r[6]
             price: r[2]
-            link: link
+            link: "http://www.raumobil.de"+link
       @emit rides
 

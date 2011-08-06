@@ -20,7 +20,7 @@ module.exports = new nodeio.Job
           time: row[4].text
           origin: row[2].text
           destination: row[3].text
-          link: $('a', row[5]).attribs.href
+          link: "http://www.mitfahrzentrale.de"+$('a', row[5]).attribs.href
       console.log "found #{rides.length} rides at mitfahrzentrale.de"
       @emit rides
 
