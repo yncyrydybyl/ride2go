@@ -31,7 +31,7 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
   match: (query, callback) ->
 
     route = "#{query.orig}->#{query.dest}" # hash-key to identify the route #
-
+    @redis.sadd "query:"+route, "time:"+new Date
     # register for any future rides on that route that might be found later #
     @on route, callback  # notify active browsers or other interested party #
 

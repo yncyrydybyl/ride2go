@@ -3,7 +3,7 @@ ruby setup
 i am using sass for the css
  * install rvm (ruby version manager) https://rvm.beginrescueend.com/
  * run "bundle install" to get haml and sass
- * start "sass --watch sass/:css/" to convert sass files instant
+ * start "sass --watch sass/:public/css" to convert sass files instant
 
 node setup
 ==========
