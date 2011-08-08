@@ -45,11 +45,12 @@ inputdone = (d, item) ->
   #$("#where" + d).text d + ": " + $("#where" + d + "box").val()
 displayride = (ride) ->
   ride = JSON.parse(ride)
-  $("#rides").append $("<div>provider: #{ride.provider} <a target='_blank' href='#{ride.link}'>visit</a></div>")
+  $("#ride").append $("<div>provider: #{ride.provider} <a target='_blank' href='#{ride.link}'>visit</a></div>")
 
 setupsocket = ->
   socket = io.connect()
   socket.on "ride", (ride) ->
+    console.log(ride)
     displayride(ride)
    
   socket.on "connect", ->
