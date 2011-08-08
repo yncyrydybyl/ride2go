@@ -3,9 +3,8 @@
 
 body
   background-color: $bgclr
-  margin: 50px 0px
+  margin: 0px 0px
   padding: 0px
-  text-align: center
   color: $defaultfontclr
   font-family: $defaultfnt  
 
@@ -16,7 +15,7 @@ h1
 #whereto, #wherefrom
   position: absolute
   background-color: $wheretoboxclr
-  width: 80%
+  width: 40%
   top: 100px
   margin: auto
   text-align: left
@@ -36,9 +35,15 @@ h1
   
   input
     font-size: 25px
+.title
+  text-align: center
+  
 #input
-  position: relative 
+  position: relative
+  size: 40
+  width: 20
   margin-left: $panelwidth+40px
+  text-align: left
 #wherefrom
   display: none
 #from, #to
@@ -53,4 +58,5 @@ h1
   top: 10px
   right: 10px
   background-color: green
-
+#status 
+  font-size: 10px
