@@ -1,4 +1,4 @@
-# Copyright (c) 2011 Flo Detig <orangeman@teleportr.org> All rights reserved.
+# Copyright (c) 2011 ride2go contributors -- ride2go.com All rights reserved.
 #                                                              AGPL Licenced.
 
 # # # # # # # # # # # # # # # #    RDS    # # # # # # # # # # # # # # # # # #
@@ -14,8 +14,9 @@
 #                                                                           #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-api  = require('./connectors')  # knows how to talk with different services #
-io = require('node.io')  # spin off the workers to search all web for rides #
+api  = require './connectors' # knows how to talk with different service apis
+log = require './lib/logging' # logs nice to console for seeing whats ongoing
+io = require 'node.io' # spin off workers for searching all the web for rides 
 
 
 class RiDeStore extends require('events').EventEmitter # pubsub style msges #
@@ -29,6 +30,7 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
   ## searches for rides that match a query
   ## returns matching rides asynchronously
   match: (query, callback) ->
+    log.notice "RDS.scraping is off" unless @scraping
 
     route = "#{query.orig}->#{query.dest}" # hash-key to identify the route #
     @redis.sadd "query:"+route, "time:"+new Date
@@ -36,15 +38,20 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
     @on route, callback  # notify active browsers or other interested party #
 
     # return cached rides available in ReDiS RiDeStore
-    @redis.hvals route, (err, rides) -> callback rides
+    @redis.hvals route, (err, rides) ->
+      log.info "RDS has " + rides.length + " rides already in cache"
+      callback rides
 
     # schedule jobs to go get find some matching RiDeS
-    for search in [api.mitfahrzentrale, api.raummobil]
-      io.start search, query, ((shouldNotFail, rides) =>
+    for search in ['mitfahrzentrale', 'raummobil'] # ToDo
+      log.info "RDS starts connector for " + search
+      io.start api[search], query, ((someerror, rides) =>
+        log.error someerror if someerror
         for ride in (new Ride(r) for r in rides) # store the RiDeS to cache #
-          @redis.hset route, ride.link, ride.json(), (shouldNotFail, isNew) =>
+          @redis.hset route, ride.link, ride.json(), (anothererror, isNew) =>
+            log.error anothererror if anothererror
             @emit route, [ride.json()] if isNew # ie. fiRst time DiScovered #
-      ), true if @scraping is on # ToDo schedule some more smarter strategy #
+      ), true if @scraping # ToDo schedule some more smarter strategy #
 
 
 module.exports = RDS ||= new RiDeStore # singleton
