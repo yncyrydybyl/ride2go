@@ -1,5 +1,6 @@
 *~
 css/*
+logs
 .sass-cache
 *.swp
 client/*.js

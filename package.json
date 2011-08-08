@@ -8,5 +8,6 @@
         "redis": "0.6.6",
         "coffee-script" : "1.1.1",
         "nodemon" : "0.5.3",
+        "winston" : "0.3.4",
         "expresso" : "0.8.1"}
 }
