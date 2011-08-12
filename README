@@ -1,14 +1,26 @@
-ruby setup
-==========
+ruby 
+====
 i am using sass for the css
  * install rvm (ruby version manager) https://rvm.beginrescueend.com/
  * run "bundle install" to get haml and sass
  * start "sass --watch sass/:public/css" to convert sass files instant
 
 node
-==========
+====
 follow https://github.com/joyent/node/wiki/Installation to install node
 
+redis
+=====
+get redis from http://redis.io/download
+
+$ wget http://redis.googlecode.com/files/redis-2.2.12.tar.gz
+$ tar xzf redis-2.2.12.tar.gz
+$ cd redis-2.2.12
+$ make
+
+and start it:
+
+$ src/redis-server
 
 node package manager
 ====================
