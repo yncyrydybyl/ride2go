@@ -5,20 +5,25 @@ i am using sass for the css
  * run "bundle install" to get haml and sass
  * start "sass --watch sass/:public/css" to convert sass files instant
 
-node setup
+node
 ==========
 follow https://github.com/joyent/node/wiki/Installation to install node
-then install npm
 
-   $ curl http://npmjs.org/install.sh | sh
 
+node package manager
+====================
+ $ curl http://npmjs.org/install.sh | sh
+  
 thanks to package.json you can simply run 
-   $ npm install
+ $ npm install
+
 it will install
  * jade # template engine
  * socket.io # async channel handling
  * coffee # js on steroids
  * express # rails for node.js
+
+to have the executables installed from npm in you PATH you should add node_modules/.bin 
 
 coffee setup
 ============
@@ -29,6 +34,10 @@ to compile the client javascript files run
 
 run tests
 =========
- $ npm install -g expresso
  $ expresso test/*
  
+run specs
+=========
+ $ ./specs.sh
+
+
