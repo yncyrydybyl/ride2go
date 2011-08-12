@@ -9,5 +9,7 @@
         "coffee-script" : "1.1.1",
         "nodemon" : "0.5.3",
         "winston" : "0.3.4",
+        "underscore" : "1.1.7",
+        "jasmine-node" : "1.0.6",
         "expresso" : "0.8.1"}
 }
