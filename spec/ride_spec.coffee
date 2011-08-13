@@ -12,41 +12,28 @@ describe "Ride", ->
 describe "RideFactory", ->
   describe 'createRide', ->
     factory = {}
+    builder = {}
 
     beforeEach ->
-        factory = new factories.RideFactory
+      factory = new factories.RideFactory
+      spyOn(builder = factories.builder.RideFromQueryBuilder, 'create')
 
     describe 'with query string', ->
-      builder = {}
-
-      beforeEach ->
-        builder = new factories.RideFromQueryBuilder
 
       it "should call the RideFromQueryBuilder when called with a string", ->
-        spyOn(builder, 'createFromQuery')
-        factory.createRide("hamburg->berlin", builder)
-        expect(builder.createFromQuery)
+        factory.createRide("hamburg->berlin")
+        expect(builder.create)
           .toHaveBeenCalledWith("hamburg","berlin")
 
       it "should call the RideFromQueryBuilder with empty origin", ->
-        spyOn(builder, 'createFromQuery')
-        factory.createRide("->berlin", builder)
-        expect(builder.createFromQuery)
+        factory.createRide("->berlin")
+        expect(builder.create)
           .toHaveBeenCalledWith("","berlin")
 
       it "should call the RideFromQueryBuilder with empty destination", ->
-        spyOn(builder, 'createFromQuery')
-        factory.createRide("hamburg->", builder)
-        expect(builder.createFromQuery)
+        factory.createRide("hamburg->")
+        expect(builder.create)
           .toHaveBeenCalledWith("hamburg","")
-  #
-  # xit "should call the RideFromQueryBuilder with its arguments", ->
-  #   factory.createRide("hamburg->")
-  #   expect(factory.RideFromQueryBuilder).toHaveBeenCalledWith("","berlin")
-  #
-  # xit "should call the RideFromQueryBuilder with its arguments", ->
-  #   factory.createRide("->berlin")
-  #   expect(factory.RideFromQueryBuilder).toHaveBeenCalledWxith("hamburg","")
   #
   # xit "should call the RideFromObjectBuilder with its arguments", ->
   #   ride = {orig:{txitle:"hamburg"},dest:{title:"berlin"}}
