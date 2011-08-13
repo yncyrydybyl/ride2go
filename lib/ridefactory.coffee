@@ -1,16 +1,17 @@
 __ = require '../vendor/underscore'
 
-module.exports = class RideFromQueryBuilder
-  constructor: (query) ->
+exports.RideFromQueryBuilder = class RideFromQueryBuilder
+  createFromQuery: (loc1, loc2) ->
     @wanted_input = "querystring"
-module.exports = class RideFromRideObjectBuilder
+exports.RideFromRideObjectBuilder = class RideFromRideObjectBuilder
   constructor: (params) ->
     @wanted_input = "object"
 
 
-module.exports = class RideFactory
-  createRide: (params) ->
-    if __.isString params and params.split("->").length == 2 
-      new RideFromQueryBuilder (params)
-    if params.orig or params.dest
+exports.RideFactory = class RideFactory
+  createRide: (params, builder) ->
+    if __.isString(params) and params.split("->").length == 2
+      route = params.split("->")
+      builder.createFromQuery(route[0], route[1])
+    else if params.orig or params.dest
       new RideFromObjectBuilder (params)
