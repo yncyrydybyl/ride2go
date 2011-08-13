@@ -14,7 +14,7 @@ describe "RideFactory", ->
     factory = {}
 
     beforeEach ->
-      factory = new factories.RideFactory
+      factory = factories.RideFactory
 
     describe 'with query string', ->
       builder = {}

@@ -9,7 +9,7 @@ builder =
   }
 
 
-class RideFactory
+RideFactory =
   createRide: (params) ->
     if __.isString(params) and params.split("->").length == 2
       route = params.split("->")
