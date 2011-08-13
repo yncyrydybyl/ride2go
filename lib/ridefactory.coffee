@@ -1,8 +1,15 @@
 __ = require '../vendor/underscore'
+Ride = require '../ride'
 
 builder =
   RideFromQueryBuilder: {
     create: (loc1, loc2) ->
+      params =
+        orig:
+          title: loc1
+        dest:
+          title: loc2
+      return params
   }
   RideFromRideObjectBuilder: {
     create: (params) ->

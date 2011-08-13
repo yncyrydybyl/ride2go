@@ -1,14 +1,6 @@
 Ride = require '../ride'
 ride_factory = require '../lib/ridefactory'
 
-describe "Ride", ->
-  it "should created with query string as parameter", ->
-    r = new Ride "hamburg->leipzig"
-    r2 = new Ride
-    r2.orig = "hamburg"
-    r2.dest = "leipzig"
-    expect(r).toEqual(r2)
-
 describe "RideFactory", ->
   describe 'createRide', ->
     factory = {}
