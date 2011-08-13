@@ -12,15 +12,13 @@ describe "Ride", ->
 describe "RideFactory", ->
   describe 'createRide', ->
     factory = {}
+    builder = {}
 
     beforeEach ->
       factory = new factories.RideFactory
+      spyOn(builder = factories.builder.RideFromQueryBuilder, 'create')
 
     describe 'with query string', ->
-      builder = {}
-
-      beforeEach ->
-        spyOn(builder = factories.builder.RideFromQueryBuilder, 'create')
 
       it "should call the RideFromQueryBuilder when called with a string", ->
         factory.createRide("hamburg->berlin")
