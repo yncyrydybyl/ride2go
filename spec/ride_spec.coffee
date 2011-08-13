@@ -44,3 +44,13 @@ describe "RideFactory", ->
         ride = {orig:{txitle:"hamburg"},dest:{title:"berlin"}}
         factory.createRide(ride)
         expect(builder.create).toHaveBeenCalledWith(ride)
+
+      it 'should call RideFromRideObjectBuilder with only orig', ->
+        ride = {orig:{txitle:"hamburg"}}
+        factory.createRide(ride)
+        expect(builder.create).toHaveBeenCalledWith(ride)
+
+      it 'should call RideFromRideObjectBuilder with only dest', ->
+        ride = {dest:{title:"berlin"}}
+        factory.createRide(ride)
+        expect(builder.create).toHaveBeenCalledWith(ride)
