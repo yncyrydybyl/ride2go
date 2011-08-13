@@ -1,5 +1,5 @@
 Ride = require '../ride'
-factories = require '../lib/ridefactory'
+ride_factory = require '../lib/ridefactory'
 
 describe "Ride", ->
   it "should created with query string as parameter", ->
@@ -14,13 +14,13 @@ describe "RideFactory", ->
     factory = {}
 
     beforeEach ->
-      factory = factories.RideFactory
+      factory = ride_factory.RideFactory
 
     describe 'with query string', ->
       builder = {}
 
       beforeEach ->
-        spyOn(builder = factories.builder.RideFromQueryBuilder, 'create')
+        spyOn(builder = ride_factory.builder.RideFromQueryBuilder, 'create')
 
       it "should call the RideFromQueryBuilder when called with a string", ->
         factory.createRide("hamburg->berlin")
@@ -38,7 +38,7 @@ describe "RideFactory", ->
       builder = {}
 
       beforeEach ->
-        spyOn(builder = factories.builder.RideFromRideObjectBuilder, 'create')
+        spyOn(builder = ride_factory.builder.RideFromRideObjectBuilder, 'create')
 
       it 'should call RideFromRideObjectBuilder with the location objects', ->
         ride = {orig:{txitle:"hamburg"},dest:{title:"berlin"}}
