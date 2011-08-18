@@ -1,5 +1,5 @@
 nodeio = require 'node.io'
-
+log = require '../lib/logging'
 
 url = (query) -> "http://www.raumobil.de/index.php?
 commodities_type=supply&commodity_type=mobile
@@ -23,7 +23,7 @@ module.exports = new nodeio.Job
   run: ->
     rides = []
     @getHtml url(@options), (err, $, data) =>
-      console.log url(@options)
+      log.debug url(@options)
       $('#mobile_search_result_data tr').has('td').each (tr) ->
         link =  $('a', tr).last?().attribs.href
         if (r = tr.fulltext.match regex) and r[1] == "Angebot"

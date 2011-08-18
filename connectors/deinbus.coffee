@@ -1,5 +1,5 @@
 nodeio = require 'node.io'
-
+log = require '../lib/logging'
 
 IdMap = {}
 url = (query) -> "http://www.deinbus.de/fs/result/?
@@ -18,19 +18,19 @@ regex = ///
 
 module.exports = nodeio.Job
   input: (a, b, run) ->
-    console.log "input"
+    log.debug "input"
     return false unless a == 0
     if true
       @get updateIdMapUrl, (err, idMap) ->
         for c in JSON.parse(idMap)
           IdMap[c.name] = c.id
-        console.log "idMap updated."
+        log.debug "idMap updated."
         run [0]
     else
       run [0]
   run: ->
     rides = []
-    console.log url(@options)
+    log.debug url(@options)
     @getHtml url(@options), (err, $, data) =>
       $('#product-serach-list tr').even (tr) ->
         link = $('td.buchenbutton a', tr).attribs.onclick.split("'")[1]
@@ -42,7 +42,7 @@ module.exports = nodeio.Job
             arr_time: r[4]
             price: r[6] || r[5]
             link: link
-        else console.log "NOT matched!!! "+tr.fulltext
+        else log.debug "NOT matched!!! "+tr.fulltext
       @emit rides
 
 updateIdMapUrl = "http://api.scraperwiki.com/api/1.0/datastore/sqlite?format=jsondict&name=deinbusde_city-ids&query=select%20*%20from%20swdata"

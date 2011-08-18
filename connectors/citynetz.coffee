@@ -1,4 +1,5 @@
 nodeio = require 'node.io'
+log = require '../lib/logging'
 
 sessionId = "7cdf6b20d2219a85d4d5431c7ef3a0ce"
 
@@ -41,12 +42,12 @@ module.exports = new nodeio.Job
           date: match[3]
           time: match[4]
           link: match[6]
-      console.log "found #{rides.length} rides at citynetz-mitfahrzentrale.de"
+      log.notice "found #{rides.length} rides at citynetz-mitfahrzentrale.de"
       if rides.length == 0
         @get "http://citynetz-mitfahrzentrale.de", (err, data) =>
-          console.log data
+          log.debug data
           sessionId = data.match(/CITYNETZSESSID=([0-9a-f]+)/)[1]
-          console.log "session refreshed: #{sessionId} -> retry..."
+          console.notice "session refreshed: #{sessionId} -> retry..."
           @retry()
       else @emit rides
   

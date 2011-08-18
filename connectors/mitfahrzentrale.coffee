@@ -1,5 +1,7 @@
 nodeio = require 'node.io'
 Ride = require '../ride'
+log = require '../lib/logging'
+
 
 url = (query) ->
   "http://www.mitfahrzentrale.de/suche.php?art=100&frmpost=1&
@@ -21,6 +23,6 @@ module.exports = new nodeio.Job
           origin: row[2].text
           destination: row[3].text
           link: "http://www.mitfahrzentrale.de"+$('a', row[5]).attribs.href
-      console.log "found #{rides.length} rides at mitfahrzentrale.de"
+      log.notice "found #{rides.length} rides at mitfahrzentrale.de"
       @emit rides
 
