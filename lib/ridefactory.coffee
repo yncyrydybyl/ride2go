@@ -1,7 +1,7 @@
 __ = require '../vendor/underscore'
 
-builder =
-  RideFromStringBuilder: {
+constructor =
+  FromString: {
     create: (loc1, loc2) ->
       params =
         orig:
@@ -10,17 +10,17 @@ builder =
           title: loc2
       return params
   }
-  RideFromRideObjectBuilder: {
+  FromRideObject: {
     create: (params) ->
   }
 
 
-RideFactory =
-  createRide: (params) ->
+Ride =
+  new: (params) ->
     if __.isString(params) and params.split("->").length == 2
       route = params.split("->")
-      builder.RideFromStringBuilder.create(route[0], route[1])
+      constructor.FromString.create(route[0], route[1])
     else if params.orig or params.dest
-      builder.RideFromRideObjectBuilder.create(params)
+      constructor.FromRideObject.create(params)
 
 module.exports = {RideFactory, builder}

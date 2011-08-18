@@ -14,6 +14,6 @@ describe "PlaceFactory", ->
         spyOn(builder = place_factory.builder.PlaceFromCityNameBuilder, 'create')
 
       it "should call the PlaceFromCityNameBuilder if param is a cityname", ->
-        factory.createPlace("hambu1rg")
+        factory.createPlace("hamburg")
         expect(builder.create).toHaveBeenCalledWith("hamburg")
 

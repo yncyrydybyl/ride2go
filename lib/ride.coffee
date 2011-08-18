@@ -1,31 +1,39 @@
 __ = require "../vendor/underscore"
 
+#Ride = ->
+
+#Ride.prototype = 
+#  fooString: -> this.orig+"---->"+this.dest
+
 class Ride
-  # create
-  constructor: (orig, dest) ->
-    @orig = orig
-    @dest = dest
-  toString: -> this.orig+"---->"+this.dest
+  fooString: -> @orig+"---->"+@dest
 
 # generic factory
 Ride.new = (egal) ->
   if __.isString(egal)
-    Ride.fromString egal
+    return Ride.fromString egal
   if __.isObject(egal) and egal.dest and egal.orig
     console.log("object")
-    Ride.fromObject egal 
+    Ride.fromVerifiedObject egal
 
 # builderFromString
 Ride.fromString = (string) ->
-  new Ride(string.split("->"))
-# builderFromSimpleObject
-Ride.fromString = (obj) ->
-  new Ride(obj.orig.title,obj.dest.title)
+  r = new Ride()
+  r.orig = "foo"
+  r.dest = "bar"
+  r
 
-#console.log Ride.prototype
-#console.log (new Ride()).toString()
-console.log Ride.new("irgend->was").toString()
-console.log Ride.new({orig:{title:"hamburg"},dest:{title:"berlin"}}).toString()
+# builderFromVerifiedObject
+Ride.fromVerifiedObject = (obj) ->
+  #new Ride(obj.orig.title,obj.dest.title)
+  obj.__proto__ = Ride.prototype
+  obj
 
-#console.log Ride.fromString("bar").__proto__
+
+a=new Ride()
+sys = require "sys"
+console.log (sys.inspect(a.fooString())) #console.log Ride.new("irgend->was").toString()
+#console.log Ride.new({orig:{title:"hamburg"},dest:{title:"berlin"}}).toString()
+
+console.log Ride.fromString("bar").fooString()
 #console.log(new Ride("fooo").toString())
