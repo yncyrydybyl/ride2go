@@ -1,8 +1,7 @@
 __ = require '../vendor/underscore'
-Ride = require '../ride'
 
 builder =
-  RideFromQueryBuilder: {
+  RideFromStringBuilder: {
     create: (loc1, loc2) ->
       params =
         orig:
@@ -20,7 +19,7 @@ RideFactory =
   createRide: (params) ->
     if __.isString(params) and params.split("->").length == 2
       route = params.split("->")
-      builder.RideFromQueryBuilder.create(route[0], route[1])
+      builder.RideFromStringBuilder.create(route[0], route[1])
     else if params.orig or params.dest
       builder.RideFromRideObjectBuilder.create(params)
 

@@ -1,4 +1,3 @@
-Ride = require '../ride'
 ride_factory = require '../lib/ridefactory'
 
 describe "RideFactory", ->
