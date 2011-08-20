@@ -1,8 +1,8 @@
 #global variables
-to = {cityname:"hamburg"}
-from = {cityname:"berlin"}
-socket = {}
-
+App =
+  to: {}
+  from: {}
+  socket: {}
 
 setgeotypes = (boxname, types) ->
   $.each types, (i, b) ->
@@ -29,46 +29,49 @@ initInputBox = (params) ->
     MapTypeIdaptype: "hybrid"
     select: (event, ui) ->
       inputdone params.direction, ui.item
-      console.log ui.item.viewport.getCenter()
+      #console.log ui.item.viewport.getCenter()
   )
   $(inputbox).autocomplete "search"
 
-fillfrom = (place) -> 
-  $("#from .address").html(place.cityname)
-fillto = (place) -> 
-  $("#to .address").html(place.cityname)
+#setting up the ui
+fillfrom = (place) ->
+  $("#whereto").hide()
+  $("#wherefrom").show()
+  $("#from .address").html(place)
+
+fillto = (place) ->
+  $("#to .address").html(place)
+
+displayride = (ride) ->
+  ride = JSON.parse(ride)
+  $("#ride").append $("<div>provider: #{ride.provider} <a target='_blank' href='#{ride.link}'>visit</a></div>")
+
 
 inputdone = (d, item) ->
   if d is "to" then toselected(item)
   if d is "from" then fromselected(item)
 
-  #$("#where" + d).text d + ": " + $("#where" + d + "box").val()
-displayride = (ride) ->
-  ride = JSON.parse(ride)
-  $("#ride").append $("<div>provider: #{ride.provider} <a target='_blank' href='#{ride.link}'>visit</a></div>")
-
 setupsocket = ->
-  socket = io.connect()
-  socket.on "ride", (ride) ->
+  App.socket = io.connect()
+  App.socket.on "ride", (ride) ->
     console.log(ride)
     displayride(ride)
    
-  socket.on "connect", ->
+  App.socket.on "connect", ->
     $("#status").html("connected")
     $("#status").effect("pulsate")
     #socket.emit "query", {origin:"hamburg", destination: "berlin"}
-  socket.on "disconnect", ->
+  App.socket.on "disconnect", ->
     $("#status").html("disconnected")
     $("#status").effect("pulsate")
     # only for debug we fire the query instantly
-  return socket
+  return App.socket
 
 toselected = (item) =>
-    fillto({cityname:item.value})
-    $("#whereto").hide()
-    $("#wherefrom").show()
-
-    to = item.value
+    fillto item.value
+    console.log("to selected")
+    console.log(item)
+    App.to = item
     initInputBox
       region: "de"
       direction: "from"
@@ -76,17 +79,24 @@ toselected = (item) =>
 
     
 fromselected = (item) ->
-    from = item.value
+    App.from = item
     $("#wherefrom").hide()
-    fillfrom({cityname:from})
+    fillfrom item.value
     console.log "from selected"
     sendquery()
+
 fuck = (msg) -> 
-    socket.emit "debug", msg 
+    App.socket.emit "debug", msg 
+
 sendquery = ->
-    fuck to
+    console.log("send query to server")
+    fuck App.from
+    fuck App.to
     #socket.emit "query", {origin:from, destination: to}
-    socket.emit "query", {origin:"berlin", destination: "hamburg"}
+    payload = {origin:App.from, destination:App.to}
+    console.log("payload: VVV ")
+    console.log(payload)
+    App.socket.emit "query",payload 
 
 displayRide = (ride) ->
       $("#rides").append $("<div>provider: #{ride.provider} <a target='_blank' href='#{ride.link}'>visit</a></div>")

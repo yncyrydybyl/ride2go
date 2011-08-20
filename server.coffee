@@ -3,7 +3,7 @@ express = require 'express'
 Ride = require './ride'
 RDS = require './rds'
 log = require './lib/logging'
-
+sys = require 'sys'
 
 app = express.createServer()
 app.set 'views', __dirname
@@ -22,7 +22,7 @@ io.set('log level', 1)
 io.sockets.on 'connection', (socket) ->
   log.debug "socket connected"
   socket.on 'query', (query) ->
-    log.info "query received", query
+    log.info "query received -> #{sys.inspect(query)}"
     RDS.match new Ride(query), (matching_rides) ->
       log.info "callback from RDS for ", matching_rides.length
       log.debug "callback from RDS", matching_rides
