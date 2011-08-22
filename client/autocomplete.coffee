@@ -43,6 +43,7 @@ $.widget "ui.geo_autocomplete",
                   value: _place
                   label: _result.formatted_address
                   viewport: _result.geometry.viewport
+                  geoobject: _result
           self.options._cache[_request.term] = _parsed
           _response _parsed
     focus: (event, ui)  ->
