@@ -1,5 +1,4 @@
 nodeio = require 'node.io'
-Ride = require '../ride'
 log = require '../lib/logging'
 
 
