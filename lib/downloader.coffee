@@ -42,8 +42,8 @@ download = (requestUrl) ->
   try
     stat = fs.statSync filename
     console.log("file is already there")
-  catch e 
+  catch e
     console.log("file is not there, lets download")
     startdownload()
 
-module.exports = download 
+module.exports = download
