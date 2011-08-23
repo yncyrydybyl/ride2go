@@ -30,6 +30,7 @@ Ride.fromVerifiedObject = (obj) ->
   obj
 
 
+module.exports = Ride
 #a=new Ride()
 #sys = require "sys"
 #console.log (sys.inspect(a.fooString())) #console.log Ride.new("irgend->was").toString()

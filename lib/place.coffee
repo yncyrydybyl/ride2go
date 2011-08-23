@@ -5,7 +5,7 @@ Place = ->
 Place.prototype =
   fooString: ->
     JSON.stringify @
-  idString: ->
+  key: ->
     [@country,@route,@foo,@street_number].join(":")
   redislookupcountry: ->
     # existiert @country im redis
@@ -22,11 +22,9 @@ Place.new = (egal) ->
     return Place.fromString egal
   else if __.isObject(egal) 
     if egal.geoobject
-      console.log("geo object")
-      Place.fromGeoObject egal.geoobject
+      Place.fromGoogleGeocoder egal.geoobject
     if egal.results[0].address_components
-      console.log("geo object 2")
-      return Place.fromGeoObject egal.results[0]
+      return Place.fromGoogleGeocoder egal.results[0]
 
 # builderFromString
 Place.fromString = (string) ->
@@ -36,7 +34,7 @@ Place.fromString = (string) ->
   r
 
 # builderFromGeoObject
-Place.fromGeoObject = (obj) ->
+Place.fromGoogleGeocoder = (obj) ->
   p = new Place
   if obj.address_components
     for component in obj.address_components
@@ -48,9 +46,9 @@ Place.fromGeoObject = (obj) ->
         p.political or= []
         a = {}
         a[component.types[0]]=component.short_name
-        console.log("poli")
-        console.log(a)
-        console.log(component.short_name)
+        #console.log("poli")
+        #console.log(a)
+        #console.log(component.short_name)
         p.political.push(a)
   else
     console.log("no address objects")
