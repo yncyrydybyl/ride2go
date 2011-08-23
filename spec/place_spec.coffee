@@ -14,7 +14,17 @@ describe "Place", ->
       Place.new require './fixtures/v'
       expect(Place.fromGoogleGeocoder).toHaveBeenCalled()
 
-  describe '.fromGoogle', ->
+  describe "function city", ->
+    beforeEach ->
+      v = require './fixtures/v'
+    it "should return the proper cityname", ->
+      p = Place.new(v)
+      city = p.city()
+      expect(city).toEqual("Mainz")
+
+
+
+  xdescribe '.fromGoogle', ->
     beforeEach ->
       v = require './fixtures/v'
       r = require('redis')
@@ -37,3 +47,4 @@ describe "Place", ->
       p=Place.new(v)
       expect(p.key()).toEqual("DE:RP:Mainz")
     it "should put it into conflicts if geonames not exist in redis", ->
+

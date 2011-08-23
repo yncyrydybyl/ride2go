@@ -11,6 +11,12 @@ Place.prototype =
     # existiert @country im redis
   redislookupaal1: ->
     # existiert @country:aal1 im redis
+  city: ->
+    # if @political["locality"] == geonames.CityExists?
+    #   @political["locality"]
+    # else 
+    #   geonames.alternativeName
+    null
     
 #class Place
 #  fooString: -> @orig+"---->"+@dest
@@ -39,23 +45,18 @@ Place.fromGoogleGeocoder = (obj) ->
   if obj.address_components
     for component in obj.address_components
    #   console.log(component)
-      for type in ['country', 'street_number', 'route', 'postal_code']
+      for type in ['country', 'street_number', 'route', 'postal_code','locality']
         if __.include(component.types, type)
           p[type] = component.short_name
       if __.include(component.types, 'political')
-        p.political or= []
-        a = {}
-        a[component.types[0]]=component.short_name
-        #console.log("poli")
-        #console.log(a)
-        #console.log(component.short_name)
-        p.political.push(a)
+        p.political or= {} 
+        p.political[component.types[0]]=component.short_name
   else
     console.log("no address objects")
   #new Place(obj.orig.title,obj.dest.title)
   #obj.__proto__ = Place.prototype
   #obj
-  p
+  return p
 
 module.exports = Place
 
