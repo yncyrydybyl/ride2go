@@ -52,4 +52,10 @@ run specs
 =========
  $ ./specs.sh
 
+PATHS
+=====
+You should set your NODE_PATH to the node directory and include the binaries into your PATH.
+
+export NODE_PATH=`pwd`/node_modules:/home/user/software/:$NODE_PATH
+export PATH=`pwd`/node_modules/.bin:/home/user/software/bin:$PATH
 
