@@ -1,1 +1,2 @@
 rvm --create 1.9.2@ride2go
+export NODE_PATH=$NODE_PATH:´pwd´/lib
