@@ -1,4 +1,4 @@
-redis = require('redis').createClient()
+redis = require('../../lib/r2gredis').client()
 csv = require "csv"
 __ = require "../../vendor/underscore"
 
@@ -17,7 +17,6 @@ module.exports =
     country_iso = data[8]
   
   importData: (filename, importfunction) ->
-    console.log("jdksjdkjK§")
     csv().fromPath filename,
       delimiter: "\t"
       escape: ""
@@ -30,8 +29,8 @@ module.exports =
     .on "error", (error) ->
       console.log error.message
   storeCountryAndAdminDivision: (countrycode = "DE") ->
-    console.log(process.env)
     importfunction = (data) ->
       doo = "DE"+":"+data[1]
       console.log(doo)
+      redis.set doo, "foo"
     @importData("./spec/fixtures/admin1CodesASCII.txt", importfunction)

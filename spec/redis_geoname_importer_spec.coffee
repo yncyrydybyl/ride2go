@@ -32,7 +32,7 @@
 #
 
 #deTxt = require ("fixtures/geonames").deTxt
-
+require "./spec_helper"
 geonames =  require ("./fixtures/geonames")
 countryInfoTxt = geonames.countryInfoTxt
 deTxt = geonames.deTxt
@@ -42,18 +42,25 @@ describe "geonames importer", ->
   redis = {}
   importer = {}
   beforeEach ->
-    redis = require("redis").createClient()
-    redis.select 15
+    redis = require("../lib/r2gredis").client()
     importer = require ("../lib/importers/geonames")
-
+    __ = require("../vendor/underscore")
+    @addMatchers({
+      toInclude: (expected) ->
+        __.include @actual, expected
+    })
+  afterEach ->
+    redis.flushdb()
   describe "country codes" , ->
 
     it "should read data admin1CodesASCII.txt and store countries and administrative areas into redis", ->
       countrycode = "DE"
       importer.storeCountryAndAdminDivision("DE")
-      redis.exists "DE", (err, exists) -> expect(exists).toEqual 1
-      redis.keys "DE:Berlin", (err, value) -> expect(value).toEqual "Berlin"
       waits 500
+      redis.exists "DE:Berlin", (err, exists) -> expect(exists).toEqual 1
+      redis.keys "DE:Berlin", (err, value) -> expect(value).toInclude "DE:Berlin"
+
+      waits 5000
 
   describe "admin division", ->
     it "should read admin data from deTXT and store it into redis", ->
