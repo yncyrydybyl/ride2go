@@ -1,9 +1,9 @@
 redis = require('redis').createClient()
 csv = require "csv"
+__ = require "../../vendor/underscore"
 
 module.exports =
   storeCountry: (line) ->
-  storeAdminDivision: (line) ->
 
   storePopulatedPlace: (line) ->
     data = line.split("\t")
@@ -16,18 +16,22 @@ module.exports =
     population = data[14]
     country_iso = data[8]
   
-  importCountry: (filename) ->
+  importData: (filename, importfunction) ->
+    console.log("jdksjdkjK§")
     csv().fromPath filename,
       delimiter: "\t"
       escape: ""
     .transform (data) ->
-        if data[7] == "ADM1"
-          return data
-        else
-          return null
+      importfunction data
     .on "data", (data, index) ->
-      console.log ("#" + data[1])
+      importfunction data
     .on "end", (count) ->
       console.log "Number of lines: " + count
     .on "error", (error) ->
       console.log error.message
+  storeCountryAndAdminDivision: (countrycode = "DE") ->
+    console.log(process.env)
+    importfunction = (data) ->
+      doo = "DE"+":"+data[1]
+      console.log(doo)
+    @importData("./spec/fixtures/admin1CodesASCII.txt", importfunction)
