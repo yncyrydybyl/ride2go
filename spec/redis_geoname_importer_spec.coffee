@@ -33,10 +33,9 @@
 
 #deTxt = require ("fixtures/geonames").deTxt
 require "./spec_helper"
-geonames =  require ("./fixtures/geonames")
+geonames =  require "./fixtures/geonames"
 countryInfoTxt = geonames.countryInfoTxt
 deTxt = geonames.deTxt
-
 
 describe "geonames importer", ->
   redis = {}
@@ -55,12 +54,21 @@ describe "geonames importer", ->
 
     it "should read data admin1CodesASCII.txt and store countries and administrative areas into redis", ->
       countrycode = "DE"
-      importer.storeCountryAndAdminDivision("DE")
-      waits 500
-      redis.exists "DE:Berlin", (err, exists) -> expect(exists).toEqual 1
-      redis.keys "DE:Berlin", (err, value) -> expect(value).toInclude "DE:Berlin"
-
-      waits 5000
+      @weiter = false
+      waitsFor(->
+        console.log("aiting")
+        f = importer.storeCountryAndAdminDivision("DE", =>
+          @weiter = true
+        ,)
+        console.log("aiting2")
+        console.log(@weiter)
+        return @weiter
+      ,"waited to long",4000)
+      runs ->
+        console.log("wtf")
+        redis.exists "DE:Berlin", (err, exists) -> expect(exists).toEqual 1
+        redis.keys "DE:Berlin", (err, value) -> expect(value).toInclude "DE:Berlin"
+        waits 100 
 
   describe "admin division", ->
     it "should read admin data from deTXT and store it into redis", ->

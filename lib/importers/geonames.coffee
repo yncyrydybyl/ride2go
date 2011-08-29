@@ -15,8 +15,13 @@ module.exports =
     state_id = data[10]
     population = data[14]
     country_iso = data[8]
-  
-  importData: (filename, importfunction) ->
+  waiter: ->
+    setTimeout((-> 
+      console.log("jdsak")
+      return false
+    ),4000)
+      
+  importData: (filename, importfunction,callback) ->
     csv().fromPath filename,
       delimiter: "\t"
       escape: ""
@@ -26,11 +31,13 @@ module.exports =
       importfunction data
     .on "end", (count) ->
       console.log "Number of lines: " + count
+      callback(count)
+      return true
     .on "error", (error) ->
       console.log error.message
-  storeCountryAndAdminDivision: (countrycode = "DE") ->
+  storeCountryAndAdminDivision: (countrycode = "DE",callback = ->) ->
     importfunction = (data) ->
       doo = "DE"+":"+data[1]
-      console.log(doo)
+      #console.log(doo)
       redis.set doo, "foo"
-    @importData("./spec/fixtures/admin1CodesASCII.txt", importfunction)
+    return @importData("./spec/fixtures/admin1CodesASCII.txt", importfunction, callback)
