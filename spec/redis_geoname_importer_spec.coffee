@@ -53,22 +53,34 @@ describe "geonames importer", ->
   describe "country codes" , ->
 
     it "should read data admin1CodesASCII.txt and store countries and administrative areas into redis", ->
-      countrycode = "DE"
-      @weiter = false
-      waitsFor(->
-        console.log("aiting")
-        f = importer.storeCountryAndAdminDivision("DE", =>
-          @weiter = true
-        ,)
-        console.log("aiting2")
-        console.log(@weiter)
-        return @weiter
-      ,"waited to long",4000)
-      runs ->
-        console.log("wtf")
-        redis.exists "DE:Berlin", (err, exists) -> expect(exists).toEqual 1
-        redis.keys "DE:Berlin", (err, value) -> expect(value).toInclude "DE:Berlin"
-        waits 100 
+      @nextstep = @somethingtodo = true
+      go = =>
+        @nextstep = false
+        @somethingtodo = true
+      go()
+
+      waitsFor "waited to long", 1000, ->
+        if @somethingtodo
+          f = importer.storeCountryAndAdminDivision "DE", =>
+            @nextstep = true
+          @somethingtodo = false
+        go() if @nextstep
+
+      waitsFor "waited to long", 1000, ->
+        if @somethingtodo
+          redis.exists "DE:Berlin", (err, exists) =>
+            expect(exists).toEqual 1
+            @nextstep = true
+          @somethingtodo = false
+        go() if @nextstep
+      
+      waitsFor "waited to long", 1000, ->
+        if @somethingtodo
+          redis.keys "DE:*", (err, value) =>
+            expect(value).toInclude "DE:Berlin"
+            @nextstep = true
+          @somethingtodo = false
+        go() if @nextstep
 
   describe "admin division", ->
     it "should read admin data from deTXT and store it into redis", ->
