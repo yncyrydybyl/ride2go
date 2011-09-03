@@ -53,44 +53,33 @@ describe "geonames importer", ->
   describe "country codes" , ->
 
     it "should read data admin1CodesASCII.txt and store countries and administrative areas into redis", ->
-      @nextstep = @somethingtodo = true
-      go = =>
-        @nextstep = false
-        @somethingtodo = true
-      go()
 
-      waitsFor "waited to long", 1000, ->
-        if @somethingtodo
-          f = importer.storeCountryAndAdminDivision "DE", =>
-            @nextstep = true
-          @somethingtodo = false
-        go() if @nextstep
+      waitsForOnce "was to boring",1000, (ret) ->
+        importer.storeCountryAndAdminDivision "DE", ->
+          ret(expect(true).toBeTruthy)
 
-      waitsFor "waited to long", 1000, ->
-        if @somethingtodo
-          redis.exists "DE:Berlin", (err, exists) =>
-            expect(exists).toEqual 1
-            @nextstep = true
-          @somethingtodo = false
-        go() if @nextstep
+      waitsForOnce "waited to long", 2000, (ret) ->
+        redis.exists "DE:Berlin", (err, exists) ->
+          expect(exists).toEqual 1
+          ret(true)
 
-      waitsFor "waited to long", 1000, ->
-        if @somethingtodo
-          redis.keys "DE:*", (err, value) =>
-            expect(value).toInclude "DE:Berlin"
-            @nextstep = true
-          @somethingtodo = false
-        go() if @nextstep
+      waitsForOnce "waited to long", 1000, (ret) ->
+        redis.keys "DE:*", (err, value) =>
+          expect(value).toInclude "DE:Berlin"
+          ret(true)
 
   describe "admin division", ->
     it "should read admin data from deTXT and store it into redis", ->
 
-once = (initialRetVal, thunk) =>
-  @triggered = false
-  @retval = initialRetVal
-  wrapper = =>
-    if not @triggered
-      @triggered = true
-      thunk( (result) =>
-        @retval = result )
-    @retval
+waitsForOnce = (message, timeout, thunk) ->
+  return waitsFor message,timeout, once(false,thunk)
+
+once = (initialRetVal, thunk) ->
+  triggered = false
+  retval = initialRetVal
+  wrapper = ->
+    if not triggered
+      triggered = true
+      thunk( (result) ->
+        retval = result )
+    retval
