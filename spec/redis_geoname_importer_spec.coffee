@@ -8,12 +8,12 @@
 #
 #foreign keys mappen aud sets von internal keys
 #<SOURCE>:<TYPE>:<ID>
-#  GOOGLE:LOCALITY:MAYENCE -> 
+#  GOOGLE:LOCALITY:MAYENCE ->
 #  HAFAS:TRAMHALT:28436    ->
 #  GEONAMES:ID:345687      ->
 #  GEONAME:PPL:MAINZ       ->
 #  GEONAME:PPL:MAYENCE     -> [DE:RF:MAINZ, AT:OÖ:MIANZO]
-#  MFGDE:CITY:123          -> 
+#  MFGDE:CITY:123          ->
 #  OSM:STREET:HAUPTSTRAßE  -> [DE:RF:MAINZ:HAUPSTR, DE:BY:MÜNCHEN:HAUPTSTR, ...] # worst case
 #  FOUSQUARE:CAFE:876543   ->
 #
@@ -22,7 +22,7 @@
 #  DE -> DE # internal key found :)
 #  DE:RF -> DE:RF # internal key found :)
 #  DE:RF:Mayence -> false # internal key NOT found :(
-#    foreign? 
+#    foreign?
 #      *:MAYENCE -> [DE:RF:MAINZ, AT:OÖ:MIANZO]
 #        wenn mehrere dann die rauspicken, die sinn machen
 #        - selber anfang
@@ -73,7 +73,7 @@ describe "geonames importer", ->
             @nextstep = true
           @somethingtodo = false
         go() if @nextstep
-      
+
       waitsFor "waited to long", 1000, ->
         if @somethingtodo
           redis.keys "DE:*", (err, value) =>
@@ -84,4 +84,13 @@ describe "geonames importer", ->
 
   describe "admin division", ->
     it "should read admin data from deTXT and store it into redis", ->
-      
+
+once = (initialRetVal, thunk) =>
+  @triggered = false
+  @retval = initialRetVal
+  wrapper = =>
+    if not @triggered
+      @triggered = true
+      thunk( (result) =>
+        @retval = result )
+    @retval
