@@ -84,12 +84,13 @@ class CityImport extends GeonameImport
 class NamesImport extends nodeio.JobClass
   input: "/tmp/alternateNames.txt"
   description: "tmp import of alternative geonames"
-  run: (row) =>
+  run: (row) ->
     data = @parseValues(row,'\t')
     redis.sadd "alt:geoname:#{data[0]}",
       "#{data[2]}:#{data[4]}:#{data[5]}:#{data[3]}",
       (error, success) =>
-        @emit true
+        @emit 42
+    null
   output: false
 
 
