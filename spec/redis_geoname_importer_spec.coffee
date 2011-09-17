@@ -32,54 +32,65 @@
 #
 
 #deTxt = require ("fixtures/geonames").deTxt
-require "./spec_helper"
-geonames =  require "./fixtures/geonames"
-countryInfoTxt = geonames.countryInfoTxt
-deTxt = geonames.deTxt
 
-describe "geonames importer", ->
-  redis = {}
-  importer = {}
+redis = NaN
+describe "geonames import", ->
+  
   beforeEach ->
-    redis = require("../lib/r2gredis").client()
-    importer = require ("../lib/importers/geonames")
-    __ = require("../vendor/underscore")
-    @addMatchers({
-      toInclude: (expected) ->
-        __.include @actual, expected
-    })
+    redis = require("redis").createClient()
+
+  it "should happen at all ;-)", ->
+    redis.keys "geonames:*", (err, keys) ->
+      expect(keys).not.toBeNull
+      expect(keys.size).not.toEqual(0)
+      asyncSpecDone()
+    asyncSpecWait()
+
+  it "should import Berlin", ->
+    redis.exists "DE:Berlin", (err, exists) ->
+      expect(exists).toBeTrue
+    redis.exists "geonames:id:2950157", (err, exists) ->
+      expect(exists).toBeTrue
+    redis.exists "DE:Berlin:Berlin", (err, exists) ->
+      expect(exists).toBeTrue
+    redis.exists "geonames:id:2950159", (err, exists) ->
+      expect(exists).toBeTrue
+      asyncSpecDone()
+    asyncSpecWait()
+
+  it "should map geoname ids as foreign keys to internal keys", ->
+    redis.get "geonames:id:2950157", (err, internal_key) ->
+      expect(internal_key).toEqual("DE:Berlin")
+    redis.get "geonames:id:2950159", (err, internal_key) ->
+      expect(internal_key).toEqual("DE:Berlin:Berlin")
+      asyncSpecDone()
+    asyncSpecWait()
+
+  it "should map geoname names as internal keys to foreign keys", ->
+    redis.smembers "DE:Berlin", (err, foreign_keys) ->
+      #expect(foreign_keys[27]).toEqual("geonames:id:2950157")
+    redis.smembers "DE:Berlin:Berlin", (err, foreign_keys) ->
+      console.log foreign_keys.length
+      console.log key for key in foreign_keys
+      #expect(foreign_keys[27]).toEqual("geonames:id:2950159")
+      asyncSpecDone()
+    asyncSpecWait()
+  
+  it "should replace internal keys by better (prefered) alternative names", ->
+    redis.get "geonames:id:2951839", (err, internal_key) ->
+      expect(internal_key).toEqual("DE:Bayern") # and not "Freistaat Bayern"
+      asyncSpecDone()
+    asyncSpecWait()
+ 
+  it "should import alternative names as foreign keys", ->
+    redis.get "geonames:alt:Beieren", (err, internal_key) ->
+      expect(internal_key).toEqual("DE:Bayern")
+    redis.get "geonames:alt:Baian", (err, internal_key) ->
+      expect(internal_key).toEqual("DE:Bayern")
+    redis.get "geonames:alt:Berliini", (err, internal_key) ->
+      expect(internal_key).toEqual("DE:Berlin")
+      asyncSpecDone()
+    asyncSpecWait()
+
   afterEach ->
-    redis.flushdb()
-  describe "country codes" , ->
-
-    it "should read data admin1CodesASCII.txt and store countries and administrative areas into redis", ->
-
-      waitsForOnce "was to boring",1000, (ret) ->
-        importer.storeCountryAndAdminDivision "DE", ->
-          ret(expect(true).toBeTruthy)
-
-      waitsForOnce "waited to long", 2000, (ret) ->
-        redis.exists "DE:Berlin", (err, exists) ->
-          expect(exists).toEqual 1
-          ret(true)
-
-      waitsForOnce "waited to long", 1000, (ret) ->
-        redis.keys "DE:*", (err, value) =>
-          expect(value).toInclude "DE:Berlin"
-          ret(true)
-
-  describe "admin division", ->
-    it "should read admin data from deTXT and store it into redis", ->
-
-waitsForOnce = (message, timeout, thunk) ->
-  return waitsFor message,timeout, once(false,thunk)
-
-once = (initialRetVal, thunk) ->
-  triggered = false
-  retval = initialRetVal
-  wrapper = ->
-    if not triggered
-      triggered = true
-      thunk( (result) ->
-        retval = result )
-    retval
+    redis.quit()
