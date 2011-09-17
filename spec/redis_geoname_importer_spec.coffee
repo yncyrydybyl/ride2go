@@ -33,15 +33,16 @@
 
 #deTxt = require ("fixtures/geonames").deTxt
 
+__ = NaN
 redis = NaN
 describe "geonames import", ->
   
   beforeEach ->
+    __ = require("underscore")
     redis = require("redis").createClient()
 
   it "should happen at all ;-)", ->
     redis.keys "geonames:*", (err, keys) ->
-      expect(keys).not.toBeNull
       expect(keys.size).not.toEqual(0)
       asyncSpecDone()
     asyncSpecWait()
@@ -49,46 +50,48 @@ describe "geonames import", ->
   it "should import Berlin", ->
     redis.exists "DE:Berlin", (err, exists) ->
       expect(exists).toBeTrue
-    redis.exists "geonames:id:2950157", (err, exists) ->
-      expect(exists).toBeTrue
+    redis.exists "geoname:id:2950157", (err, exists) ->
+      expect(exists).toEqual 1
     redis.exists "DE:Berlin:Berlin", (err, exists) ->
-      expect(exists).toBeTrue
-    redis.exists "geonames:id:2950159", (err, exists) ->
-      expect(exists).toBeTrue
+      expect(exists).toEqual 1
+    redis.exists "geoname:id:2950159", (err, exists) ->
+      expect(exists).toEqual 1
       asyncSpecDone()
     asyncSpecWait()
 
   it "should map geoname ids as foreign keys to internal keys", ->
-    redis.get "geonames:id:2950157", (err, internal_key) ->
+    redis.get "geoname:id:2950157", (err, internal_key) ->
       expect(internal_key).toEqual("DE:Berlin")
-    redis.get "geonames:id:2950159", (err, internal_key) ->
+    redis.get "geoname:id:2950159", (err, internal_key) ->
       expect(internal_key).toEqual("DE:Berlin:Berlin")
       asyncSpecDone()
     asyncSpecWait()
 
   it "should map geoname names as internal keys to foreign keys", ->
     redis.smembers "DE:Berlin", (err, foreign_keys) ->
-      #expect(foreign_keys[27]).toEqual("geonames:id:2950157")
+      expect(__.include(foreign_keys,"geoname:id:2950157")).toBeTrue
     redis.smembers "DE:Berlin:Berlin", (err, foreign_keys) ->
-      console.log foreign_keys.length
-      console.log key for key in foreign_keys
-      #expect(foreign_keys[27]).toEqual("geonames:id:2950159")
+      expect(__.include(foreign_keys,"geoname:id:2950159")).toBeTrue
       asyncSpecDone()
     asyncSpecWait()
   
   it "should replace internal keys by better (prefered) alternative names", ->
-    redis.get "geonames:id:2951839", (err, internal_key) ->
+    redis.get "geoname:id:2951839", (err, internal_key) ->
       expect(internal_key).toEqual("DE:Bayern") # and not "Freistaat Bayern"
       asyncSpecDone()
     asyncSpecWait()
  
   it "should import alternative names as foreign keys", ->
-    redis.get "geonames:alt:Beieren", (err, internal_key) ->
+    redis.get "geoname:alt:Beieren", (err, internal_key) ->
       expect(internal_key).toEqual("DE:Bayern")
-    redis.get "geonames:alt:Baian", (err, internal_key) ->
+    redis.get "geoname:alt:Baian", (err, internal_key) ->
       expect(internal_key).toEqual("DE:Bayern")
-    redis.get "geonames:alt:Berliini", (err, internal_key) ->
-      expect(internal_key).toEqual("DE:Berlin")
+    redis.get "geoname:alt:Berliini", (err, internal_key) ->
+      expect(internal_key).toEqual("DE:Berlin:Berlin")
+    redis.get "geoname:alt:Bad Gernrode", (err, internal_key) ->
+      expect(internal_key).toEqual("DE:Sachsen-Anhalt:Gernrode")
+    redis.get "geoname:alt:Foehrenwald", (err, internal_key) ->
+      expect(internal_key).toEqual("DE:Bayern:Waldram")
       asyncSpecDone()
     asyncSpecWait()
 
