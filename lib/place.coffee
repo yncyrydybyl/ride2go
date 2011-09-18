@@ -1,46 +1,46 @@
 __ = require "../vendor/underscore"
-redis = require "redis"
+redis = require("redis").createClient()
 
 Place = ->
 Place.prototype =
-  fooString: ->
+
+  toJson: ->
     JSON.stringify @
-  key: ->
-    [@country,@route,@foo,@street_number].join(":")
+  
+  country: -> @key.substring(0,2)
+
+  city: -> @key.match(/^\w{2}:[^:]*:([^:]*).*/)[1]
+  
   redislookupcountry: ->
     # existiert @country im redis
   redislookupaal1: ->
     # existiert @country:aal1 im redis
-  city: ->
-    # if @political["locality"] == geonames.CityExists?
-    #   @political["locality"]
-    # else 
-    #   geonames.alternativeName
-    null
+
     
 #class Place
 #  fooString: -> @orig+"---->"+@dest
 #  longstring: ->
     
 # generic factory
-Place.new = (egal) ->
+Place.new = (egal, callback) ->
   if __.isString(egal)
-    return Place.fromString egal
-  else if __.isObject(egal) 
+    Place.fromString egal, callback
+  else if __.isObject(egal)
     if egal.geoobject
-      Place.fromGoogleGeocoder egal.geoobject
+      Place.fromGoogleGeocoder egal.geoobject, callback
     if egal.results[0].address_components
-      return Place.fromGoogleGeocoder egal.results[0]
+      Place.fromGoogleGeocoder egal.results[0], callback
 
 # builderFromString
-Place.fromString = (string) ->
-  r = new Place()
-  r.orig = "foo"
-  r.dest = "bar"
-  r
+Place.fromString = (string, callback) ->
+  p = new Place()
+  redis.exists string, (err, exists) ->
+    if exists == 1
+      p.key = string
+      callback(p)
 
 # builderFromGeoObject
-Place.fromGoogleGeocoder = (obj) ->
+Place.fromGoogleGeocoder = (obj, callback) ->
   p = new Place
   if obj.address_components
     for component in obj.address_components
