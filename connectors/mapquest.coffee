@@ -1,12 +1,12 @@
 nodeio = require 'node.io'
-log = require '../lib/logging'
+log = require 'logging'
 
 url = (query) -> "http://open.mapquestapi.com/directions/v0/route?
 outFormat=json&unit=k&narrativeType=none&shapeFormat=cmp&
 from=#{query.orig}&
 to=#{query.dest}"
 
-module.exports = nodeio.Job
+module.exports.findRides = nodeio.Job
   input: false
   run: ->
     rides = []
@@ -16,3 +16,10 @@ module.exports = nodeio.Job
       log.debug require('util').inspect(JSON.parse(data).route)
       @emit rides
 
+
+class Import extends nodeio.JobClass
+  input: false
+  run: (num) -> @emit 'import finished!'
+
+@class = Import
+@job = new Import()

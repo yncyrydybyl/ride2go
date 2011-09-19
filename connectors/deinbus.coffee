@@ -1,5 +1,6 @@
 nodeio = require 'node.io'
-log = require '../lib/logging'
+log = require 'logging'
+
 
 IdMap = {}
 url = (query) -> "http://www.deinbus.de/fs/result/?
@@ -16,7 +17,7 @@ regex = ///
         (?:Sonderpreis:(\d+,\d+\s€))?
         ///
 
-module.exports = nodeio.Job
+module.exports.findRides = nodeio.Job
   input: (a, b, run) ->
     log.debug "input"
     return false unless a == 0

@@ -1,5 +1,5 @@
 nodeio = require 'node.io'
-log = require '../lib/logging'
+log = require 'logging'
 
 sessionId = "7cdf6b20d2219a85d4d5431c7ef3a0ce"
 
@@ -21,7 +21,7 @@ body = (query) ->
 &land_nach=D&ort_nach=#{query.destination}
 &search=suche"
 
-module.exports = new nodeio.Job
+module.exports.findRides = new nodeio.Job
   input: false
   run: ->
     @options.encoding = "binary" # "iso-8859-1"
