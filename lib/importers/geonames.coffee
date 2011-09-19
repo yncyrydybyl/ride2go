@@ -6,6 +6,7 @@ COUNTRY = "DE"
 module.exports = new nodeio.Job
   input: false
   run: (f) ->
+    console.log "arg1: " + @options.args[0]
     start new NamesImport(), () =>
       start new AdminImport(), () =>
         start new CityImport(), () =>
@@ -15,7 +16,7 @@ start = (job, callback) ->
   nodeio.start job, {}, (
     (err) ->
       if err
-        console.log("Error while "+job.description+": "+err+"\n")
+        log.error("Error while "+job.description+": "+err+"\n")
       else
         console.log(job.description+" finished.\n")
       callback()
