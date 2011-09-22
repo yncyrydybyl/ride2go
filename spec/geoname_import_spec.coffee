@@ -56,6 +56,10 @@ describe "geonames import", ->
       expect(exists).toEqual 1
     redis.exists "geoname:id:2950159", (err, exists) ->
       expect(exists).toEqual 1
+    redis.hget "DE:Berlin:Berlin", "population", (err, pp) ->
+      expect(pp).toEqual "3426354"
+    redis.hget "DE:Berlin:Berlin", "lat", (err, lat) ->
+      expect(lat).toEqual "13.41053"
       asyncSpecDone()
     asyncSpecWait()
 
@@ -82,18 +86,16 @@ describe "geonames import", ->
     asyncSpecWait()
  
   it "should import alternative names as foreign keys", ->
-    redis.get "geoname:alt:Beieren", (err, internal_key) ->
-      expect(internal_key).toEqual("DE:Bayern")
-    redis.get "geoname:alt:Baian", (err, internal_key) ->
-      expect(internal_key).toEqual("DE:Bayern")
-    redis.get "geoname:alt:Berliini", (err, internal_key) ->
-      expect(internal_key).toEqual("DE:Berlin:Berlin")
-    redis.get "geoname:alt:Bad Gernrode", (err, internal_key) ->
-      expect(internal_key).toEqual("DE:Sachsen-Anhalt:Gernrode")
-    redis.get "geoname:alt:Foehrenwald", (err, internal_key) ->
-      expect(internal_key).toEqual("DE:Bayern:Waldram")
-      asyncSpecDone()
-    asyncSpecWait()
+    redis.smembers "geoname:alt:Beieren", (err, alts) ->
+      expect(__.include(alts, "DE:Bayern")).toBeTrue
+    redis.smembers "geoname:alt:Baian", (err, alts) ->
+      expect(__.include(alts, "DE:Bayern")).toBeTrue
+    redis.smembers "geoname:alt:Berliini", (err, alts) ->
+      expect(__.include(alts, "DE:Berlin:Berlin")).toBeTrue
+    redis.smembers "geoname:alt:Bad Gernrode", (err, alts) ->
+      expect(__.include(alts, "DE:Sachsen-Anhalt:Gernrode")).toBeTrue
+    redis.smembers "geoname:alt:Foehrenwald", (err, alts) ->
+      expect(__.include(alts, "DE:Bayern:Waldram")).toBeTrue
 
   afterEach ->
     redis.quit()
