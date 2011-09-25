@@ -4,8 +4,8 @@ connectors = require '../connectors'
 
 exports['test sth'] = () ->
   query =
-    orig: "Frankfurt am Main"
-    dest: "Köln"
+    orig: "DE:Nordrhein-Westfalen:Köln"
+    dest: "DE:Hessen:Frankfurt am Main"
   nodeio.start connectors.deinbus, query, ((err, rides) ->
     console.log rides
   ), true

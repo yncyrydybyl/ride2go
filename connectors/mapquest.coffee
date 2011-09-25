@@ -17,9 +17,3 @@ module.exports.findRides = nodeio.Job
       @emit rides
 
 
-class Import extends nodeio.JobClass
-  input: false
-  run: (num) -> @emit 'import finished!'
-
-@class = Import
-@job = new Import()
