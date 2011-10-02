@@ -28,6 +28,7 @@ require.extensions['.js'] = function (obj, path) {
 afterEach(function() {
   for (var path in moduleSpies) {
     delete moduleSpies[path];
+    delete require.cache[path];
   }
 });
 var once, waitsForOnce;
