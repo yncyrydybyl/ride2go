@@ -7,11 +7,10 @@ describe "redis", ->
   beforeEach ->
     redis_module = require "redis"
     redis = require "../lib/r2gredis"
-    redis_client_spy = createSpyObj("my redis client", ["select"])
+    redis_client_spy = createSpyObj("my redis client", ["select","on"])
 
     mod = spyOnModule "redis", ["createClient"]
     spyOn(mod,"createClient").andReturn(redis_client_spy)
-
 
   describe ".client" , ->
     it "should return a redis client", ->
@@ -28,3 +27,14 @@ describe "redis", ->
       #process.env.NODE_ENV = "test" // because we are in test 
       r = redis.client()
       expect(redis_client_spy.select).toHaveBeenCalledWith(15)
+
+describe "redis database ", ->
+  redis = {}
+  beforeEach ->
+    redis = require "../lib/r2gredis"
+  it "should be a empty database" , ->
+    r = redis.client()
+    r.dbsize (err, numberofkeys) ->
+      expect(numberofkeys).toBe(0)
+      asyncSpecDone()
+    asyncSpecWait()
