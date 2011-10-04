@@ -1,16 +1,52 @@
 Place = require '../lib/place'
 describe "Place", ->
-  v = {}
-  r = {}
+  # the tests in here only work with a proper redis database running
+  last_test = redis = undefined
+  redizz = require('r2gredis')
+  beforeEach ->
+    redis = redizz.client()
+  afterEach ->
+    if last_test
+      redizz.kill()
 
-
-  describe 'factory: Place.new("DE:Bayern:München)', ->
+  describe '.find ', ->
     it "should work with primary keys", ->
-      Place.new "DE:Bayern:München", (p) ->
+      redis.hset "DE:Bayern:München", "population", "1260391", ->
+        Place.find "DE:Bayern:München", (p) ->
+          expect(p.city()).toEqual("München")
+          expect(p.country()).toEqual("DE")
+          asyncSpecDone()
+      asyncSpecWait()
+    it "should return false if primary key is not there", ->
+      Place.find "DE:Bayern:Nonexistent", (p) ->
+        expect(p).toBe(false)
+        last_test = true
+        asyncSpecDone()
+      asyncSpecWait()
+
+    xit "should work with search parameters", ->
+      params =
+        city:"München"
+        country: "DE"
+
+      Place.find params, (p) ->
         expect(p.city()).toEqual("München")
         expect(p.country()).toEqual("DE")
         asyncSpecDone()
       asyncSpecWait()
+
+
+    xit "should work with alternative name", ->
+      Place.new "DE:Rheinland-Pfalz:Mayence", (p) ->
+        expect(p.city()).toEqual("Mainz")
+        expect(p.country()).toEqual("DE")
+        asyncSpecDone()
+      asyncSpecWait()
+
+    xit "should work with alternative name", ->
+      Place.new "DE:ichbinnichtexistent", (p) ->
+        
+
 
     xit "should work with formated address strings from google street addresses", ->
       p = Place.new "Kopernikusstraße 23, 10245 Berlin, Germany"
