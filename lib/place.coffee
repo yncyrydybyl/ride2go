@@ -36,18 +36,21 @@ Place.prototype =
 # generic factory
 # this function determines which find method is used
 Place.find = (egal, callback) ->
+  #log.transports.console.level="debug"
   if __.isString(egal)
+    log.debug "find parameter is a string"
     if egal.indexOf("DE:") == 0
-      log.notice("starts with DE:")
+      log.debug("starts with DE:")
       Place.findByPrimaryKey egal, callback
 
   else if __.isObject(egal)
+    log.debug "find parameter is an object"
     if egal.geoobject
       Place.fromGoogleGeocoder egal.geoobject, callback
     if egal.city and egal.country
-      Place.findByKeyPattern "#{egal.country}:*:#{city}"
+      Place.findByKeyPattern "#{egal.country}:*:#{egal.city}", callback
 
-    if egal.results[0].address_components
+    if egal.results and egal.results[0].address_components
       Place.fromGoogleGeocoder egal.results[0], callback
 
 
@@ -64,7 +67,38 @@ Place.findByPrimaryKey = (key, callback) ->
 #Place.deinbusbottomuptemporaryname (keypattern, callback) ->
 #  redis keypatter, callback
 
-#Place.findByKeyPattern =
+Place.findByKeyPattern = (pattern,callback) ->
+  redis.keys pattern, (err, keys) ->
+    #none
+    if keys.length == 0
+      log.debug "no key"
+      callback false
+    else if keys.length == 1
+      log.debug "exacly 1 key"
+      Place.findByPrimaryKey(keys[0], callback)
+    else if keys.length >= 1
+      log.debug "more than one key"
+      Place.chooseByStrategy(keys,callback)
+
+Place.chooseByStrategy = (keys,callback, strategy = "population") ->
+  if strategy == "population"
+    log.debug "population strategy"
+    redis.multi(["HGET", k, "population"] for k in keys).exec (err, results) =>
+      i = idx = max = 0
+      for p in results
+        p = p*1
+        if p > max
+          max = p
+          idx = i
+        i += 1
+      Place.find(keys[idx],callback)
+  else if strategy == "icke"
+    log.debug "icke strategy"
+    log.debug "icke here we go"
+    p = new Place()
+    p.key = "DE:Berlin:Berlin"
+    console.log(callback)
+    callback(p)
 
 #Place.findByCityAndCountry city, country, callback
 #  fromString "#{country}:*:#{city}"
