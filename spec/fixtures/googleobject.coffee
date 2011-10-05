@@ -1,4 +1,4 @@
-v=results: [ 
+googleobject=results: [ 
     address_components: [ 
       long_name: "13"
       short_name: "13"
@@ -53,4 +53,4 @@ v=results: [
    ]
   status: "OK"
 
-module.exports = v
+module.exports = googleobject
