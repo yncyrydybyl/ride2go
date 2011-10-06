@@ -21,18 +21,21 @@ describe "\nClass 'Place':", ->
     it "should find a country by key", ->
       Country.find "DE", (country) ->
         expect(country.key).toBe("DE")
+        expect(country.constructor).toBe(Country)
         asyncSpecDone()
       asyncSpecWait()
     
     it "should find a state in a country", ->
       new Country("DE").states.find "Berlin", (state) ->
         expect(state.key).toBe("DE:Berlin")
+        expect(state.constructor).toBe(State)
         asyncSpecDone()
       asyncSpecWait()
         
     it "should find a city in a country", ->
       new Country("DE").cities.find "Hamburg", (city) ->
         expect(city.key).toBe("DE:Hamburg:Hamburg")
+        expect(city.constructor).toBe(City)
         asyncSpecDone()
       asyncSpecWait()
     
@@ -49,8 +52,8 @@ describe "\nClass 'Place':", ->
       asyncSpecWait()
 
     it "should find a city in a state by alternative name", ->
-      new State("DE:Berlin").cities.find "Berlinii", (city) ->
-        expect(city.key).toBe("DE:Berlin:Berlin")
+      new State("DE:Rheinland-Pfalz").cities.find "Mayence", (city) ->
+        expect(city.key).toBe("DE:Rheinland-Pfalz:Mainz")
         asyncSpecDone()
       asyncSpecWait()
 
@@ -60,30 +63,19 @@ describe "\nClass 'Place':", ->
         expect(city.key).toBe("DE:Rheinland-Pfalz:Mainz")
         asyncSpecDone()
       asyncSpecWait()
-  
+ 
+    it "should return undefined if place does not exist", ->
+      new State("DE:Bayern").cities.find "Oachkatzleschwoafhausen", (city) ->
+        console.log("--------->"+city)
+        expect(city).toBe(undefined)
+
+        asyncSpecDone()
+      asyncSpecWait()
+
     xit "should find by geoip geocoder objects", ->
       go = require("./fixtures/geoipobject")
       City.find go, (city) ->
         expect(city.key).toBe("DE:Berlin:Berlin")
-        asyncSpecDone()
-      asyncSpecWait()
-   
-    it "should be the last test ", ->
-      last_test = true
-
-  
-  
-  xdescribe '.find ', ->
-    it "should work with primary keys", ->
-      redis.hset "DE:Bayern:München", "population", "1260391", (err, result) ->
-        Place.find "DE:Bayern:München", (p) ->
-          expect(p.city()).toEqual("München")
-          expect(p.country()).toEqual("DE")
-          asyncSpecDone()
-      asyncSpecWait()
-    it "should return false if primary key is not there", ->
-      Place.find "DE:Bayern:Nonexistent", (p) ->
-        expect(p).toBe(false)
         asyncSpecDone()
       asyncSpecWait()
 
@@ -100,21 +92,7 @@ describe "\nClass 'Place':", ->
     it "should be the last test ", ->
       last_test = true
 
-
-# somehow broken i have no idea why
-    xit "selection should be icke strategy ", ->
-
-      Place.chooseByStrategy(["DE:Bayern:München","DE:Brandenburg:München"] , ((p) ->
-        expect(p.key).toBe("DE:Berlin:Berlin")
-        console.log("called")
-        last_test = true
-        asyncSpecDone()
-        console.log("called")
-      ), "icke")
-      asyncSpecWait()
-
-
-
+  describe "left overs and feature wishes", ->
     xit "should work with alternative name", ->
       Place.new "DE:Rheinland-Pfalz:Mayence", (p) ->
         #  expect(p.city()).toEqual("Mainz")
@@ -152,38 +130,7 @@ describe "\nClass 'Place':", ->
       Place.new require './fixtures/v'
       expect(Place.fromGoogleGeocoder).toHaveBeenCalled()
 
-  xdescribe "function city", ->
-    beforeEach ->
-      v = require './fixtures/v'
-    it "should return the proper cityname", ->
-      p = Place.new(v)
-      city = p.city()
-      expect(city).toEqual("Mainz")
 
-
-
-  xdescribe '.fromGoogle', ->
-    beforeEach ->
-      v = require './fixtures/v'
-      r = require('redis')
-      redis = r.createClient()
-      redis.select 15
-      redis.set("DE","foo")
-      redis.sadd "DE:RP","2847618"
-      redis.sadd "DE:RP:Mainz", ["2874225","Mainz","Mayence","Mogontiacum","Moguncja"]
-      redis.smembers "DE:RP", (er,data) -> console.log("foo"+data+er)
-      waits 2000
-    it "should assign a proper key if geonames exist in redis", ->
-       # im redis 
-      #   SELECT 99
-      #   SET DE foo
-      #   SADD DE:RP 2847618 
-      #   SADD DE:RP Rheinland-Pfalz
-      #   SADD DE:RP:Mainz 2874225 Mainz Mayence Mogontiacum Moguncja
-      #   SET DE:RP:Mayence DE:RP:Mainz
-
-      p=Place.new(v)
-      expect(p.key()).toEqual("DE:RP:Mainz")
     it "should put it into conflicts if geonames not exist in redis", ->
 
 #geoname = require "../lib/geonames"

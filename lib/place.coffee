@@ -1,6 +1,5 @@
 __ = require "../vendor/underscore"
 redis = require("r2gredis").keymap()
-#redis = require("redis").createClient()
 log = require("logging")
 log.transports.console.level="debug"
 
@@ -21,57 +20,51 @@ class Place
     if c = @key.match(/^\w{2}:[^:]*:([^:]*).*/)
       return c[1]
     else
-      console.log("not found")
-      return false
+      log.debug("city not found")
+      return undefined
 
 Place.find = (egal, callback) ->
   if __.isString(egal)
     log.debug "find parameter is a string"
-    if egal.indexOf("DE:") == 0
-      log.debug("starts with DE:")
-      Place.findByPrimaryKey egal, callback
-    else # it must be a name of some place
-      Place.findByKeyPattern egal, callback
+    @findByKeyPattern egal, callback
 
   else if __.isObject(egal)
     log.debug "find parameter is an object"
     if egal.city and egal.country
-      Place.findByKeyPattern "#{egal.country}:*:#{egal.city}", callback
+      @findByKeyPattern "#{egal.country}:*:#{egal.city}", callback
 
     else if egal.address_components
-      Place.fromGoogleGeocoder egal, callback
+      @fromGoogleGeocoder egal, callback
 
-Place.findByName = (name, callback) ->
-  Place.findByKeyPattern @pattern+name, (place) ->
-    if place
-      callback place
-    else
-      Place.findByKeyPattern "geoname:alt:"+name, callback
-
-# builderFromString
-Place.findByPrimaryKey = (key, callback) ->
-  p = new Place()
-  redis.exists key, (err, exists) ->
+Place.findByName = (name,subkey,callback) ->
+  redis.exists (key = subkey+":"+name), (err, exists) =>
     if exists == 1
-      callback(new Place(key))
+      callback(@new(key))
     else
-      callback(false)
-
-#Place.deinbusbottomuptemporaryname (keypattern, callback) ->
-#  redis keypatter, callback
+      redis.smembers "geoname:alt:"+name, (err, alts) =>
+        alts = (a for a in alts when a.indexOf(subkey) == 0)
+        if alts.length == 1
+          callback(@new(alts[0]))
+        else
+          # TODO more determination of the place by coords or zip code
+          callback undefined
 
 Place.findByKeyPattern = (pattern,callback) ->
-  redis.keys pattern, (err, keys) ->
-    #none
+  redis.keys pattern, (err, keys) =>
     if keys.length == 0
       log.debug "no key found for "+pattern
-      callback false
+      callback undefined
     else if keys.length == 1
       log.debug "exacly 1 key"
-      Place.findByPrimaryKey(keys[0], callback)
+      redis.exists keys[0], (err, exists) =>
+        if exists == 1
+          callback(@new(keys[0]))
+        else
+          callback undefined
+
     else if keys.length >= 1
       log.debug "more than one key"
-      Place.chooseByStrategy(keys,callback)
+      @chooseByStrategy(keys,callback)
 
 Place.chooseByStrategy = (keys,callback, strategy = "population") ->
   if strategy == "population"
@@ -81,65 +74,50 @@ Place.chooseByStrategy = (keys,callback, strategy = "population") ->
       idx = 0
       max = 0
       for p in results
-        console.log(keys[i] + "---  "+p)
         p = p*1
-        console.log(keys[i] + "---  "+p)
         if p > max
           max = p
           idx = i
         i += 1
-        console.log "max: "+max+" "+keys[idx]
-      Place.find(keys[idx],callback)
-  else if strategy == "icke"
-    log.debug "icke strategy"
-    log.debug "icke here we go"
-    p = new Place()
-    p.key = "DE:Berlin:Berlin"
-    console.log(callback)
-    callback(p)
+        log.debug "max: "+max+" "+keys[idx]
+      @find(keys[idx],callback)
 
 #Place.findByCityAndCountry city, country, callback
 #  fromString "#{country}:*:#{city}"
 
 # builderFromGeoObject
 Place.fromGoogleGeocoder = (obj, callback) ->
-  log.notice "using from Place.fromGoogleGeocoder"
-  gcountry = gstate = gcity = undefined
+  log.debug "using from Place.fromGoogleGeocoder"
+  gcountry = gstate = gcity = {}
   stateterm = "administrative_area_level_1"
   cityterm = "locality"
 
   for component in obj.address_components
     gcountry = component.short_name if __.include(component.types, "country")
     gcity = component.long_name if __.include(component.types, cityterm)
-    gstate = component.short_name if __.include(component.types, stateterm)
-  
-  c = Country.find (gcountry), (country) ->
+    gstate = component.long_name if __.include(component.types, stateterm)
+  Country.find (gcountry), (country) ->
     country.states.find gstate, (state) ->
       state.cities.find gcity, (city) ->
-        callback place
-        console.log("ßßßßßßßßßßßßßß"+place)
-
-
-  p = Place.find([country,state,city].join(":")], callback)
-
-  console.log(country)
-  console.log(city)
-
+        callback city
 
 class Country extends Place
   findState: (name, callback) ->
-    Place.findByKeyPattern @key+":"+name, callback
+    State.findByName name, @key, callback
   findCity: (name, callback) ->
-    Place.findByKeyPattern @key+":*:"+name, callback
-  
-  states:
-    find: (name, callback) -> @key
+    City.findByKeyPattern @key+":*:"+name, callback
 
 class State extends Place
   findCity: (name, callback) ->
-    Place.findByKeyPattern @key+":"+name, callback
+    City.findByName name, @key, callback
 
 class City extends Place
+
+
+Place.new = (key)-> new Place(key)
+Country.new = (key)-> new Country(key)
+State.new = (key)-> new State(key)
+City.new = (key)-> new City(key)
 
 module.exports.Country = Country
 module.exports.Place = Place
