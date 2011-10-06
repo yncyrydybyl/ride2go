@@ -121,12 +121,7 @@ store = (geoname_id, sub_key, name, done, population=false, lat=false, lon=false
         #redis.set "wikipedia:#{a.match(/\/([^\/]*)$/)[1]}", primary_key
       else
         alt_key = "geoname:alt:#{a.match(/:([^:]*)$/)[1]}"
-        redis.get alt_key, (err, key) =>
-          if not key
-            redis.sadd alt_key, primary_key
-          else if key != primary_key
-            log.notice "AHA! "+alt_key+" already mapped to "+key+
-              "\n    we can not map it to "+primary_key
+        redis.sadd alt_key, primary_key
     redis.set foreign_key, primary_key
     redis.hset(primary_key, "population", population) if population
     redis.hset(primary_key, "lat", lat) if lat

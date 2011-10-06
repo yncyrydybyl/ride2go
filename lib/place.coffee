@@ -23,9 +23,6 @@ class Place
     else
       console.log("not found")
       return false
-    
-
-Place.pattern = ""
 
 Place.find = (egal, callback) ->
   if __.isString(egal)
@@ -34,17 +31,15 @@ Place.find = (egal, callback) ->
       log.debug("starts with DE:")
       Place.findByPrimaryKey egal, callback
     else # it must be a name of some place
-      Place.findByKeyPattern @pattern+egal, callback 
+      Place.findByKeyPattern egal, callback
 
   else if __.isObject(egal)
     log.debug "find parameter is an object"
-    if egal.geoobject
-      Place.fromGoogleGeocoder egal.geoobject, callback
     if egal.city and egal.country
       Place.findByKeyPattern "#{egal.country}:*:#{egal.city}", callback
 
-    if egal.results and egal.results[0].address_components
-      Place.fromGoogleGeocoder egal.results[0], callback
+    else if egal.address_components
+      Place.fromGoogleGeocoder egal, callback
 
 Place.findByName = (name, callback) ->
   Place.findByKeyPattern @pattern+name, (place) ->
@@ -108,22 +103,27 @@ Place.chooseByStrategy = (keys,callback, strategy = "population") ->
 
 # builderFromGeoObject
 Place.fromGoogleGeocoder = (obj, callback) ->
-  p = new Place
-  if obj.address_components
-    for component in obj.address_components
-   #   console.log(component)
-      for type in ['country', 'street_number', 'route', 'postal_code','locality']
-        if __.include(component.types, type)
-          p[type] = component.short_name
-      if __.include(component.types, 'political')
-        p.political or= {} 
-        p.political[component.types[0]]=component.short_name
-  else
-    console.log("no address objects")
-  #new Place(obj.orig.title,obj.dest.title)
-  #obj.__proto__ = Place.prototype
-  #obj
-  return p
+  log.notice "using from Place.fromGoogleGeocoder"
+  gcountry = gstate = gcity = undefined
+  stateterm = "administrative_area_level_1"
+  cityterm = "locality"
+
+  for component in obj.address_components
+    gcountry = component.short_name if __.include(component.types, "country")
+    gcity = component.long_name if __.include(component.types, cityterm)
+    gstate = component.short_name if __.include(component.types, stateterm)
+  
+  c = Country.find (gcountry), (country) ->
+    country.states.find gstate, (state) ->
+      state.cities.find gcity, (city) ->
+        callback place
+        console.log("ßßßßßßßßßßßßßß"+place)
+
+
+  p = Place.find([country,state,city].join(":")], callback)
+
+  console.log(country)
+  console.log(city)
 
 
 class Country extends Place
@@ -135,5 +135,13 @@ class Country extends Place
   states:
     find: (name, callback) -> @key
 
+class State extends Place
+  findCity: (name, callback) ->
+    Place.findByKeyPattern @key+":"+name, callback
+
+class City extends Place
+
 module.exports.Country = Country
 module.exports.Place = Place
+module.exports.State = State
+module.exports.City = City

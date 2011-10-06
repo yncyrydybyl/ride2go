@@ -1,6 +1,8 @@
 log = require 'logging'
 Place = require('place').Place
 Country = require('place').Country
+State = require('place').State
+City = require('place').City
 
 describe "\nClass 'Place':", ->
   # the tests in here only work with a proper redis database running
@@ -40,14 +42,20 @@ describe "\nClass 'Place':", ->
         asyncSpecDone()
       asyncSpecWait()
 
-    xit "should find a city in a state", ->
+    it "should find a city in a state", ->
       new State("DE:Berlin").cities.find "Berlin", (city) ->
         expect(city.key).toBe("DE:Berlin:Berlin")
         asyncSpecDone()
       asyncSpecWait()
 
-    xit "should find by google geocoder objects", ->
-      go = require("./fixtures/googleobject")
+    it "should find a city in a state by alternative name", ->
+      new State("DE:Berlin").cities.find "Berlinii", (city) ->
+        expect(city.key).toBe("DE:Berlin:Berlin")
+        asyncSpecDone()
+      asyncSpecWait()
+
+    it "should find by google geocoder object", ->
+      go = require("./fixtures/googleobject").results[0]
       City.find go, (city) ->
         expect(city.key).toBe("DE:Rheinland-Pfalz:Mainz")
         asyncSpecDone()
