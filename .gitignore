@@ -11,3 +11,4 @@ connectors/*.js
 node_modules/
 public/js/ride2go.js
 *.js
+redis/dumps
