@@ -19,11 +19,14 @@ describe "\nClass 'Place':", ->
     it "should find a country by key", ->
       Country.find "DE", (country) ->
         expect(country.key).toBe("DE")
+        asyncSpecDone()
+      asyncSpecWait()
     
     it "should find a state in a country", ->
       new Country("DE").states.find "Berlin", (state) ->
         expect(state.key).toBe("DE:Berlin")
-        console.log "happened"
+        asyncSpecDone()
+      asyncSpecWait()
         
     it "should find a city in a country", ->
       new Country("DE").cities.find "Hamburg", (city) ->
@@ -31,7 +34,7 @@ describe "\nClass 'Place':", ->
         asyncSpecDone()
       asyncSpecWait()
     
-    xit "should choose the city with max population if not unique", ->
+    it "should choose the city with max population if not unique", ->
       new Country("DE").cities.find "München", (city) ->
         expect(city.key).toBe("DE:Bayern:München")
         asyncSpecDone()

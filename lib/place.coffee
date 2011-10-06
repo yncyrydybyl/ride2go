@@ -34,7 +34,7 @@ Place.find = (egal, callback) ->
       log.debug("starts with DE:")
       Place.findByPrimaryKey egal, callback
     else # it must be a name of some place
-      Place.findByKeyPattern @pattern+egal, (place) ->
+      Place.findByKeyPattern @pattern+egal, callback 
 
   else if __.isObject(egal)
     log.debug "find parameter is an object"
