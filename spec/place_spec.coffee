@@ -2,7 +2,7 @@ log = require 'logging'
 Place = require('place').Place
 Country = require('place').Country
 
-describe "\nPLACE class:", ->
+describe "\nClass 'Place':", ->
   # the tests in here only work with a proper redis database running
   last_test = redis = undefined
   redizz = require('r2gredis')
@@ -14,7 +14,7 @@ describe "\nPLACE class:", ->
       redizz.kill()
 
   
-  describe "how to lookup places", ->
+  describe "method 'find':", ->
 
     it "should find a country by key", ->
       Country.find "DE", (country) ->
