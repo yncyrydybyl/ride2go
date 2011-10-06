@@ -10,10 +10,10 @@ module.exports = {
     return client
   # keymap consists of primary key
   keymap: ->
-    keymap = redis.createClient() unless client
+    keymap = redis.createClient() unless keymap
     return keymap
   kill: ->
-    client.quit()
-    keymap.quit()
+    client.quit() if client
+    keymap.quit() if keymap
 
 }
