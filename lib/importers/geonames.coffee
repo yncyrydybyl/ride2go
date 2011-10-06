@@ -21,6 +21,9 @@ module.exports = new nodeio.Job
         importCountry COUNTRY, @emit
 
 importCountry = (country, done) ->
+  # ToDo should be import all countries including currency, population etc.
+  redis.hset COUNTRY.toUpperCase(), "shortname", "Germany", (err, result) ->
+    log.error err if err
   start new AdminImport(), () =>
     start new CityImport(), () =>
       done "all done now :-)."

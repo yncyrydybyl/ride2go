@@ -1,38 +1,3 @@
-#import kann complex sein
-#lookups sollen schnell und simple sein
-#
-#internal keys == place.descriptor_string
-#(erstellen aus geonames datensatz)
-#
-#<COUNTRY>:<ADMIN1>:...:<CITY>:<PLZ>:<STREET>:<NR>
-#
-#foreign keys mappen aud sets von internal keys
-#<SOURCE>:<TYPE>:<ID>
-#  GOOGLE:LOCALITY:MAYENCE ->
-#  HAFAS:TRAMHALT:28436    ->
-#  GEONAMES:ID:345687      ->
-#  GEONAME:PPL:MAINZ       ->
-#  GEONAME:PPL:MAYENCE     -> [DE:RF:MAINZ, AT:OÖ:MIANZO]
-#  MFGDE:CITY:123          ->
-#  OSM:STREET:HAUPTSTRAßE  -> [DE:RF:MAINZ:HAUPSTR, DE:BY:MÜNCHEN:HAUPTSTR, ...] # worst case
-#  FOUSQUARE:CAFE:876543   ->
-#
-#----
-#internal?
-#  DE -> DE # internal key found :)
-#  DE:RF -> DE:RF # internal key found :)
-#  DE:RF:Mayence -> false # internal key NOT found :(
-#    foreign?
-#      *:MAYENCE -> [DE:RF:MAINZ, AT:OÖ:MIANZO]
-#        wenn mehrere dann die rauspicken, die sinn machen
-#        - selber anfang
-#        - first guess
-#      -> DE:RF:MAINZ # internal key found
-#    :)
-#
-
-#deTxt = require ("fixtures/geonames").deTxt
-
 __ = NaN
 redis = NaN
 describe "geonames import", ->
@@ -48,11 +13,13 @@ describe "geonames import", ->
     asyncSpecWait()
 
   it "should import Berlin", ->
+    redis.exists "DE", (err, exists) ->
+      expect(exists).toEqual 1
     redis.exists "DE:Berlin", (err, exists) ->
-      expect(exists).toBeTrue
-    redis.exists "geoname:id:2950157", (err, exists) ->
       expect(exists).toEqual 1
     redis.exists "DE:Berlin:Berlin", (err, exists) ->
+      expect(exists).toEqual 1
+    redis.exists "geoname:id:2950157", (err, exists) ->
       expect(exists).toEqual 1
     redis.exists "geoname:id:2950159", (err, exists) ->
       expect(exists).toEqual 1
