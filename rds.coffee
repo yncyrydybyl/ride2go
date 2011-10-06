@@ -47,7 +47,7 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
       log.info "RDS starts connector for " + search
       io.start api[search], query, ((someerror, rides) =>
         log.error someerror if someerror
-        for ride in (new Ride(r) for r in rides) # store the RiDeS to cache #
+        for ride in (Ride.new(r) for r in rides) # store the RiDeS to cache #
           @redis.hset route, ride.link, ride.json(), (anothererror, isNew) =>
             log.error anothererror if anothererror
             @emit route, [ride.json()] if isNew # ie. fiRst time DiScovered #
@@ -55,5 +55,5 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
 
 
 module.exports = RDS ||= new RiDeStore # singleton
-Ride = require './ride' # convenience
-RDS = NaN # the instance
+Ride = require './lib/ride' # convenience
+RDS = NaN # the single one instance

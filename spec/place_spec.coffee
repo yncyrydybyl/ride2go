@@ -1,17 +1,68 @@
-Place = require 'place'
 log = require 'logging'
-describe "Place", ->
+Place = require('place').Place
+Country = require('place').Country
+
+describe "\nPLACE class:", ->
   # the tests in here only work with a proper redis database running
   last_test = redis = undefined
   redizz = require('r2gredis')
   beforeEach ->
-    redis = redizz.client()
+    redis = redizz.keymap()
   afterEach ->
     if last_test
       log.debug("last test -> killed redis")
       redizz.kill()
 
-  describe '.find ', ->
+  
+  describe "how to lookup places", ->
+
+    it "should find a country by key", ->
+      Country.find "DE", (country) ->
+        expect(country.key).toBe("DE")
+    
+    it "should find a state in a country", ->
+      new Country("DE").states.find "Berlin", (state) ->
+        expect(state.key).toBe("DE:Berlin")
+        console.log "happened"
+        
+    it "should find a city in a country", ->
+      new Country("DE").cities.find "Hamburg", (city) ->
+        expect(city.key).toBe("DE:Hamburg:Hamburg")
+        asyncSpecDone()
+      asyncSpecWait()
+    
+    xit "should choose the city with max population if not unique", ->
+      new Country("DE").cities.find "München", (city) ->
+        expect(city.key).toBe("DE:Bayern:München")
+        asyncSpecDone()
+      asyncSpecWait()
+
+    xit "should find a city in a state", ->
+      new State("DE:Berlin").cities.find "Berlin", (city) ->
+        expect(city.key).toBe("DE:Berlin:Berlin")
+        asyncSpecDone()
+      asyncSpecWait()
+
+    xit "should find by google geocoder objects", ->
+      go = require("./fixtures/googleobject")
+      City.find go, (city) ->
+        expect(city.key).toBe("DE:Rheinland-Pfalz:Mainz")
+        asyncSpecDone()
+      asyncSpecWait()
+  
+    xit "should find by geoip geocoder objects", ->
+      go = require("./fixtures/geoipobject")
+      City.find go, (city) ->
+        expect(city.key).toBe("DE:Berlin:Berlin")
+        asyncSpecDone()
+      asyncSpecWait()
+   
+    it "should be the last test ", ->
+      last_test = true
+
+  
+  
+  xdescribe '.find ', ->
     it "should work with primary keys", ->
       redis.hset "DE:Bayern:München", "population", "1260391", (err, result) ->
         Place.find "DE:Bayern:München", (p) ->
@@ -25,7 +76,7 @@ describe "Place", ->
         asyncSpecDone()
       asyncSpecWait()
 
-    it "should work with search parameters", ->
+    xit "should work with search parameters", ->
       params =
         city: "München"
         country: "DE"
@@ -34,19 +85,11 @@ describe "Place", ->
         asyncSpecDone()
       asyncSpecWait()
 
+  
+    it "should be the last test ", ->
+      last_test = true
 
-  describe "choose one city from a list", ->
-    it "selection should be done by population", ->
-      redis.hset "DE:Brandenburg:München", "population", "23231", (err,foo) ->
-        params =
-          city: "München"
-          country: "DE"
-        Place.find params , (p) ->
-          expect(p.key).toBe("DE:Bayern:München")
-          last_test = true
-          asyncSpecDone()
-      asyncSpecWait()
-    
+
 # somehow broken i have no idea why
     xit "selection should be icke strategy ", ->
 

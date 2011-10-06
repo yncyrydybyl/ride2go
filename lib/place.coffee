@@ -1,9 +1,16 @@
 __ = require "../vendor/underscore"
-redis = require("r2gredis").client()
+redis = require("r2gredis").keymap()
+#redis = require("redis").createClient()
 log = require("logging")
+log.transports.console.level="debug"
 
-Place = ->
-Place.prototype =
+#Place = ->
+#Place.prototype =
+class Place
+  
+  constructor: (@key) -> # syntactig sugar to ignore
+    (@states={}).find = (name, done) => @findState(name, done)
+    (@cities={}).find = (name, done) => @findCity(name, done)
 
   toJson: ->
     JSON.stringify @
@@ -17,31 +24,17 @@ Place.prototype =
       console.log("not found")
       return false
     
-  
-  redislookupcountry: ->
-    # existiert @country im redis
-  redislookupaal1: ->
-    # existiert @country:aal1 im redis
 
+Place.pattern = ""
 
-
-    #  Place.find 42 #primary_key
-    # Place.find :all, params
-    #Place.find :first, params
-    
-#class Place
-#  fooString: -> @orig+"---->"+@dest
-#  longstring: ->
-    
-# generic factory
-# this function determines which find method is used
 Place.find = (egal, callback) ->
-  #log.transports.console.level="debug"
   if __.isString(egal)
     log.debug "find parameter is a string"
     if egal.indexOf("DE:") == 0
       log.debug("starts with DE:")
       Place.findByPrimaryKey egal, callback
+    else # it must be a name of some place
+      Place.findByKeyPattern @pattern+egal, (place) ->
 
   else if __.isObject(egal)
     log.debug "find parameter is an object"
@@ -53,14 +46,19 @@ Place.find = (egal, callback) ->
     if egal.results and egal.results[0].address_components
       Place.fromGoogleGeocoder egal.results[0], callback
 
+Place.findByName = (name, callback) ->
+  Place.findByKeyPattern @pattern+name, (place) ->
+    if place
+      callback place
+    else
+      Place.findByKeyPattern "geoname:alt:"+name, callback
 
 # builderFromString
 Place.findByPrimaryKey = (key, callback) ->
   p = new Place()
   redis.exists key, (err, exists) ->
     if exists == 1
-      p.key = key
-      callback(p)
+      callback(new Place(key))
     else
       callback(false)
 
@@ -71,7 +69,7 @@ Place.findByKeyPattern = (pattern,callback) ->
   redis.keys pattern, (err, keys) ->
     #none
     if keys.length == 0
-      log.debug "no key"
+      log.debug "no key found for "+pattern
       callback false
     else if keys.length == 1
       log.debug "exacly 1 key"
@@ -84,13 +82,18 @@ Place.chooseByStrategy = (keys,callback, strategy = "population") ->
   if strategy == "population"
     log.debug "population strategy"
     redis.multi(["HGET", k, "population"] for k in keys).exec (err, results) =>
-      i = idx = max = 0
+      i = 0
+      idx = 0
+      max = 0
       for p in results
+        console.log(keys[i] + "---  "+p)
         p = p*1
+        console.log(keys[i] + "---  "+p)
         if p > max
           max = p
           idx = i
         i += 1
+        console.log "max: "+max+" "+keys[idx]
       Place.find(keys[idx],callback)
   else if strategy == "icke"
     log.debug "icke strategy"
@@ -122,4 +125,15 @@ Place.fromGoogleGeocoder = (obj, callback) ->
   #obj
   return p
 
-module.exports = Place
+
+class Country extends Place
+  findState: (name, callback) ->
+    Place.findByKeyPattern @key+":"+name, callback
+  findCity: (name, callback) ->
+    Place.findByKeyPattern @key+":*:"+name, callback
+  
+  states:
+    find: (name, callback) -> @key
+
+module.exports.Country = Country
+module.exports.Place = Place
