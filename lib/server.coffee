@@ -1,16 +1,17 @@
 socketIO = require 'socket.io'
 express = require 'express'
-Ride = require './ride'
-RDS = require './rds'
-log = require './lib/logging'
 sys = require 'sys'
 
+Ride = require 'ride'
+RDS = require 'rds'
+log = require 'logging'
+
 app = express.createServer()
-app.set 'views', __dirname
+app.set 'views', "view"
 app.set 'view engine', 'jade'
 app.set 'view options', {pretty:true}
 app.use express.bodyParser()
-app.use express.static __dirname+'/public'
+app.use express.static 'public'
 
 app.listen 3000, ->
   addr = app.address()

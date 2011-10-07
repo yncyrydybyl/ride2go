@@ -14,9 +14,9 @@
 #                                                                           #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-api  = require './connectors' # knows how to talk with different service apis
-log = require './lib/logging' # logs nice to console for seeing whats ongoing
-io = require 'node.io' # spin off workers for searching all the web for rides 
+io   = require 'node.io' # spin off workers for searching the web for rides 
+api  = require 'connectors' # knows how to talk with different service apis
+log  = require 'logging' # logs nice to a console for seeing whats going on
 
 
 class RiDeStore extends require('events').EventEmitter # pubsub style msges #
@@ -55,5 +55,5 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
 
 
 module.exports = RDS ||= new RiDeStore # singleton
-Ride = require './lib/ride' # convenience
+Ride = require 'ride' # convenience
 RDS = NaN # the single one instance
