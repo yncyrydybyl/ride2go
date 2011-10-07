@@ -13,7 +13,7 @@ describe "redis", ->
     spyOn(mod,"createClient").andReturn(redis_client_spy)
 
   describe ".client" , ->
-    it "should return a redis client", ->
+    xit "should return a redis client", ->
 
       #spyOn(mod,"createClient").andReturn(redis_client_spy)
 
@@ -23,7 +23,7 @@ describe "redis", ->
       expect(r).toEqual(redis_client_spy)
 
   describe ".client in testmode" , ->
-    it "should select the testdatabase if running in test enviroment", ->
+    xit "should select the testdatabase if running in test enviroment", ->
       #process.env.NODE_ENV = "test" // because we are in test 
       r = redis.client()
       expect(redis_client_spy.select).toHaveBeenCalledWith(15)
