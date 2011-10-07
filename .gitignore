@@ -12,3 +12,4 @@ node_modules/
 public/js/ride2go.js
 *.js
 redis/dumps
+tmp
