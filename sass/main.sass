@@ -12,21 +12,19 @@ body
 #header
   height: $header-height
   background-color: $header-bg
-  padding: 0px
-#left
+
+#left, #right
   position: absolute
-  //top: $header-height
-  top: 40px
+  width: $panel-width
+  top: $header-height
+
+#left
   left: 0px
   background-color: red
-  width: 20%
 
 #right
-  position: absolute
-  top: $header-height
   right: 0px
   background-color: green
-  width: 20%
 
 #middle
   position: absolute
@@ -55,10 +53,13 @@ body
   position: inherit
   background-color: $overlay-bg
   text-align: left
-  
+  width: 100% 
   input
     font-size: 25px
  
+#from_panel, #to_panel
+  background-color: white
+  margin: 10px
 
 #status 
   font-size: 10px

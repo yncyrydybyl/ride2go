@@ -28,17 +28,21 @@ html
 
     #left
       #from_panel
-        img
-        h2 from
-        .address
-          .cityname
+        h2 departing
+        h3.cityname Berlin
+        img(src='/staticmap.berlin.png')
+        h3
+        #depature-startdate 18/11/2011 9:00 am
+        #depature-endate 18/11/2011 7:21 pm 
 
     #right
       #to_panel
-        img
-        h2 to
-        .address
-          .cityname
+        h2 arriving
+        h3.cityname Berlin
+        img(src='/staticmap.hamburg.png')
+        h3 
+        #depature-startdate 18/11/2011 9:00 am
+        #depature-endate 18/11/2011 7:21 pm 
 
  
      
@@ -58,8 +62,10 @@ html
         h1 where do you want to go? 
 
       #to_input
+        h1 From where?
         input#wheretobox(type='text',  value='#{to}')
 
       #from_input
+        h1 Where to?
         input#wherefrombox(type='text', value='#{from}')
  
