@@ -8,55 +8,57 @@ body
   color: $defaultfontclr
   font-family: $defaultfnt  
 
-h1 
-  font-family: $defaultfnt
-
-	
-#whereto, #wherefrom
+// screen areas
+#header
+  height: $header-height
+  background-color: $header-bg
+  padding: 0px
+#left
   position: absolute
-  background-color: $wheretoboxclr
-  width: 40%
-  top: 100px
-  margin: auto
+  //top: $header-height
+  top: 40px
+  left: 0px
+  background-color: red
+  width: 20%
+
+#right
+  position: absolute
+  top: $header-height
+  right: 0px
+  background-color: green
+  width: 20%
+
+#middle
+  position: absolute
+  left: $panel-width
+  width: 100%-$panel-width*2
+  background-color: blue 
+// --- widgets
+
+#middle_overlay
+  background-color: yellow 
+  position: absolute
+  left: $panel-width
+  margin: 2% 
+  width: 96%-$panel-width*2
+  min-height: 60%
+  
+
+// -- visisbility
+#from_input
+  display: none
+
+#start_splash
+  display: none
+
+#from_input, #to_input
+  position: inherit
+  background-color: $overlay-bg
   text-align: left
-  padding: 20px
-  
-  .switcher,
-    font-size: 10px
-    position: absolute
-    top: 0px
-    right: 10px
-  
-  .details
-    font-size: 10px 
-    display: none 
-    * 
-      font-size: 10px
   
   input
     font-size: 25px
-.title
-  text-align: center
-  
-#input
-  position: relative
-  size: 40
-  width: 20
-  margin-left: $panelwidth+40px
-  text-align: left
-#wherefrom
-  display: none
-#from, #to
-  position: absolute
-  width: $panelwidth
-  height: 500px
-#from
-  top: 10px
-  left: 10px
-  background-color: red
-#to
-  top: 10px
-  right: 10px
-  background-color: green
+ 
+
 #status 
   font-size: 10px
