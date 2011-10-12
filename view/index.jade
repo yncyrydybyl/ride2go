@@ -21,8 +21,14 @@ html
   body
     #header
       span#logo ride2go
-      span#status status: disconnected
-      span#social
+      span#status status: disconnected 
+      span#mode
+        ul
+          li.splash.mode_active splash
+          li.to to
+          li.from from
+          li.result result 
+      span#social 
         span#gplus gplus
         span#facebook gplus
 
@@ -32,8 +38,8 @@ html
         h3.cityname Berlin
         img(src='/staticmap.berlin.png')
         h3
-        #depature-startdate 18/11/2011 9:00 am
-        #depature-endate 18/11/2011 7:21 pm 
+        #depature_startdate 18/11/2011 9:00 am
+        #depature_endate 18/11/2011 7:21 pm 
 
     #right
       #to_panel
@@ -41,8 +47,8 @@ html
         h3.cityname Berlin
         img(src='/staticmap.hamburg.png')
         h3 
-        #depature-startdate 18/11/2011 9:00 am
-        #depature-endate 18/11/2011 7:21 pm 
+        #depature_startdate 18/11/2011 9:00 am
+        #depature_endate 18/11/2011 7:21 pm 
 
  
      
@@ -58,14 +64,15 @@ html
           li eine fahrt
 
     #middle_overlay
+      #inputbox
+        input(type='text',  value='#{to}')
+      
       #start_splash 
         h1 where do you want to go? 
 
       #to_input
-        h1 From where?
-        input#wheretobox(type='text',  value='#{to}')
+        h1 Where to?
 
       #from_input
-        h1 Where to?
-        input#wherefrombox(type='text', value='#{from}')
+        h1 From where?
  

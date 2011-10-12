@@ -42,12 +42,24 @@ body
   min-height: 60%
   
 
+// for debug
+#mode
+  display: inline
+  ul
+    display: inline
+  li
+    display: inline
+    padding: 2px
+    margin: 2px
+
+#mode ul li.mode_active
+  background-color: red  
+
 // -- visisbility
-#from_input
+#from_input, #to_input, #from_panel, #to_panel, #options, #rides
   display: none
 
 #start_splash
-  display: none
 
 #from_input, #to_input
   position: inherit

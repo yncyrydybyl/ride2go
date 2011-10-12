@@ -3,34 +3,45 @@ App =
   to: {}
   from: {}
   socket: {}
+  geotypes: ["locality","sublocality","street_address","route"]
+  # "locality", "premise", "subpremise", "route", "street_address
+  mode: "splash"
 
-setgeotypes = (boxname, types) ->
-  $.each types, (i, b) ->
-    $("input[name='" + boxname + "'][value='" + b + "']").attr "checked", true
 
-geotypes = (direction) ->
-  $("input[name=where" + direction + "]:checked").map(->
-    @value
-  ).get()
+switchmode = (mode, lastmode) ->
+  if mode == "to"
+    $("#to_input, #to_panel").show()
+    $("#start_splash").hide()
+  else if mode == "from"
+    $("#from_input, #from_panel").show()
+  else if mode == "result"
+    $("#options").show()
+    $("#rides").show()
+  else if mode == "splash"
+    $("#start_splash").show()
+    $("#from_input,#from_panel,#from_panel,#to_input,#to_panel").hide()
 
-initInputBox = (params) ->
-  params ?=
-    region: "de"
-    direction: "to"
-  params.region ?= "de"
-  params.direction ?= "to"
+  App.mode = mode
+ 
+  # for debugging
+  console.log("switching from "+lastmode+" to " +mode)
+  $("#mode ul li."+mode).addClass("mode_active")
+  $("#mode ul li."+lastmode).removeClass("mode_active")
+  console.log($("#mode ul li."+mode))
 
-  inputbox = $("#where" + params.direction + "box").geo_autocomplete(
+
+initInputBox = (params = {region:"de",direction:"to",selector:"#to_input input"}) ->
+  inputbox = $(params.selector).geo_autocomplete
     geocoder_region: params.region
     geocoder_address: true
-    geocoder_types: geotypes(params.direction).join(",")
+    geocoder_types: App.geotypes.join(",")
     mapheight: 200
     mapwidth: 200
     MapTypeIdaptype: "hybrid"
     select: (event, ui) ->
       inputdone params.direction, ui.item
       #console.log ui.item.viewport.getCenter()
-  )
+    params: params
   $(inputbox).autocomplete "search"
 
 #setting up the ui
@@ -46,8 +57,8 @@ displayride = (ride) ->
   ride = JSON.parse(ride)
   $("#ride").append $("<div>provider: #{ride.provider} <a target='_blank' href='#{ride.link}'>visit</a></div>")
 
-
 inputdone = (d, item) ->
+  console.log(d+" selected")
   if d is "to" then toselected(item)
   if d is "from" then fromselected(item)
 
@@ -60,11 +71,9 @@ setupsocket = ->
   App.socket.on "connect", ->
     $("#status").html("connected")
     $("#status").effect("pulsate")
-    #socket.emit "query", {origin:"hamburg", destination: "berlin"}
   App.socket.on "disconnect", ->
     $("#status").html("disconnected")
     $("#status").effect("pulsate")
-    # only for debug we fire the query instantly
   return App.socket
 
 toselected = (item) =>
@@ -85,13 +94,13 @@ fromselected = (item) ->
     console.log "from selected"
     sendquery()
 
-fuck = (msg) -> 
+send = (msg) -> 
     App.socket.emit "debug", msg 
 
 sendquery = ->
     console.log("send query to server")
-    fuck App.from
-    fuck App.to
+    send App.from
+    send App.to
     #socket.emit "query", {origin:from, destination: to}
     payload = {origin:App.from, destination:App.to}
     console.log("payload: VVV ")
@@ -102,20 +111,11 @@ displayRide = (ride) ->
       $("#rides").append $("<div>provider: #{ride.provider} <a target='_blank' href='#{ride.link}'>visit</a></div>")
 
 $().ready ->
-  setgeotypes "whereto", [ "locality", "premise", "subpremise", "route", "street_address" ]
-  setgeotypes "wherefrom", [ "locality", "route", "premise", "subpremise", "locality" ]
   socket = setupsocket()
-  initInputBox 
-    region: "de"
-    direction: "to"
- 
-  $.each [ "to", "from" ], (i, d) ->
-    $("#where" + d + " input").change ->
-      initInputBox direction: d
-    
-    $("#where" + d + " .switcher").toggle (->
-      $(this).html "- hide options"
-      $(this).parent().children(".details").show 100
-    ), ->
-      $(this).html "+ show options"
-      $(this).parent().children(".details").hide 200
+  # manual switcher for debugging
+  $("#mode .to").click -> switchmode "to", App.mode
+  $("#mode .from").click -> switchmode "from", App.mode
+  $("#mode .splash").click -> switchmode "splash", App.mode
+  $("#mode .result").click -> switchmode "result", App.mode
+
+  initInputBox({region:"de",direction:"to",selector:"#inputbox input"})
