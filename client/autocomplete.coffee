@@ -46,6 +46,7 @@ $.widget "ui.geo_autocomplete",
                   options: self.options
           self.options._cache[_request.term] = _parsed
           _response _parsed
+
     focus: (event, ui)  ->
       #console.log(ui.item.options)
       options = ui.item.options
