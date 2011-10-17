@@ -14,12 +14,11 @@ switchmode = (mode, lastmode) ->
     $("#start_splash").hide()
   else if mode == "from"
     $("#from_input, #from_panel").show()
+    $("#start_splash").hide()
   else if mode == "result"
+    $("#middle_overlay, #to_input, #from_input").hide()
     $("#options").show()
     $("#rides").show()
-  else if mode == "splash"
-    $("#start_splash").show()
-    $("#from_input,#from_panel,#from_panel,#to_input,#to_panel").hide()
 
   App.mode = mode
  
@@ -27,39 +26,34 @@ switchmode = (mode, lastmode) ->
   console.log("switching from "+lastmode+" to " +mode)
   $("#mode ul li."+mode).addClass("mode_active")
   $("#mode ul li."+lastmode).removeClass("mode_active")
-  console.log($("#mode ul li."+mode))
+  #console.log($("#mode ul li."+mode))
 
 
-initInputBox = (params = {region:"de",direction:"to",selector:"#to_input input", showpanel:true}) ->
+initInputBox = (params = {region:"de",direction:"to",selector:"#from_input_field", showpanel:true}) ->
   if not $("#"+params.direction+"_panel").is(":visible") and params.showpanel
     $("#"+params.direction+"_panel").fadeTo "20000", 0.33
     console.log("showing panel")
   console.log "initInputBox called with parameter: "
   #removing any autocomplete functionality 
-  $(params.selector).autocomplete("destroy")
-  console.log params
+  console.log($(params.selector))
   inputbox = $(params.selector).geo_autocomplete
     geocoder_region: params.region
     geocoder_address: true
     geocoder_types: App.geotypes.join(",")
     mapheight: 200
     mapwidth: 200
+    noCache: true
     MapTypeIdaptype: "hybrid"
     select: (event, ui) ->
       inputdone params.direction, ui.item
       #console.log ui.item.viewport.getCenter()
     params: params
+  $(params.selector).focus()
   $(params.selector).keydown ->
     if not $("#"+params.direction+"_panel").is(":visible")
       $("#"+params.direction+"_panel").fadeTo "20000", 0.33 
   
-  $(inputbox).autocomplete "search"
-
-#setting up the ui
-fillfrom = (place) ->
-  $("#whereto").hide()
-  $("#wherefrom").show()
-  $("#from .address").html(place)
+  #$(inputbox).autocomplete "search"
 
 displayride = (ride) ->
   ride = JSON.parse(ride)
@@ -71,13 +65,16 @@ inputdone = (d, item) ->
   $("#"+d+"_panel").fadeTo("slow", 1)
   if d is "to"
     App.to = item
+    $("#to_input").hide()
+    switchmode "from"
     initInputBox
       region: "de"
       direction: "from"
-      selector: "#inputbox input"
+      selector: "#from_input_field"
       showpanel: true
   if d is "from"
     App.from = item
+    switchmode "result"
 
 
 setupsocket = ->
@@ -92,14 +89,6 @@ setupsocket = ->
   App.socket.on "disconnect", ->
     $("#status").html("disconnected")
     $("#status").effect("pulsate")
-
-toselected = (item) =>
-    initInputBox
-      region: "de"
-      direction: "from"
-      selector: "#inputbox input"
-      showpanel: true
-    #sendquery()
 
 send = (msg) -> 
     App.socket.emit "debug", msg 
@@ -124,5 +113,5 @@ $().ready ->
   $("#mode .from").click -> switchmode "from", App.mode
   $("#mode .splash").click -> switchmode "splash", App.mode
   $("#mode .result").click -> switchmode "result", App.mode
-  $("#inputbox input").focus()
-  initInputBox({region:"de",direction:"to",selector:"#inputbox input",showpanel:false})
+  $("#to_input_field").focus()
+  initInputBox({region:"de",direction:"to",selector:"#to_input_field",showpanel:false})

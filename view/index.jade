@@ -37,6 +37,7 @@ html
         h2 departing
         h3.cityname Berlin
         img(src='/staticmap.berlin.png')
+        a#edit_from_input edit
         h3
         #depature_startdate 18/11/2011 9:00 am
         #depature_endate 18/11/2011 7:21 pm 
@@ -46,6 +47,7 @@ html
         h2 arriving
         h3.cityname Berlin
         img(src='/staticmap.hamburg.png')
+        a#edit_to_input edit
         h3 
         #depature_startdate 18/11/2011 9:00 am
         #depature_endate 18/11/2011 7:21 pm 
@@ -65,14 +67,11 @@ html
 
     #middle_overlay
       #inputbox
-        input(type='text')
       
-      #start_splash 
-        h1 where do you want to go? 
-
       #to_input
         h1 Where to?
-
+        input#to_input_field(type='text')
       #from_input
         h1 From where?
+        input#from_input_field(type='text')
  
