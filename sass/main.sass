@@ -20,11 +20,11 @@ body
 
 #left
   left: 0px
-  background-color: red
+  background-color: $fromclr
 
 #right
   right: 0px
-  background-color: green
+  background-color: $toclr
 
 #middle
   position: absolute
@@ -34,7 +34,7 @@ body
 // --- widgets
 
 #middle_overlay
-  background-color: yellow 
+  background-color: $middleoverlayclr 
   position: absolute
   left: $panel-width
   margin: 2% 
@@ -71,13 +71,17 @@ body
   background-color: white
   margin: 10px
 
+#to_input_field_wrapper
+  margin-left: 20px
+  margin-right: 20px
 #to_input_field
-  font-size: 25px
-  width: 100%
-  background-color: green
+  font-size: 20px
+  width: 98%
+  background-color: $toclr
 #from_input_field
-  font-size: 25px
-  background-color: red
+  font-size: 20px
+  width: 98%
+  background-color: $fromclr
 
 #status 
   font-size: 10px

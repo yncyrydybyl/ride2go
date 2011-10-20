@@ -94,7 +94,8 @@ inputdone = (d, item) ->
     App.from = item
     switchmode "result", "from"
 
-
+  console.log("from and to")
+  sendquery()
 setupsocket = ->
   App.socket = io.connect()
   App.socket.on "ride", (ride) ->
@@ -113,13 +114,11 @@ send = (msg) ->
 
 sendquery = ->
     console.log("send query to server")
-    send App.from
-    send App.to
+    #send App.from
+    #send App.to.geoobject
     #socket.emit "query", {origin:from, destination: to}
-    payload = {origin:App.from, destination:App.to}
-    console.log("payload: VVV ")
-    console.log(payload)
-    App.socket.emit "query",payload 
+    payload = {origin:App.from.geoobject, destination:App.to.geoobject}
+    App.socket.emit "query",payload
 
 displayRide = (ride) ->
       $("#rides").append $("<div>provider: #{ride.provider} <a target='_blank' href='#{ride.link}'>visit</a></div>")
