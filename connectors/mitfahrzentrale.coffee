@@ -1,6 +1,5 @@
 nodeio = require 'node.io'
-Ride = require '../ride'
-log = require '../lib/logging'
+log = require 'logging'
 
 
 url = (query) ->
@@ -9,7 +8,7 @@ STARTLAND=D&START=#{query.orig}&
 ZIELLAND=D&ZIEL=#{query.dest}&
 abdat=#{query.date || ''}"
 
-module.exports = new nodeio.Job
+module.exports.findRides = new nodeio.Job
   input: false
   run: ->
     @getHtml url(@options), (err, $, data) =>

@@ -52,4 +52,31 @@ run specs
 =========
  $ ./specs.sh
 
+PATHS
+=====
+You should set your NODE_PATH to the node directory and to the "lib"
+
+export NODE_PATH=`pwd`/node_modules:`pwd`/lib:/home/user/software/:$NODE_PATH
+export PATH=`pwd`/node_modules/.bin:/home/user/software/bin:$PATH
+
+preparation
+===========
+
+alternative names
+-----------------
+
+you need a redis server with alternative names.
+you need alternativenames.txt and admincodes from geonames.org into /tmp
+http://download.geonames.org/export/dump/alternateNames.zip
+http://download.geonames.org/export/dump/admin1CodesASCII.txt
+
+and then start the redis server with "redis/alt.conf"
+it will write a dump to "dumps" of the db after a while
+
+geonames
+--------
+run the import by:
+node.io lib/importers/geonames.coffee
+check consitency with 
+jasmine-node --coffee --verbose -m geoname_import_ spec
 

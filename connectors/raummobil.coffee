@@ -1,5 +1,5 @@
 nodeio = require 'node.io'
-log = require '../lib/logging'
+log = require 'logging'
 
 url = (query) -> "http://www.raumobil.de/index.php?
 commodities_type=supply&commodity_type=mobile
@@ -18,7 +18,7 @@ regex = ///                   # HEREGEX:
       (\d+:\d+)               #6    time
       ///
 
-module.exports = new nodeio.Job
+module.exports.findRides = new nodeio.Job
   input: false
   run: ->
     rides = []

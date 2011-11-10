@@ -1,9 +1,19 @@
 
+client = keymap =  undefined
+redis = require "redis"
+
 module.exports = {
   client: (db = 0) ->
-    redis = require "redis"
-    r = redis.createClient()
+    client = redis.createClient() unless client
     if process.env.NODE_ENV == "test"
-      r.select 15
-    return r
+      client.select 15
+    return client
+  # keymap consists of primary key
+  keymap: ->
+    keymap = redis.createClient() unless keymap
+    return keymap
+  kill: ->
+    client.quit() if client
+    keymap.quit() if keymap
+
 }

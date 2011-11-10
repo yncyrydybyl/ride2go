@@ -13,4 +13,4 @@ class Dummy extends nodeio.JobClass
         mode : { vehicle: "citroen 2cv", type: "car", capacity: {people:2, storage: {amount: 0.3, unit: "m³"}}}
         } ]
 
-module.exports = new Dummy
+module.exports.findRides = new Dummy

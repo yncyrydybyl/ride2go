@@ -1,4 +1,5 @@
 *~
+.rvmrc
 public/css/*
 css/*
 logs
@@ -10,3 +11,5 @@ connectors/*.js
 node_modules/
 public/js/ride2go.js
 *.js
+redis/dumps
+tmp

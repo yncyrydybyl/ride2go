@@ -1,70 +1,125 @@
 __ = require "../vendor/underscore"
-redis = require "redis"
+redis = require("r2gredis").keymap()
+log = require("logging")
+log.transports.console.level="debug"
 
-Place = ->
-Place.prototype =
-  fooString: ->
+#Place = ->
+#Place.prototype =
+class Place
+  
+  constructor: (@key) -> # syntactig sugar to ignore
+    (@states={}).find = (name, done) => @findState(name, done)
+    (@cities={}).find = (name, done) => @findCity(name, done)
+
+  toJson: ->
     JSON.stringify @
-  idString: ->
-    [@country,@route,@foo,@street_number].join(":")
-  redislookupcountry: ->
-    # existiert @country im redis
-  redislookupaal1: ->
-    # existiert @country:aal1 im redis
-    
-#class Place
-#  fooString: -> @orig+"---->"+@dest
-#  longstring: ->
-    
-# generic factory
-Place.new = (egal) ->
-  if __.isString(egal)
-    return Place.fromString egal
-  else if __.isObject(egal) 
-    if egal.geoobject
-      console.log("geo object")
-      Place.fromGeoObject egal.geoobject
-    if egal.results[0].address_components
-      console.log("geo object 2")
-      return Place.fromGeoObject egal.results[0]
+  
+  country: -> @key.substring(0,2)
 
-# builderFromString
-Place.fromString = (string) ->
-  r = new Place()
-  r.orig = "foo"
-  r.dest = "bar"
-  r
+  city: ->
+    if c = @key.match(/^\w{2}:[^:]*:([^:]*).*/)
+      return c[1]
+    else
+      log.debug("city not found")
+      return undefined
+
+Place.find = (egal, callback) ->
+  if __.isString(egal)
+    log.debug "find parameter is a string"
+    @findByKeyPattern egal, callback
+
+  else if __.isObject(egal)
+    log.debug "find parameter is an object"
+    if egal.city and egal.country
+      @findByKeyPattern "#{egal.country}:*:#{egal.city}", callback
+
+    else if egal.address_components
+      @fromGoogleGeocoder egal, callback
+
+Place.findByName = (name,subkey,callback) ->
+  redis.exists (key = subkey+":"+name), (err, exists) =>
+    if exists == 1
+      callback(@new(key))
+    else
+      redis.smembers "geoname:alt:"+name, (err, alts) =>
+        alts = (a for a in alts when a.indexOf(subkey) == 0)
+        if alts.length == 1
+          callback(@new(alts[0]))
+        else
+          # TODO more determination of the place by coords or zip code
+          callback undefined
+
+Place.findByKeyPattern = (pattern,callback) ->
+  redis.keys pattern, (err, keys) =>
+    if keys.length == 0
+      log.debug "no key found for "+pattern
+      callback undefined
+    else if keys.length == 1
+      log.debug "exacly 1 key"
+      redis.exists keys[0], (err, exists) =>
+        if exists == 1
+          callback(@new(keys[0]))
+        else
+          callback undefined
+
+    else if keys.length >= 1
+      log.debug "more than one key"
+      @chooseByStrategy(keys,callback)
+
+Place.chooseByStrategy = (keys,callback, strategy = "population") ->
+  if strategy == "population"
+    log.debug "population strategy"
+    redis.multi(["HGET", k, "population"] for k in keys).exec (err, results) =>
+      i = 0
+      idx = 0
+      max = 0
+      for p in results
+        p = p*1
+        if p > max
+          max = p
+          idx = i
+        i += 1
+        log.debug "max: "+max+" "+keys[idx]
+      @find(keys[idx],callback)
+
+#Place.findByCityAndCountry city, country, callback
+#  fromString "#{country}:*:#{city}"
 
 # builderFromGeoObject
-Place.fromGeoObject = (obj) ->
-  p = new Place
-  if obj.address_components
-    for component in obj.address_components
-   #   console.log(component)
-      for type in ['country', 'street_number', 'route', 'postal_code']
-        if __.include(component.types, type)
-          p[type] = component.short_name
-      if __.include(component.types, 'political')
-        p.political or= []
-        a = {}
-        a[component.types[0]]=component.short_name
-        console.log("poli")
-        console.log(a)
-        console.log(component.short_name)
-        p.political.push(a)
-  else
-    console.log("no address objects")
-  #new Place(obj.orig.title,obj.dest.title)
-  #obj.__proto__ = Place.prototype
-  #obj
-  p
+Place.fromGoogleGeocoder = (obj, callback) ->
+  log.debug "using from Place.fromGoogleGeocoder"
+  gcountry = gstate = gcity = {}
+  stateterm = "administrative_area_level_1"
+  cityterm = "locality"
 
-module.exports = Place
+  for component in obj.address_components
+    gcountry = component.short_name if __.include(component.types, "country")
+    gcity = component.long_name if __.include(component.types, cityterm)
+    gstate = component.long_name if __.include(component.types, stateterm)
+  Country.find (gcountry), (country) ->
+    country.states.find gstate, (state) ->
+      state.cities.find gcity, (city) ->
+        callback city
 
-#a=new Place()
-#sys = require "sys"
-#console.log (sys.inspect(a.fooString())) #console.log Place.new("irgend->was").toString()
-#console.log Place.new({orig:{title:"hamburg"},dest:{title:"berlin"}}).toString()
+class Country extends Place
+  findState: (name, callback) ->
+    State.findByName name, @key, callback
+  findCity: (name, callback) ->
+    City.findByKeyPattern @key+":*:"+name, callback
 
-#console.log Place.fromString("bar").fooString()
-#console.log(new Place("fooo").toString())
+class State extends Place
+  findCity: (name, callback) ->
+    City.findByName name, @key, callback
+
+class City extends Place
+
+
+Place.new = (key)-> new Place(key)
+Country.new = (key)-> new Country(key)
+State.new = (key)-> new State(key)
+City.new = (key)-> new City(key)
+
+module.exports.Country = Country
+module.exports.Place = Place
+module.exports.State = State
+module.exports.City = City

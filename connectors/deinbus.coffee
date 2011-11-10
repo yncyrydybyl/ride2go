@@ -1,48 +1,110 @@
+redis = require('redis').createClient()
 nodeio = require 'node.io'
-log = require '../lib/logging'
+log = require 'logging'
 
-IdMap = {}
-url = (query) -> "http://www.deinbus.de/fs/result/?
-bus_von=#{IdMap[query.orig];"9"}&
-bus_nach=#{IdMap[query.dest]}&
-passengers=1"
 
-regex = ///
-        ab\s(\w{2},\s\d{2}\.\d{2}\.\d{4})
+regexx = ///
+        Ab\s(\w{2},\s\d{2}\.\d{2}\.\d{4})
         \s(\d{2}:\d{2}\s)Uhr\n
-        an\s(\w{2},\s\d{2}\.\d{2}\.\d{4})
+        An\s(\w{2},\s\d{2}\.\d{2}\.\d{4})
         \s(\d{2}:\d{2}\s)Uhr
         (?:Preis:)?(\d+,\d+\s€)
         (?:Sonderpreis:(\d+,\d+\s€))?
         ///
 
-module.exports = nodeio.Job
-  input: (a, b, run) ->
-    log.debug "input"
-    return false unless a == 0
-    if true
-      @get updateIdMapUrl, (err, idMap) ->
-        for c in JSON.parse(idMap)
-          IdMap[c.name] = c.id
-        log.debug "idMap updated."
-        run [0]
-    else
-      run [0]
-  run: ->
+regex = ///
+        Ab:\s(.+)Uhr\n    # Ab: Sonntag, 16. Okt 2011 15:30 Uhr
+        An:\s(.+)Uhr      # An: Freitag, 14. Okt 2011 22:30 Uhr
+        (?:Preis:)?(\d+,\d+\s€)           # Preis:15,50 €
+        (?:Sonderpreis:(\d+,\d+\s€))?     # Sonderpreis:14,00 €
+        ///
+
+module.exports.findRides = nodeio.Job
+  input: (i, j, run) ->
+    return false unless i == 0 # only run once
+    redis.multi([
+      ['HGET', @options.orig, 'deinbus:orig'],
+      ['HGET', @options.dest, 'deinbus:dest']]
+    ).exec (err, ids) =>
+      run ["http://www.deinbus.de/fs/result/?"+
+        "bus_von=#{ids[0]}&"+
+        "bus_nach=#{ids[1]}&"+
+        "passengers=1"]
+  run: (url) ->
     rides = []
-    log.debug url(@options)
-    @getHtml url(@options), (err, $, data) =>
-      $('#product-serach-list tr').even (tr) ->
-        link = $('td.buchenbutton a', tr).attribs.onclick.split("'")[1]
+    log.notice url
+    @getHtml url, (err, $, data) =>
+      #jq = require("jquery")
+      
+      $('#product-serach-list tbody tr').odd (tr) ->
+
         if (r = tr.fulltext.match regex)
           rides.push
             dep_date: r[1]
             dep_time: r[2]
-            arr_date: r[3]
-            arr_time: r[4]
-            price: r[6] || r[5]
-            link: link
-        else log.debug "NOT matched!!! "+tr.fulltext
+            st_price: r[3]
+            sp_price: r[4]
+        else
+          log.error "Regex did NOT match!"
+      
+      i = 0
+      $('#product-serach-list tbody tr').even (tr) ->
+        try
+          rides[i].link = $('div.divbuchungsbtn a', tr).attribs.href
+          console.log rides[i].link
+          i += 1
+      
+        #else log.debug "NOT matched!!! "+tr.fulltext
       @emit rides
 
-updateIdMapUrl = "http://api.scraperwiki.com/api/1.0/datastore/sqlite?format=jsondict&name=deinbusde_city-ids&query=select%20*%20from%20swdata"
+
+# import city ids into redis
+
+idMap = "http://api.scraperwiki.com/api/1.0/datastore/sqlite?format=jsondict&name=deinbusde_city-ids&query=select%20*%20from%20swdata"
+redis = require("redis").createClient()
+
+class Import extends nodeio.JobClass
+  input: (a,b,run) ->
+    return false if a != 0  # only once
+    log.notice "importing deinbus city ids"
+    @get idMap, (err, idMap) ->
+      for city in JSON.parse(idMap)
+        #log.notice city.name+"---->"+city.id+"  type "+city.type
+        run [city]
+
+  run: (city) ->
+    # we could refactor this as Place.deinbustemporarynotaname(city, country) if we need it in more places
+    foreign_key = "deinbus:#{city.type}:#{city.id}"
+    redis.keys "DE:*:#{city.name}", (err, keys) =>
+      if keys.length == 1
+        redis.sadd foreign_key, keys[0]
+        redis.hset keys[0], "deinbus:#{city.type}", city.id, (err, succ) =>
+          log.debug " + stored #{city.name} automatically"
+          @emit()
+      else if keys.length > 1 # get by highest population of primary keys
+        redis.multi(["HGET", k, "population"] for k in keys).exec (err, results) =>
+          i = 0
+          idx = 0
+          max = 0
+          for p in results
+            if p > max
+              max = p
+              idx = i
+            i += 1
+          key = keys[idx]
+          redis.sadd foreign_key, key
+          redis.hset key, "deinbus:#{city.type}", city.id, (err, succ) =>
+            log.debug " + stored #{city.name} because it has the highest population"
+            @emit()
+      else
+        # ToDo: try to match alternative names
+        #redis.smembers "geoname:alt:#{city.name}", (err, keys)
+        log.notice "could not map "+city.name+": "+keys
+        @skip()
+    null
+        
+
+@class = Import
+@job = new Import()
+
+
