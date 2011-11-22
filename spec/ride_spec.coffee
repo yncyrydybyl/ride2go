@@ -1,5 +1,6 @@
 Ride = require('ride')
 Place = require('place').Place
+City = require('place').City
 
 describe "\nClass 'Ride':", ->
 
@@ -17,12 +18,13 @@ describe "\nClass 'Ride':", ->
 
       expect(r.origin().city()).toBe("Mainz")
 
-    it "should accept Place objects", ->
+    it "should accept different Place objects", ->
       r = Ride.new
         orig: new Place("DE:RP:Mainz"),
-        dest: new Place("DE:Berlin:Berlin")
+        dest: new City("DE:Berlin:Berlin")
       expect(r.origin().constructor).toBe(Place)
       expect(r.origin().city()).toBe("Mainz")
+      expect(r.dest).toBe("DE:Berlin:Berlin")
  
     it  "should accept timestamps", ->
       r = Ride.new

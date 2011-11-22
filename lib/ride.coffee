@@ -1,6 +1,7 @@
 __ = require "../vendor/underscore"
 log = require "logging"
 Place = require("place").Place
+City = require("place").City
 log.transports.console.level="debug"
 
 class Ride
@@ -40,8 +41,8 @@ Ride.new = (o) ->
     r.arr  = o.arr  || o.arrival  || o.ankunft
     r.dep  = o.dep  || o.depature || o.abfahrt
      
-    r.orig = r.orig.key if r.orig?.constructor == Place
-    r.dest = r.dest.key if r.dest?.constructor == Place
+    r.orig = r.orig.key if r.orig?.constructor == Place or r.orig?.constructor == City
+    r.dest = r.dest.key if r.dest?.constructor == Place or r.dest?.constructor == City
     r.arr  = r.arr.getTime() if r.arr?.constructor == Date
     r.dep  = r.dep.getTime() if r.dep?.constructor == Date
 

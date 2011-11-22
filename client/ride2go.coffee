@@ -72,7 +72,7 @@ initInputBox = (params = {region:"de",direction:"to",selector:"#from_input_field
 
 displayride = (ride) ->
   ride = JSON.parse(ride)
-  $("#ride").append $("<div>provider: #{ride.provider} <a target='_blank' href='#{ride.link}'>visit</a></div>")
+  $("#rides ul").append $("<li>provider: #{ride.provider} <a target='_blank' href='#{ride.id}'>visit</a></li>")
 
 inputdone = (d, item) ->
   console.log(d+" selected")
@@ -120,9 +120,6 @@ sendquery = ->
     #socket.emit "query", {origin:from, destination: to}
     payload = {origin:App.from.geoobject, destination:App.to.geoobject}
     App.socket.emit "query",payload
-
-displayRide = (ride) ->
-      $("#rides").append $("<div>provider: #{ride.provider} <a target='_blank' href='#{ride.link}'>visit</a></div>")
 
 $().ready ->
   setupsocket()

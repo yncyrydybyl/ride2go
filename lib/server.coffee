@@ -3,6 +3,7 @@ express = require 'express'
 sys = require 'sys'
 
 Ride = require 'ride'
+City = require('place').City
 RDS = require 'rds'
 log = require 'logging'
 
@@ -23,12 +24,16 @@ io.set('log level', 1)
 io.sockets.on 'connection', (socket) ->
   log.debug "socket connected"
   socket.on 'query', (query) ->
-    log.info "query received -> #{sys.inspect(query)}"
-    RDS.match new Ride(query), (matching_rides) ->
-      log.info "callback from RDS for ", matching_rides.length
-      log.debug "callback from RDS", matching_rides
-      for ride in matching_rides
-        socket.emit 'ride', ride
+    log.info "query received -> #{JSON.stringify(query)}"
+    unless query.origin
+      query.origin = new City("DE:Berlin:Berlin") # geocoding serverbased
+    City.find query.origin, (orig) ->
+      console.log "found a goal: #{orig.key} "
+      City.find query.destination, (dest) ->
+        console.log "found goal: #{orig.key} #{dest.key}"
+        RDS.match Ride.new(orig:orig,dest:dest), (matching_ride) ->
+          log.info "callback from RDS for #{matching_ride}"
+          socket.emit 'ride', matching_ride
 
 app.get "/", (req,res) ->
   res.render 'index',  { layout: false, locals: {

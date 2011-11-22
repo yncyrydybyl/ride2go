@@ -1,17 +1,18 @@
 nodeio = require 'node.io'
 log = require 'logging'
-
-
-url = (query) ->
+Place = require('place').Place
+Ride = require('ride')
+url = (ride) ->
+  console.log(ride)
   "http://www.mitfahrzentrale.de/suche.php?art=100&frmpost=1&
-STARTLAND=D&START=#{query.orig}&
-ZIELLAND=D&ZIEL=#{query.dest}&
-abdat=#{query.date || ''}"
+STARTLAND=D&START=#{escape(ride.origin().city())}&
+ZIELLAND=D&ZIEL=#{escape(ride.ziel().city())}&
+abdat=#{ride.date || ''}"
 
 module.exports.findRides = new nodeio.Job
   input: false
   run: ->
-    @getHtml url(@options), (err, $, data) =>
+    @getHtml url(Ride.new(@options)), (err, $, data) =>
       rides = []
       for tr in $('tr .tabbody')
         $('td', tr).each (td) -> 0
