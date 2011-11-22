@@ -15,6 +15,7 @@ module.exports = new nodeio.Job
       log.notice "alternative names import dump already exists.\n"
       importCountry COUNTRY, @emit
     catch error
+      log.error error
       log.notice "alternative names import dump does NOT exist.\n"
       start new NamesImport(), () => redis.save () =>
         fs.renameSync "dump.rdb", "redis/dumps/alts.rdb"

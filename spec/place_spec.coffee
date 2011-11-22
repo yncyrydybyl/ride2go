@@ -25,6 +25,12 @@ describe "\nClass 'Place':", ->
         asyncSpecDone()
       asyncSpecWait()
     
+    it "should find a city by key", ->
+      City.find "DE:Berlin:Berlin", (city) ->
+        expect(city.key).toBe("DE:Berlin:Berlin")
+        expect(city.constructor).toBe(City)
+        asyncSpecDone()
+    
     it "should find a state in a country", ->
       new Country("DE").states.find "Berlin", (state) ->
         expect(state.key).toBe("DE:Berlin")
