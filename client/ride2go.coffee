@@ -113,6 +113,7 @@ send = (msg) ->
     App.socket.emit "debug", msg 
 
 sendquery = ->
+    return unless App.from.geoobject and App.to.geoobject
     console.log("send query to server")
     #send App.from
     #send App.to.geoobject
