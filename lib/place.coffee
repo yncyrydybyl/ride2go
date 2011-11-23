@@ -41,8 +41,10 @@ Place.findByName = (name,subkey,callback) ->
     if exists == 1
       callback(@new(key))
     else
+      log.debug "#{name} is no primary key trying alternatives"
       redis.smembers "geoname:alt:"+name, (err, alts) =>
         alts = (a for a in alts when a.indexOf(subkey) == 0)
+        log.debug "the alterbatives are: #{alts}"
         if alts.length == 1
           callback(@new(alts[0]))
         else

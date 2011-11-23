@@ -28,11 +28,11 @@ io.sockets.on 'connection', (socket) ->
     unless query.origin
       query.origin = new City("DE:Berlin:Berlin") # geocoding serverbased
     City.find query.origin, (orig) ->
-      console.log "found a goal: #{orig.key} "
+      console.log "found orig: #{orig.key} "
       City.find query.destination, (dest) ->
-        console.log "found goal: #{orig.key} #{dest.key}"
+        console.log "found dest: #{dest.key}"
         RDS.match Ride.new(orig:orig,dest:dest), (matching_ride) ->
-          log.info "callback from RDS for #{matching_ride}"
+          #log.debug "callback from RDS for #{matching_ride}"
           socket.emit 'ride', matching_ride
 
 app.get "/", (req,res) ->
@@ -40,6 +40,9 @@ app.get "/", (req,res) ->
       from: req.params.from ? "rungestrasse berlin" ,
       to: req.params.to ? "hauptstrasse 42 panketal"
   }}
+
+app.get "/connectors/:name", (req, res) ->
+  res.send RDS.get_connector(req.params.name)
 
 app.get "/rides/:from/:to", (req, res) ->
   res.render 'index',  { layout: false, locals: {

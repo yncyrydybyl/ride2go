@@ -21,8 +21,8 @@ log  = require 'logging' # logs nice to a console for seeing whats going on
 
 class RiDeStore extends require('events').EventEmitter # pubsub style msges #
 
-  scraping: off # only local RiDeStore is queried if scraping is switched OFF
-
+  scraping: on # only local RiDeStore is queried if scraping is switched OFF
+  get_connector: (name) ->  JSON.stringify api[name].details
   redis: require('redis').createClient() # memory Ride Data structure Store #
 
   ## RDMS: Ride Data Matcher Scheduler is the core API of the RideDataStore #
@@ -45,12 +45,11 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
       callback ride for ride in rides
 
     # schedule jobs to go get find some matching RiDeS
-    for search in ['mitfahrzentrale'] # ToDo
-      log.info "RDS starts connector for " + search
-      io.start api[search], query, ((someerror, rides) =>
+    for job in ['mitfahrzentrale'] # ToDo
+      log.info "RDS starts connector for " + job
+      io.start api[job].findRides, query, ((someerror, rides) =>
         log.error someerror if someerror
         for ride in (Ride.new(r) for r in rides) # store the RiDeS to cache #
-          log.notice "beim rds ist  #{ride} anjekommen"
           @redis.hset route, ride.link(), ride.toJson(), (anothererror, isNew) =>
             log.error anothererror if anothererror
             @emit route, ride.toJson() if isNew # ie. fiRst time DiScovered #
