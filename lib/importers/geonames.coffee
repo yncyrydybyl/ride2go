@@ -27,7 +27,12 @@ importCountry = (country, done) ->
     log.error err if err
   start new AdminImport(), () =>
     start new CityImport(), () =>
-      done "all done now :-)."
+      importManualKeys(done)
+
+importManualKeys = (done) ->
+  redis.sadd "geoname:alt:Baden-Wurttemberg", "DE:Baden-Württemberg", (err, succ) =>
+    redis.hset "DE:Hessen:Frankfurt am Main", "mitfahrzentrale:id", "Frankfurt/ Main", (err, succ) =>
+      done("fertig.") # TODO find a better solution for manual keys https://www.pivotaltracker.com/story/show/21451669
 
 start = (job, callback) ->
   log.notice "starting "+job.description

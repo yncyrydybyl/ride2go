@@ -77,6 +77,19 @@ describe "\nClass 'Place':", ->
         asyncSpecDone()
       asyncSpecWait()
 
+    it "should find Baden-Wurttemberg (manual foreign key)", ->
+      new Country("DE").states.find "Baden-Wurttemberg", (state) ->
+        expect(state.key).toBe("DE:Baden-Württemberg")
+        asyncSpecDone()
+      asyncSpecWait()
+
+    it "should find Stuttgart", ->
+      new State("DE:Baden-Württemberg").cities.find "Stuttgart", (city) ->
+        expect(city.key).toBe("DE:Baden-Württemberg:Stuttgart")
+        asyncSpecDone()
+      asyncSpecWait()
+
+
     xit "should find by geoip geocoder objects", ->
       go = require("./fixtures/geoipobject")
       City.find go, (city) ->
