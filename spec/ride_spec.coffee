@@ -62,10 +62,10 @@ describe "\nClass 'Ride':", ->
       
   describe "json method", ->
     it "should serialise to a proper json string", ->
-      r = Ride.new(orig:"DE:RP:Mainz", dest:"DE:Berlin:Berlin")
+      r = Ride.new(orig:"DE:RP:Mainz", dest:"DE:Berlin:Berlin", dep: 959143320000, arr: 959157720000)
       json = r.toJson()
       json_template = ""
-      expect(r.toJson()).toBe('{"dest":"DE:Berlin:Berlin","orig":"DE:RP:Mainz"}')
+      expect(r.toJson()).toBe('{"dest":"DE:Berlin:Berlin","orig":"DE:RP:Mainz","arr":959157720000,"dep":959143320000}')
 
   describe "details", ->
     it "get and return details about a ride", ->

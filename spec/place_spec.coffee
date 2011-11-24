@@ -74,7 +74,6 @@ describe "\nClass 'Place':", ->
       new State("DE:Bayern").cities.find "Oachkatzleschwoafhausen", (city) ->
         console.log("--------->"+city)
         expect(city).toBe(undefined)
-
         asyncSpecDone()
       asyncSpecWait()
 

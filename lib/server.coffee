@@ -28,9 +28,9 @@ io.sockets.on 'connection', (socket) ->
     unless query.origin
       query.origin = new City("DE:Berlin:Berlin") # geocoding serverbased
     City.find query.origin, (orig) ->
-      console.log "found orig: #{orig.key} "
+      log.info "found orig: #{orig.key} "
       City.find query.destination, (dest) ->
-        console.log "found dest: #{dest.key}"
+        log.info "found dest: #{dest.key}"
         RDS.match Ride.new(orig:orig,dest:dest), (matching_ride) ->
           #log.debug "callback from RDS for #{matching_ride}"
           socket.emit 'ride', matching_ride
