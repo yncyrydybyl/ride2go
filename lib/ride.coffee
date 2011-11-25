@@ -20,7 +20,7 @@ class Ride
   departure: -> new Date(@dep)
   arrival: -> new Date(@arr)
  
-  link: -> "http://www.#{@provider}/#{@id}"
+  link: -> "#{@id}"
   image: -> "http://ride2go.com/images/providers/#{@provider}.png"
 
   displayPrice: -> "#{@price.toFixed(2)} #{@currency}"

@@ -74,7 +74,7 @@ describe "\nClass 'Ride':", ->
         dest: "DE:Berlin:Berlin"
         provider: "deinbus.de"
         mode: "bus"
-        id: "checkout/cart/add/product/2100"
+        id: "http://www.deinbus.de/checkout/cart/add/product/2100"
         price: 14
         currency: "€" # default is bitcoin
       expect(r.link()).toBe("http://www.deinbus.de/checkout/cart/add/product/2100")
