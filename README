@@ -84,3 +84,4 @@ jasmine-node --coffee --verbose -m geoname_import_ spec
 roadmap
 -------
 we using pivotaltracker at https://www.pivotaltracker.com/projects/130935 for our planing.
+use [fixes #storyid] in commit messages
