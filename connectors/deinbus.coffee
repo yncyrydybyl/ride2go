@@ -1,7 +1,7 @@
 redis = require('redis').createClient()
 nodeio = require 'node.io'
+Ride = require 'ride'
 log = require 'logging'
-
 
 regexx = ///
         Ab\s(\w{2},\s\d{2}\.\d{2}\.\d{4})
@@ -15,21 +15,20 @@ regexx = ///
 regex = ///
         Ab:\s(.+)Uhr\n    # Ab: Sonntag, 16. Okt 2011 15:30 Uhr
         An:\s(.+)Uhr      # An: Freitag, 14. Okt 2011 22:30 Uhr
-        (?:Preis:)?(\d+,\d+\s€)           # Preis:15,50 €
+        (?:.*Preis:)?(\d+,\d+\s€)         # ReguläPreis:15,50 €
         (?:Sonderpreis:(\d+,\d+\s€))?     # Sonderpreis:14,00 €
         ///
 
-module.exports.findRides = nodeio.Job
+module.exports.findRides = new nodeio.Job
   input: (i, j, run) ->
     return false unless i == 0 # only run once
-    redis.multi([
-      ['HGET', @options.orig, 'deinbus:orig'],
-      ['HGET', @options.dest, 'deinbus:dest']]
-    ).exec (err, ids) =>
-      run ["http://www.deinbus.de/fs/result/?"+
-        "bus_von=#{ids[0]}&"+
-        "bus_nach=#{ids[1]}&"+
-        "passengers=1"]
+    ride = Ride.new(@options)
+    ride.origin().foreignKeyOrCity "deinbus:orig", (orig) =>
+      ride.destination().foreignKeyOrCity "deinbus:dest", (dest) =>
+        run ["http://www.deinbus.de/fs/result/?"+
+          "bus_von=#{orig}&"+
+          "bus_nach=#{dest}&"+
+          "passengers=1"]
   run: (url) ->
     rides = []
     log.notice url
@@ -45,7 +44,7 @@ module.exports.findRides = nodeio.Job
             st_price: r[3]
             sp_price: r[4]
         else
-          log.error "Regex did NOT match!"
+          log.error "Regex did NOT match! "+tr.fulltext
       
       i = 0
       $('#product-serach-list tbody tr').even (tr) ->

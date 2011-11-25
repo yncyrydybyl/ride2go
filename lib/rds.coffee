@@ -45,7 +45,7 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
       callback ride for ride in rides
 
     # schedule jobs to go get find some matching RiDeS
-    for job in ['mitfahrzentrale'] # ToDo
+    for job in ['mitfahrzentrale', 'deinbus'] # ToDo
       log.info "RDS starts connector for " + job
       io.start api[job].findRides, query, ((someerror, rides) =>
         log.error someerror if someerror

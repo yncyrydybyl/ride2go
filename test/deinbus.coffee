@@ -6,7 +6,7 @@ exports['test sth'] = () ->
   query =
     orig: "DE:Nordrhein-Westfalen:Köln"
     dest: "DE:Hessen:Frankfurt am Main"
-  nodeio.start connectors.deinbus, query, ((err, rides) ->
+  nodeio.start connectors.deinbus.findRides, query, ((err, rides) ->
     console.log rides
   ), true
 

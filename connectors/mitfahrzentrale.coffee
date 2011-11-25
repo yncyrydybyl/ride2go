@@ -15,6 +15,8 @@ module.exports.details =
   seats: "1" # free seats
   driver: ""
   telefon: ""
+  #specifics
+  prefix: "mitfahrzentrale:id"
 
 make_date = (date) ->
   d = new Date(date)
@@ -26,9 +28,18 @@ ZIELLAND=D&ZIEL=#{escape(ride.ziel().city())}&
 abdat=#{make_date(ride.departure()) || ''}"
 
 module.exports.findRides = new nodeio.Job
-  input: false
-  run: ->
-    url = make_url(Ride.new(@options))
+  input: (i, j, run) ->
+    return false unless i == 0 # only run once
+    ride = Ride.new(@options)
+    ride.origin().foreignKeyOrCity "mitfahrzentrale:id", (orig) =>
+      ride.destination().foreignKeyOrCity "mitfahrzentrale:id", (dest) =>
+        url = "http://www.mitfahrzentrale.de/suche.php?art=100&frmpost=1&
+STARTLAND=D&START=#{escape(orig)}&
+ZIELLAND=D&ZIEL=#{escape(dest)}&
+abdat=#{make_date(ride.departure()) || ''}"
+        run [url]
+
+  run: (url) ->
     log.notice url
     @getHtml url, (err, $, data) =>
       rides = []
