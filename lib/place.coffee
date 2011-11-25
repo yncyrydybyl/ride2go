@@ -15,7 +15,6 @@ class Place
     JSON.stringify @
   
   country: -> @key.substring(0,2)
-
   city: ->
     if c = @key.match(/^\w{2}:[^:]*:([^:]*).*/)
       return c[1]
@@ -23,6 +22,15 @@ class Place
       log.debug("city not found")
       return undefined
 
+  foreignKeyOrCity: (namespace_prefix, done) ->
+    redis.hget @key, namespace_prefix, (err,foreign_key) =>
+      if foreign_key == null
+        log.debug "no #{namespace_prefix} foreign key for #{@key}"
+        done @city()
+      else
+        log.debug "found #{foreign_key} foreign key for #{@key}"
+        done foreign_key
+    
 Place.find = (egal, callback) ->
   if __.isString(egal)
     #log.debug "find parameter is a string"
