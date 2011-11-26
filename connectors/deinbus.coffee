@@ -2,6 +2,24 @@ redis = require('redis').createClient()
 nodeio = require 'node.io'
 Ride = require 'ride'
 log = require 'logging'
+Place = require('place').Place
+
+module.exports.details = details =
+  mode: "bus"
+  name: "deinbus.de" # uniq primary key
+  source: "http://deinbus.de"
+  author: ["flo","t"]
+  icon: "deinbus.de.png"
+  update_frequenz: "10" # in minutes
+  expires: ""
+  #defaults
+  price: "0"
+  seats: "1" # free seats
+  driver: ""
+  telefon: ""
+  #specifics
+  prefix: "mitfahrzentrale:id"
+
 
 regexx = ///
         Ab\s(\w{2},\s\d{2}\.\d{2}\.\d{4})
@@ -32,6 +50,9 @@ module.exports.findRides = new nodeio.Job
   run: (url) ->
     rides = []
     log.notice url
+    dest = Place.new(@options.dest).city()
+    orig = Place.new(@options.orig).city()
+    log.notice "orig: #{orig} dest: #{dest}"
     @getHtml url, (err, $, data) =>
       #jq = require("jquery")
       
@@ -43,6 +64,9 @@ module.exports.findRides = new nodeio.Job
             dep_time: r[2]
             st_price: r[3]
             sp_price: r[4]
+            orig: orig
+            dest: dest
+            provider: details.name
         else
           log.error "Regex did NOT match! "+tr.fulltext
       

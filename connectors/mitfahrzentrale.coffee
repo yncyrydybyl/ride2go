@@ -2,7 +2,7 @@ nodeio = require 'node.io'
 log = require 'logging'
 Place = require('place').Place
 Ride = require('ride')
-module.exports.details =
+module.exports.details = details =
   mode: "rideshare"
   name: "mitfahrzentrale.de" # uniq primary key
   source: "http://mitfahrzentrale.de"
