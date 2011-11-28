@@ -124,6 +124,26 @@ describe "\nClass 'Place':", ->
       asyncSpecWait()
 
   
+  describe "find out about the characteristics of a place", ->
+    it "city should know that is a city", ->
+      c = new City("DE:Hessen:Frankfurt am Main")
+      expect(c.isCity()).toBe(true)
+      expect(c.isCountry()).toBe(false)
+      expect(c.isState()).toBe(false)
+
+    it "state should know that is a state", ->
+      s = new State("DE:Hessen")
+      expect(s.isState()).toBe(true)
+      expect(s.isCity()).toBe(false)
+      expect(s.isCountry()).toBe(false)
+    
+    it "country should know that is a country", ->
+      c = new Country("DE")
+      expect(c.isCountry()).toBe(true)
+      expect(c.isCity()).toBe(false)
+      expect(c.isState()).toBe(false)
+
+
     it "should be the last test ", ->
       last_test = true
 
