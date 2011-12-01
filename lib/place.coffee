@@ -21,6 +21,19 @@ class Place
     else
       log.debug("city not found")
       return undefined
+  
+  seperators: ->
+    if s = @key.match(/:/g)
+      return s.length
+    else
+      return 0
+  
+  isCountry: ->
+    return @seperators() == 0
+  isState: ->
+    return @seperators() == 1
+  isCity: ->
+    return @seperators() == 2
 
   foreignKeyOrCity: (namespace_prefix, done) ->
     redis.hget @key, namespace_prefix, (err,foreign_key) =>
