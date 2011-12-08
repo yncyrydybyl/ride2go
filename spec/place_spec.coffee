@@ -143,6 +143,13 @@ describe "\nClass 'Place':", ->
       expect(c.isCity()).toBe(false)
       expect(c.isState()).toBe(false)
 
+  describe "object instance methods", ->
+
+    it "should have a convenience getter for state", ->
+      p = new City("DE:Bayern:München")
+      expect(p.state().key).toBe "DE:Bayern"
+      p = new City("DE:Bayern")
+      expect(p.state().key).toBe "DE:Bayern"
 
     it "should be the last test ", ->
       last_test = true

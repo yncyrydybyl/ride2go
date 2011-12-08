@@ -15,13 +15,21 @@ class Place
     JSON.stringify @
   
   country: -> @key.substring(0,2)
+  
   city: ->
-    if c = @key.match(/^\w{2}:[^:]*:([^:]*).*/)
+    if c = @key.match(/^\w{2}:[^:]+:([^:]*).*/)
       return c[1]
     else
       log.debug("city not found")
       return undefined
   
+  state: ->
+    if c = @key.match(/(^\w{2}:[^:]+).*/)
+      return new State(c[1])
+    else
+      log.debug("city not found")
+      return undefined
+
   seperators: ->
     if s = @key.match(/:/g)
       return s.length
