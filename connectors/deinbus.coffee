@@ -67,8 +67,10 @@ module.exports.findRides = new nodeio.Job
               provider: details.name
           else
             log.error "Regex did NOT match! "+tr.fulltext
+        i = 0
         $('#product-serach-list tbody tr').even (tr) ->
           rides[i].link = $('div.divbuchungsbtn a', tr).attribs.href
+          i += 1
       @emit rides
   
   reduce: (rides) ->

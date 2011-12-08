@@ -16,8 +16,8 @@ Ride = require 'ride'
 
 exports['test foreign key'] = () ->
   query = Ride.new
-    orig: "DE:Hessen:Frankfurt am Main"
-    dest: "DE:Berlin:Berlin"
+    orig: "DE:Bayern:München"
+    dest: "DE:Nordrhein-Westfalen:Köln"
   nodeio.start connectors.mitfahrzentrale.findRides, query, ((err, rides) ->
     console.log rides
   ), true
