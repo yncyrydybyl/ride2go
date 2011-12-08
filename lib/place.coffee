@@ -71,20 +71,36 @@ Place.findByName = (name,subkey,callback) ->
       log.debug "#{key} is a primary key."
       callback(@new(key))
     else
-      log.debug "#{key} is NO primary key. trying alternatives"
-      redis.smembers "geoname:alt:"+name, (err, alts) =>
-        alts = (a for a in alts when a.indexOf(subkey) == 0)
-        if alts.length == 1
-          log.debug "found geoname:alt:#{name} mapping to #{alts[0]}"
-          callback(@new(alts[0]))
-        else if alts.length > 1
-          log.debug "found more than one primary key for geoname:alt:#{name}"
-          # TODO more determination of the place by coords or zip code
-          log.debug "NOT handled yet: #{alts}"
-          callback undefined
-        else # alts.length == 0
-          log.debug "no alternative name for geoname:alt:#{name}"
-          callback undefined
+      log.debug "#{key} is NO primary key."
+      if (i = name.indexOf("�")) != -1
+        log.debug "#{name} contains enc�ding �rrors!!"
+        name = name.substr(0,i)+"*"+name.substr(i+1,name.length)
+        log.debug "trying #{name} with wildcard"
+        redis.keys subkey+":"+name, (err, matches) =>
+          if matches.length == 1
+            log.debug "found #{matches[0]}"
+            callback(@new(matches[0]))
+          else if matches.length > 1
+            log.debug "found more primary keys matching #{subkey}:#{name}"
+            @chooseByStrategy(matches, callback)
+          else # alts.length == 0
+            log.debug "no matches found for #{subkey}:#{name}"
+            callback undefined
+      else
+        log.debug "trying alternatives"
+        redis.smembers "geoname:alt:"+name, (err, alts) =>
+          alts = (a for a in alts when a.indexOf(subkey) == 0)
+          if alts.length == 1
+            log.debug "found geoname:alt:#{name} mapping to #{alts[0]}"
+            callback(@new(alts[0]))
+          else if alts.length > 1
+            log.debug "found more primary keys for geoname:alt:#{name}"
+            # TODO more determination of the place by coords or zip code
+            log.debug "NOT handled yet: #{alts}"
+            callback undefined
+          else # alts.length == 0
+            log.debug "no alternative name for geoname:alt:#{name}"
+            callback undefined
 
 Place.findByKeyPattern = (pattern,callback) ->
   log.debug "trying key pattern "+pattern
@@ -117,7 +133,6 @@ Place.chooseByStrategy = (keys,callback, strategy = "population") ->
           max = p
           idx = i
         i += 1
-        log.debug "max: "+max+" "+keys[idx]
       @find(keys[idx],callback)
 
 #Place.findByCityAndCountry city, country, callback

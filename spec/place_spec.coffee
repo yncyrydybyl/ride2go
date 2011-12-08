@@ -58,6 +58,18 @@ describe "\nClass 'Place':", ->
         asyncSpecDone()
       asyncSpecWait()
 
+    it "should find a city in a state with enc�ding �rrors in its name", ->
+      new State("DE:Berlin").cities.find "B�rlin", (city) ->
+        expect(city.key).toBe("DE:Berlin:Berlin")
+        asyncSpecDone()
+      asyncSpecWait()
+
+    it "should pick by population if more cities match the enc�ding �rror", ->
+      new State("DE:Bayern").cities.find "N�rnberg", (city) ->
+        expect(city.key).toBe("DE:Bayern:Nürnberg")
+        asyncSpecDone()
+      asyncSpecWait()
+
     it "should find a city in a state by alternative name", ->
       new State("DE:Rheinland-Pfalz").cities.find "Mayence", (city) ->
         expect(city.key).toBe("DE:Rheinland-Pfalz:Mainz")
