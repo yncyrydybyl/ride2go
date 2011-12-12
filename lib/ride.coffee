@@ -1,6 +1,7 @@
 __ = require "../vendor/underscore"
 log = require "logging"
 Place = require("place").Place
+City = require("place").City
 log.transports.console.level="debug"
 
 class Ride
@@ -19,7 +20,7 @@ class Ride
   departure: -> new Date(@dep)
   arrival: -> new Date(@arr)
  
-  link: -> "http://www.#{@provider}/#{@id}"
+  link: -> "#{@id}"
   image: -> "http://ride2go.com/images/providers/#{@provider}.png"
 
   displayPrice: -> "#{@price.toFixed(2)} #{@currency}"
@@ -37,11 +38,11 @@ Ride.new = (o) ->
 
     r.dest = o.dest || o.to       || o.destination  || o.target || o.ziel
     r.orig = o.from || o.orig     || o.origin       || o.start || o.source
-    r.arr  = o.arr  || o.arrival  || o.ankunft
-    r.dep  = o.dep  || o.depature || o.abfahrt
+    r.arr  = o.arr  || o.arrival  || o.ankunft || Date.now()
+    r.dep  = o.dep  || o.depature || o.abfahrt || o.dep_date || Date.now()
      
-    r.orig = r.orig.key if r.orig?.constructor == Place
-    r.dest = r.dest.key if r.dest?.constructor == Place
+    r.orig = r.orig.key if r.orig?.constructor == Place or r.orig?.constructor == City
+    r.dest = r.dest.key if r.dest?.constructor == Place or r.dest?.constructor == City
     r.arr  = r.arr.getTime() if r.arr?.constructor == Date
     r.dep  = r.dep.getTime() if r.dep?.constructor == Date
 

@@ -13,11 +13,15 @@ log = new winston.Logger
   levels: winston.config.syslog.levels
   transports: [
     new winston.transports.Console
-      level: "notice" 
+      level: "notice"
       colorize: on
     new winston.transports.File
-       level: "error"
-       filename: 'logs/error.log'
-       colorize: on
+      level: "error"
+      filename: 'logs/error.log'
+      colorize: on
+    new winston.transports.File
+      level: "info"
+      colorize: off
+      filename: 'logs/server.log'
   ]
 module.exports = log

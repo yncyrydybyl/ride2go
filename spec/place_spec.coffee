@@ -25,6 +25,13 @@ describe "\nClass 'Place':", ->
         asyncSpecDone()
       asyncSpecWait()
     
+    it "should find a city by key", ->
+      City.find "DE:Berlin:Berlin", (city) ->
+        expect(city.key).toBe("DE:Berlin:Berlin")
+        expect(city.constructor).toBe(City)
+        asyncSpecDone()
+ 
+    
     it "should find a state in a country", ->
       new Country("DE").states.find "Berlin", (state) ->
         expect(state.key).toBe("DE:Berlin")
@@ -68,14 +75,42 @@ describe "\nClass 'Place':", ->
       new State("DE:Bayern").cities.find "Oachkatzleschwoafhausen", (city) ->
         console.log("--------->"+city)
         expect(city).toBe(undefined)
-
         asyncSpecDone()
       asyncSpecWait()
+
+    it "should find Baden-Wurttemberg (manual foreign key)", ->
+      new Country("DE").states.find "Baden-Wurttemberg", (state) ->
+        expect(state.key).toBe("DE:Baden-Württemberg")
+        asyncSpecDone()
+      asyncSpecWait()
+
+    it "should find Stuttgart", ->
+      new State("DE:Baden-Württemberg").cities.find "Stuttgart", (city) ->
+        expect(city.key).toBe("DE:Baden-Württemberg:Stuttgart")
+        asyncSpecDone()
+      asyncSpecWait()
+
 
     xit "should find by geoip geocoder objects", ->
       go = require("./fixtures/geoipobject")
       City.find go, (city) ->
         expect(city.key).toBe("DE:Berlin:Berlin")
+        asyncSpecDone()
+      asyncSpecWait()
+
+
+
+    it "should return foreign key for a city", ->
+      c = new City("DE:Hessen:Frankfurt am Main")
+      c.foreignKeyOrCity "mitfahrzentrale:id", (fkoc) ->
+        expect(fkoc).toBe("Frankfurt/ Main")
+        asyncSpecDone()
+      asyncSpecWait()
+    
+    it "should return city if foreign key does not exists", ->
+      c = new City("DE:Hessen:Frankfurt am Main")
+      c.foreignKeyOrCity "nonexistent:id", (fkoc) ->
+        expect(fkoc).toBe("Frankfurt am Main")
         asyncSpecDone()
       asyncSpecWait()
 
@@ -89,6 +124,33 @@ describe "\nClass 'Place':", ->
       asyncSpecWait()
 
   
+  describe "find out about the characteristics of a place", ->
+    it "city should know that is a city", ->
+      c = new City("DE:Hessen:Frankfurt am Main")
+      expect(c.isCity()).toBe(true)
+      expect(c.isCountry()).toBe(false)
+      expect(c.isState()).toBe(false)
+
+    it "state should know that is a state", ->
+      s = new State("DE:Hessen")
+      expect(s.isState()).toBe(true)
+      expect(s.isCity()).toBe(false)
+      expect(s.isCountry()).toBe(false)
+    
+    it "country should know that is a country", ->
+      c = new Country("DE")
+      expect(c.isCountry()).toBe(true)
+      expect(c.isCity()).toBe(false)
+      expect(c.isState()).toBe(false)
+
+  describe "object instance methods", ->
+
+    it "should have a convenience getter for state", ->
+      p = new City("DE:Bayern:München")
+      expect(p.state().key).toBe "DE:Bayern"
+      p = new City("DE:Bayern")
+      expect(p.state().key).toBe "DE:Bayern"
+
     it "should be the last test ", ->
       last_test = true
 

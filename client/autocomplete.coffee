@@ -5,7 +5,6 @@ $.widget "ui.geo_autocomplete",
     @element.autocomplete @options
     @element.data("autocomplete")._renderItem = (_ul, _item) ->
       $("<li></li>").data("item.autocomplete", _item).append(@options.getItemHTML(_item)).appendTo _ul
-  
   options:
     geocoder_region: ""
     geocoder_types: "locality,political,sublocality,neighborhood,country"
@@ -39,20 +38,19 @@ $.widget "ui.geo_autocomplete",
                     unless _part.toLowerCase().indexOf(_request.term.toLowerCase()) == -1
                       _place = $.trim(_part)
                       false
-                _parsed.push 
+                _parsed.push
                   value: _place
                   label: _result.formatted_address
                   viewport: _result.geometry.viewport
                   geoobject: _result
+                  options: self.options
           self.options._cache[_request.term] = _parsed
           _response _parsed
+
     focus: (event, ui)  ->
-      mapheight = 120
-      mapwidth = 120
-      maptype = "terrain"
-      mapsensor = false
-      $("#to img").attr("src", "http://maps.google.com/maps/api/staticmap?visible=" + ui.item.viewport.getSouthWest().toUrlValue() + "|" + ui.item.viewport.getNorthEast().toUrlValue() + "&size=" + mapwidth + "x" + mapheight + "&maptype=" + maptype + "&sensor=" + (if mapsensor then "true" else "false"))
-      console.log($("#to img"))
+      #console.log(ui.item.options)
+      options = ui.item.options
+      $("#"+options.params.direction+"_panel img").attr("src", "http://maps.google.com/maps/api/staticmap?visible=" + ui.item.viewport.getSouthWest().toUrlValue() + "|" + ui.item.viewport.getNorthEast().toUrlValue() + "&size=" + options.mapwidth + "x" + options.mapheight + "&maptype=" + options.maptype + "&sensor=" + (if options.mapsensor then "true" else "false"))
     getItemHTML: (_item) ->
       _src = "http://maps.google.com/maps/api/staticmap?visible=" + _item.viewport.getSouthWest().toUrlValue() + "|" + _item.viewport.getNorthEast().toUrlValue() + "&size=" + @mapwidth + "x" + @mapheight + "&maptype=" + @maptype + "&sensor=" + (if @mapsensor then "true" else "false")
       "<a>" + _item.label + "<br clear=\"both\" /></a>"

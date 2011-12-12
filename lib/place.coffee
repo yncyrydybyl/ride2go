@@ -15,21 +15,50 @@ class Place
     JSON.stringify @
   
   country: -> @key.substring(0,2)
-
+  
   city: ->
-    if c = @key.match(/^\w{2}:[^:]*:([^:]*).*/)
+    if c = @key.match(/^\w{2}:[^:]+:([^:]*).*/)
       return c[1]
     else
       log.debug("city not found")
       return undefined
+  
+  state: ->
+    if c = @key.match(/(^\w{2}:[^:]+).*/)
+      return new State(c[1])
+    else
+      log.debug("city not found")
+      return undefined
 
+  seperators: ->
+    if s = @key.match(/:/g)
+      return s.length
+    else
+      return 0
+  
+  isCountry: ->
+    return @seperators() == 0
+  isState: ->
+    return @seperators() == 1
+  isCity: ->
+    return @seperators() == 2
+
+  foreignKeyOrCity: (namespace_prefix, done) ->
+    redis.hget @key, namespace_prefix, (err,foreign_key) =>
+      if foreign_key == null
+        log.debug "no #{namespace_prefix} foreign key for #{@key}"
+        done @city()
+      else
+        log.debug "found #{foreign_key} foreign key for #{@key}"
+        done foreign_key
+    
 Place.find = (egal, callback) ->
   if __.isString(egal)
-    log.debug "find parameter is a string"
+    #log.debug "find parameter is a string"
     @findByKeyPattern egal, callback
 
   else if __.isObject(egal)
-    log.debug "find parameter is an object"
+    #log.debug "find parameter is an object"
     if egal.city and egal.country
       @findByKeyPattern "#{egal.country}:*:#{egal.city}", callback
 
@@ -39,23 +68,32 @@ Place.find = (egal, callback) ->
 Place.findByName = (name,subkey,callback) ->
   redis.exists (key = subkey+":"+name), (err, exists) =>
     if exists == 1
+      log.debug "#{key} is a primary key."
       callback(@new(key))
     else
+      log.debug "#{key} is NO primary key. trying alternatives"
       redis.smembers "geoname:alt:"+name, (err, alts) =>
         alts = (a for a in alts when a.indexOf(subkey) == 0)
         if alts.length == 1
+          log.debug "found geoname:alt:#{name} mapping to #{alts[0]}"
           callback(@new(alts[0]))
-        else
+        else if alts.length > 1
+          log.debug "found more than one primary key for geoname:alt:#{name}"
           # TODO more determination of the place by coords or zip code
+          log.debug "NOT handled yet: #{alts}"
+          callback undefined
+        else # alts.length == 0
+          log.debug "no alternative name for geoname:alt:#{name}"
           callback undefined
 
 Place.findByKeyPattern = (pattern,callback) ->
+  log.debug "trying key pattern "+pattern
   redis.keys pattern, (err, keys) =>
     if keys.length == 0
-      log.debug "no key found for "+pattern
+      log.debug ".. no key."
       callback undefined
     else if keys.length == 1
-      log.debug "exacly 1 key"
+      log.debug "..exactly 1 key."
       redis.exists keys[0], (err, exists) =>
         if exists == 1
           callback(@new(keys[0]))
@@ -97,8 +135,11 @@ Place.fromGoogleGeocoder = (obj, callback) ->
     gcity = component.long_name if __.include(component.types, cityterm)
     gstate = component.long_name if __.include(component.types, stateterm)
   Country.find (gcountry), (country) ->
+    log.debug "found country #{country.key}"
     country.states.find gstate, (state) ->
+      log.debug "found state #{state.key}"
       state.cities.find gcity, (city) ->
+        log.debug "found city #{city.key}"
         callback city
 
 class Country extends Place

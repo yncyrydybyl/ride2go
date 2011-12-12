@@ -1,5 +1,6 @@
 Ride = require('ride')
 Place = require('place').Place
+City = require('place').City
 
 describe "\nClass 'Ride':", ->
 
@@ -17,12 +18,13 @@ describe "\nClass 'Ride':", ->
 
       expect(r.origin().city()).toBe("Mainz")
 
-    it "should accept Place objects", ->
+    it "should accept different Place objects", ->
       r = Ride.new
         orig: new Place("DE:RP:Mainz"),
-        dest: new Place("DE:Berlin:Berlin")
+        dest: new City("DE:Berlin:Berlin")
       expect(r.origin().constructor).toBe(Place)
       expect(r.origin().city()).toBe("Mainz")
+      expect(r.dest).toBe("DE:Berlin:Berlin")
  
     it  "should accept timestamps", ->
       r = Ride.new
@@ -60,10 +62,10 @@ describe "\nClass 'Ride':", ->
       
   describe "json method", ->
     it "should serialise to a proper json string", ->
-      r = Ride.new(orig:"DE:RP:Mainz", dest:"DE:Berlin:Berlin")
+      r = Ride.new(orig:"DE:RP:Mainz", dest:"DE:Berlin:Berlin", dep: 959143320000, arr: 959157720000)
       json = r.toJson()
       json_template = ""
-      expect(r.toJson()).toBe('{"dest":"DE:Berlin:Berlin","orig":"DE:RP:Mainz"}')
+      expect(r.toJson()).toBe('{"dest":"DE:Berlin:Berlin","orig":"DE:RP:Mainz","arr":959157720000,"dep":959143320000}')
 
   describe "details", ->
     it "get and return details about a ride", ->
@@ -72,7 +74,7 @@ describe "\nClass 'Ride':", ->
         dest: "DE:Berlin:Berlin"
         provider: "deinbus.de"
         mode: "bus"
-        id: "checkout/cart/add/product/2100"
+        id: "http://www.deinbus.de/checkout/cart/add/product/2100"
         price: 14
         currency: "€" # default is bitcoin
       expect(r.link()).toBe("http://www.deinbus.de/checkout/cart/add/product/2100")
