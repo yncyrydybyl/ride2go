@@ -1,7 +1,7 @@
 redis = require('redis').createClient()
 nodeio = require 'node.io'
-Ride = require 'ride'
 log = require 'logging'
+Ride = require 'ride'
 
 regexx = ///
         Ab\s(\w{2},\s\d{2}\.\d{2}\.\d{4})
@@ -34,26 +34,28 @@ module.exports.findRides = new nodeio.Job
     log.notice url
     @getHtml url, (err, $, data) =>
       #jq = require("jquery")
-      
-      $('#product-serach-list tbody tr').odd (tr) ->
+      try
+        $('#product-serach-list tbody tr').odd (tr) ->
 
-        if (r = tr.fulltext.match regex)
-          rides.push
-            dep_date: r[1]
-            dep_time: r[2]
-            st_price: r[3]
-            sp_price: r[4]
-        else
-          log.error "Regex did NOT match! "+tr.fulltext
-      
-      i = 0
-      $('#product-serach-list tbody tr').even (tr) ->
-        try
+          if (r = tr.fulltext.match regex)
+            rides.push
+              dep_date: r[1]
+              dep_time: r[2]
+              st_price: r[3]
+              sp_price: r[4]
+          else
+            log.error "Regex did NOT match! "+tr.fulltext
+        
+        i = 0
+        $('#product-serach-list tbody tr').even (tr) ->
           rides[i].link = $('div.divbuchungsbtn a', tr).attribs.href
           console.log rides[i].link
           i += 1
-      
-        #else log.debug "NOT matched!!! "+tr.fulltext
+        
+          #else log.debug "NOT matched!!! "+tr.fulltext
+      catch e
+        log.error "connector: deinbus failed " + e
+
       @emit rides
 
 
