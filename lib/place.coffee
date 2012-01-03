@@ -15,13 +15,21 @@ class Place
     JSON.stringify @
   
   country: -> @key.substring(0,2)
+  
   city: ->
-    if c = @key.match(/^\w{2}:[^:]*:([^:]*).*/)
+    if c = @key.match(/^\w{2}:[^:]+:([^:]*).*/)
       return c[1]
     else
       log.debug("city not found")
       return undefined
   
+  state: ->
+    if c = @key.match(/(^\w{2}:[^:]+).*/)
+      return new State(c[1])
+    else
+      log.debug("city not found")
+      return undefined
+
   seperators: ->
     if s = @key.match(/:/g)
       return s.length
@@ -59,14 +67,11 @@ Place.find = (egal, callback) ->
 
 Place.findByName = (name,subkey,callback) ->
   redis.exists (key = subkey+":"+name), (err, exists) =>
-    console.log(exists)
-    console.log(err)
-    console.log("key")
-    console.log(key)
     if exists == 1
+      log.debug "#{key} is a primary key."
       callback(@new(key))
     else
-      log.debug "#{key} is no primary key. trying alternatives"
+      log.debug "#{key} is NO primary key. trying alternatives"
       redis.smembers "geoname:alt:"+name, (err, alts) =>
         alts = (a for a in alts when a.indexOf(subkey) == 0)
         if alts.length == 1
@@ -85,10 +90,10 @@ Place.findByKeyPattern = (pattern,callback) ->
   log.debug "trying key pattern "+pattern
   redis.keys pattern, (err, keys) =>
     if keys.length == 0
-      log.debug "no key found."
+      log.debug ".. no key."
       callback undefined
     else if keys.length == 1
-      log.debug "found exactly 1 key"
+      log.debug "..exactly 1 key."
       redis.exists keys[0], (err, exists) =>
         if exists == 1
           callback(@new(keys[0]))
