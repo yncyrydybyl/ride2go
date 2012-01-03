@@ -4,13 +4,18 @@ City = require('place').City
 
 describe "\nClass 'Ride':", ->
 
+  last_test = false
+  redizz = require('r2gredis')
+  afterEach ->
+    if last_test
+      redizz.kill()
   describe "'constructor'", ->
     # we use lightweight objects
     # we have:
     #     orig and dest as strings of the primary place keys
     #     arr and dep as number of the unix time stamp
     # various convenience methods provide objects of Place and Date
-     
+
     it "should accept Place key strings", ->
       r = Ride.new(orig:"DE:RP:Mainz")
       expect(r.origin().constructor).toBe(Place)
@@ -82,6 +87,9 @@ describe "\nClass 'Ride':", ->
       expect(r.displayPrice()).toBe("14.00 €")
       expect(r.mode).toBe("bus")
       expect(r.toGo).toBe("ready to go :-)")
+
+    it "should be the last test", ->
+      last_test = true
 #
 #  xdescribe "expiration logic ... part of RDS?", ->
 #
