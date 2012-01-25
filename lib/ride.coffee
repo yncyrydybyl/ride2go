@@ -2,7 +2,7 @@ __ = require "../vendor/underscore"
 log = require "logging"
 Place = require("place").Place
 City = require("place").City
-log.transports.console.level="debug"
+#log.transports.console.level="debug"
 
 class Ride
   # convenience getters
