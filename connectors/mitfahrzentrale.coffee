@@ -54,14 +54,16 @@ abdat=#{make_date(query.departure()) || ''}"
           orig: row[2].text
           dest: row[3].text
           link: "http://www.mitfahrzentrale.de"+$('a', row[5]).attribs.href
+          provider: "#{details.name}"
       i = 0
-      for ride in rides
-        query.origin().state().cities.find ride.orig, (orig) =>
-          query.destination().state().cities.find ride.dest, (dest) =>
-            rides[i].orig = orig.key
-            rides[i].dest = dest.key
-            i += 1
-            if i == rides.length
-              log.notice "mitfahrzentrale found "+rides.length+" rides"
-              @emit rides
-
+      @emit rides
+#      for ride in rides
+#        query.origin().state().cities.find ride.orig, (orig) =>
+#          query.destination().state().cities.find ride.dest, (dest) =>
+#            rides[i].orig = orig.key
+#            rides[i].dest = dest.key
+#            i += 1
+#            if i == rides.length
+#              log.notice "mitfahrzentrale found "+rides.length+" rides"
+#              @emit rides
+#
