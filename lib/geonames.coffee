@@ -1,5 +1,5 @@
 log = require("../lib/logging")
-log.transports.console.level = "debug"
+#log.transports.console.level = "debug"
 
 geoname_place = "geonames:place"
 

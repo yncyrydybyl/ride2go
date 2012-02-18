@@ -1,7 +1,7 @@
 __ = require "../vendor/underscore"
 redis = require("r2gredis").keymap()
 log = require("logging")
-log.transports.console.level="debug"
+#log.transports.console.level="debug"
 
 #Place = ->
 #Place.prototype =
@@ -60,7 +60,7 @@ Place.find = (egal, callback) ->
   else if __.isObject(egal)
     #log.debug "find parameter is an object"
     if egal.city and egal.country
-      @findByKeyPattern "#{egal.country}:*:#{egal.city}", callback
+      @findByKeyPattern "#{egal.country()}:*:#{egal.city()}", callback
 
     else if egal.address_components
       @fromGoogleGeocoder egal, callback

@@ -1,7 +1,7 @@
 redis = require('redis').createClient()
 nodeio = require 'node.io'
-Ride = require 'ride'
 log = require 'logging'
+Ride = require 'ride'
 Place = require('place').Place
 
 module.exports.details = details =
@@ -19,7 +19,6 @@ module.exports.details = details =
   telefon: ""
   #specifics
   prefix: "mitfahrzentrale:id"
-
 
 regexx = ///
         Ab\s(\w{2},\s\d{2}\.\d{2}\.\d{4})
@@ -54,6 +53,10 @@ module.exports.findRides = new nodeio.Job
     orig = Place.new(@options.orig).city()
     log.notice "orig: #{orig} dest: #{dest}"
     @getHtml url, (err, $, data) =>
+<<<<<<< HEAD
+=======
+      #jq = require("jquery")
+>>>>>>> 4f7c1065bce04212b38e13ae489592d4b4473c21
       try
         $('#product-serach-list tbody tr').odd (tr) ->
           if (r = tr.fulltext.match regex)
@@ -67,10 +70,22 @@ module.exports.findRides = new nodeio.Job
               provider: details.name
           else
             log.error "Regex did NOT match! "+tr.fulltext
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 4f7c1065bce04212b38e13ae489592d4b4473c21
         i = 0
         $('#product-serach-list tbody tr').even (tr) ->
           rides[i].link = $('div.divbuchungsbtn a', tr).attribs.href
           i += 1
+<<<<<<< HEAD
+=======
+        
+          #else log.debug "NOT matched!!! "+tr.fulltext
+      catch e
+        log.error "connector: deinbus failed " + e
+
+>>>>>>> 4f7c1065bce04212b38e13ae489592d4b4473c21
       @emit rides
   
   reduce: (rides) ->

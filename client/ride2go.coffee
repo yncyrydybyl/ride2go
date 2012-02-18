@@ -44,6 +44,7 @@ deactivatepanel = (panel_id) ->
   console.log(panel_id + " deactivated")
   $(panel_id).fadeTo "20000" ,1 
 
+
 initInputBox = (params = {region:"de",direction:"to",selector:"#from_input_field", showpanel:true}) ->
   if not $("#"+params.direction+"_panel").is(":visible") and params.showpanel
     activatepanel("#"+params.direction+"_panel")

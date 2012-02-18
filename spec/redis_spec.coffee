@@ -36,5 +36,6 @@ describe "redis database ", ->
     r = redis.client()
     r.dbsize (err, numberofkeys) ->
       expect(numberofkeys).toBe(0)
+      redis.kill()
       asyncSpecDone()
     asyncSpecWait()
