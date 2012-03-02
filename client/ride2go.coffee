@@ -34,9 +34,6 @@ switchmode = (mode, lastmode=App.mode) ->
  
   # for debugging
   console.log("switching from "+lastmode+" to " +mode)
-  $("#mode ul li."+mode).addClass("mode_active")
-  $("#mode ul li."+lastmode).removeClass("mode_active")
-  #console.log($("#mode ul li."+mode))
 
 activatepanel = (panel_id) ->
   $(panel_id).fadeTo "20000", 0.33 
@@ -76,7 +73,14 @@ displayride = (ride) ->
   arr=new Date(ride.arr)
   dep=new Date(ride.dep)
   #$("#rides ul").append $("<li>#{dep.toLocaleDateString()}:#{dep.toLocaleTimeString()}:#{ride.orig} -> #{ride.dest} provider: #{ride.provider} <a target='_blank' href='#{ride.id}'>visit</a></li>")
-  $("#rides ul").append $("<li>#{dep.toLocaleDateString()}:#{dep.toLocaleTimeString()}:#{ride.orig} -> #{ride.dest} provider: #{ride.provider} <a target='_blank' href='#{ride.id}'>visit</a></li>")
+  $("#rides").dataTable().fnAddData( [
+    dep.toLocaleTimeString()
+    ride.orig
+    ride.dest
+    ride.provider
+    arr.toLocaleDateString()
+  ]
+  )
 
 inputdone = (d, item) ->
   console.log(d+" selected")
@@ -133,6 +137,16 @@ $().ready ->
   $("#mode .splash").click -> switchmode "splash", App.mode
   $("#mode .result").click -> switchmode "result", App.mode
   $("#edit_from_input").click -> switchmode "from", App.mode
+  $("#from").click -> switchmode "from", App.mode
+  $("#to").click -> switchmode "to", App.mode
   $("#edit_to_input").click -> switchmode "to", App.mode
+  $("#rides").dataTable(
+    "bPaginate": false
+    "bLengthChange": false
+    "bFilter": false
+    "bSort": false
+    "bInfo": false
+    "bAutoWidth": false
+  )
   $("#to_input_field").focus()
   initInputBox({region:"de",direction:"to",selector:"#to_input_field",showpanel:false})

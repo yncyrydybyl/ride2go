@@ -1,1 +1,1 @@
-../../vendor/jquery-1.6.2.min.js
+../../vendor/jquery-1.7.1.js

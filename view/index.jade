@@ -6,6 +6,7 @@ html
     script(src='http://maps.google.com/maps/api/js?sensor=false')
     script(src='/js/jquery.js')
     script(src='/js/jquery.ui.js')
+    script(src='/js/jquery.dataTables.min.js')
     script(src='/socket.io/socket.io.js')
     script(src='/js/ride2go.js')
     script(src='/js/autocomplete.js')
@@ -25,9 +26,9 @@ html
       span#status status: disconnected 
       div#route
         span#from_label From
-        span(contentEditable='true',spellcheck='false')#from startort
+        span#from startort
         span#to_label To
-        span(contentEditable='true')#to zielort
+        span#to zielort
         div#when When
           input when
     #left
@@ -51,9 +52,14 @@ html
  
      
     #middle 
-      #options bahn? bus? mfg?
-      #rides
-        ul 
+      table#rides
+        thead
+          tr
+            th Start:
+            th From
+            th To
+            th Provided by:
+            th Arrival Time
 
     #middle_overlay
       #inputbox
