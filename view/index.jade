@@ -11,6 +11,7 @@ html
     script(src='/js/autocomplete.js')
               
     link(type='text/css', href='/css/smoothness/jquery-ui-1.8.14.custom.css', rel='stylesheet')
+    link(type='text/css', href='/css/header.css', rel='stylesheet')
     link(type='text/css', href='/css/main.css', rel='stylesheet')
     
     style(type='text/css')
@@ -22,16 +23,13 @@ html
     #header
       span#logo ride2go
       span#status status: disconnected 
-      span#mode
-        ul
-          li.splash.mode_active splash
-          li.to to
-          li.from from
-          li.result result 
-      span#social 
-        span#gplus gplus
-        span#facebook gplus
-
+      div#route
+        span#from_label From
+        span(contentEditable='true',spellcheck='false')#from startort
+        span#to_label To
+        span(contentEditable='true')#to zielort
+        div#when When
+          input when
     #left
       #from_panel
         h2 departing

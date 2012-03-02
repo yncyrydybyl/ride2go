@@ -73,7 +73,10 @@ initInputBox = (params = {region:"de",direction:"to",selector:"#from_input_field
 
 displayride = (ride) ->
   ride = JSON.parse(ride)
-  $("#rides ul").append $("<li>#{ride.orig} -> #{ride.dest} provider: #{ride.provider} <a target='_blank' href='#{ride.id}'>visit</a></li>")
+  arr=new Date(ride.arr)
+  dep=new Date(ride.dep)
+  #$("#rides ul").append $("<li>#{dep.toLocaleDateString()}:#{dep.toLocaleTimeString()}:#{ride.orig} -> #{ride.dest} provider: #{ride.provider} <a target='_blank' href='#{ride.id}'>visit</a></li>")
+  $("#rides ul").append $("<li>#{dep.toLocaleDateString()}:#{dep.toLocaleTimeString()}:#{ride.orig} -> #{ride.dest} provider: #{ride.provider} <a target='_blank' href='#{ride.id}'>visit</a></li>")
 
 inputdone = (d, item) ->
   console.log(d+" selected")
