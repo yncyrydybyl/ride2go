@@ -54,31 +54,28 @@ module.exports.findRides = new nodeio.Job
     orig = Place.new(@options.orig).city()
     log.notice "orig: #{orig} dest: #{dest}"
     @getHtml url, (err, $, data) =>
-      #jq = require("jquery")
-      
-      $('#product-serach-list tbody tr').odd (tr) ->
-
-        if (r = tr.fulltext.match regex)
-          rides.push
-            dep_date: r[1]
-            dep_time: r[2]
-            st_price: r[3]
-            sp_price: r[4]
-            orig: orig
-            dest: dest
-            provider: details.name
-        else
-          log.error "Regex did NOT match! "+tr.fulltext
-      
-      i = 0
-      $('#product-serach-list tbody tr').even (tr) ->
-        try
+      try
+        $('#product-serach-list tbody tr').odd (tr) ->
+          if (r = tr.fulltext.match regex)
+            rides.push
+              dep_date: r[1]
+              dep_time: r[2]
+              st_price: r[3]
+              sp_price: r[4]
+              orig: orig
+              dest: dest
+              provider: details.name
+          else
+            log.error "Regex did NOT match! "+tr.fulltext
+        i = 0
+        $('#product-serach-list tbody tr').even (tr) ->
           rides[i].link = $('div.divbuchungsbtn a', tr).attribs.href
-          console.log rides[i].link
           i += 1
-      
-        #else log.debug "NOT matched!!! "+tr.fulltext
       @emit rides
+  
+  reduce: (rides) ->
+    log.notice "deinbus found "+rides.length+" rides"
+    @emit rides
 
 
 # import city ids into redis

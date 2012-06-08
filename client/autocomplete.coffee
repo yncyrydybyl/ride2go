@@ -51,6 +51,8 @@ $.widget "ui.geo_autocomplete",
       #console.log(ui.item.options)
       options = ui.item.options
       $("#"+options.params.direction+"_panel img").attr("src", "http://maps.google.com/maps/api/staticmap?visible=" + ui.item.viewport.getSouthWest().toUrlValue() + "|" + ui.item.viewport.getNorthEast().toUrlValue() + "&size=" + options.mapwidth + "x" + options.mapheight + "&maptype=" + options.maptype + "&sensor=" + (if options.mapsensor then "true" else "false"))
+      $("#"+options.params.direction+"_panel h3").html(ui.item.value)
+      $("#"+options.params.direction).html(ui.item.value)
     getItemHTML: (_item) ->
       _src = "http://maps.google.com/maps/api/staticmap?visible=" + _item.viewport.getSouthWest().toUrlValue() + "|" + _item.viewport.getNorthEast().toUrlValue() + "&size=" + @mapwidth + "x" + @mapheight + "&maptype=" + @maptype + "&sensor=" + (if @mapsensor then "true" else "false")
       "<a>" + _item.label + "<br clear=\"both\" /></a>"

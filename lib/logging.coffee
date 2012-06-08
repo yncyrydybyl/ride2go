@@ -13,7 +13,7 @@ log = new winston.Logger
   levels: winston.config.syslog.levels
   transports: [
     new winston.transports.Console
-      level: "notice"
+      level: "info"
       colorize: on
     new winston.transports.File
       level: "error"

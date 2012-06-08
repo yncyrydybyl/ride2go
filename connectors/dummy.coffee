@@ -62,31 +62,28 @@ module.exports.findRides = new nodeio.Job
 # import city ids into redis
 
 # FIXME check that client is disposed after use
-store = redis.createClient()
-
-class Import extends nodeio.JobClass
-  input: (a,b,run) ->
-    return false if a != 0  # only once
-    log.notice "importing #{details.name} city ids"
-    url = "" # should return json with service city definitions
-    @get url, (err, url) ->
-      for city in JSON.parse(url)
-        # cf dummy-city.json for format
-        run [city]
-
-  run: (city) ->
-    # FIXME turn into compact DSL of lookup strategies or
-    # hide behind subclass hierarchy and strategy pattern
-    foreign_key = "#{details.name}:#{city.type}:#{city.id}"
-    store.keys "#{details.country}:*:#{city.name}", (err, keys) =>
-      Place.chooseByStrategy(keys, "#{details.match_strategy}", (place) =>
-        store.sadd foreign_key, place.key
-        store.hset place.key, "#{details.name}:#{city.type}", city.id, (err, succ) =>
-          log.debug " + stored #{city.name} automatically"
-          @emit()
-
-# these imports allow to run this connector under node.io from the cmd line
-@class = Import
-@job = new Import()
-
-
+#store = redis.createClient()
+#
+#class Import extends nodeio.JobClass
+#  input: (a,b,run) ->
+#    log.notice "importing #{details.name} city ids"
+#    url = "" # should return json with service city definitions
+#    @get url, (err, url) ->
+#      for city in JSON.parse(url)
+#        # cf dummy-city.json for format
+#        run [city]
+#
+#  run: (city) ->
+#    # FIXME turn into compact DSL of lookup strategies or
+#    # hide behind subclass hierarchy and strategy pattern
+#    foreign_key = "#{details.name}:#{city.type}:#{city.id}"
+#    store.keys "#{details.country}:*:#{city.name}", (err, keys) =>
+#      Place.chooseByStrategy(keys, "#{details.match_strategy}", (place) =>
+#        store.sadd foreign_key, place.key
+#        store.hset place.key, "#{details.name}:#{city.type}", city.id, (err, succ) =>
+#          log.debug " + stored #{city.name} automatically"
+#          @emit()
+#
+## these imports allow to run this connector under node.io from the cmd line
+#@class = Import
+#@job = new Import()
