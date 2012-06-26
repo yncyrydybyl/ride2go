@@ -1,5 +1,5 @@
 # Copyright (c) 2011 ride2go contributors -- ride2go.com All rights reserved.
-#                                                              AGPL Licenced.
+#                                                              AGPL licenced.
 
 # # # # # # # # # # # # # # # #    RDS    # # # # # # # # # # # # # # # # # #
 #                            ____  ____  ____                               #
@@ -30,7 +30,7 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
   ## searches for rides that match a query
   ## returns matching rides asynchronously
   match: (query, callback) ->
-    log.notice "RDS.scraping is off" unless @scraping
+    log.notice "RDS.scraping is OFF" unless @scraping
     log.notice "RDS: received query ride #{JSON.stringify(query)}"
 
     route = "#{query.orig}->#{query.dest}" # hash-key to identify the route #
@@ -44,7 +44,7 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
       log.info "RDS has " + rides.length + " rides already in cache"
       callback ride for ride in rides
 
-    # schedule jobs to go get find some matching RiDeS
+    # schedule jobs to run and find even more matching RiDeS
     for job in ['deinbus', 'mitfahrzentrale'] # ToDo
       log.info "RDS starts connector for " + job
       io.start api[job].findRides, query, ((someerror, rides) =>

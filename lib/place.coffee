@@ -27,7 +27,7 @@ class Place
     if c = @key.match(/(^\w{2}:[^:]+).*/)
       return new State(c[1])
     else
-      log.debug("city not found")
+      log.debug("state not found")
       return undefined
 
   seperators: ->
