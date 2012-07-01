@@ -8,6 +8,9 @@ describe "Connectors", ->
       orig: "DE:Berlin:Berlin"
       dest: "DE:Hamburg:Hamburg"
     io.start connectors.pts.findRides, query, ((err, rides) ->
-      console.log rides
+      expect(rides.length).to.equal 1
       done()
     ), true
+
+  it 'there should be 42 tests in total!', ->
+    expect(42).to.exist
