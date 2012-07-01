@@ -90,6 +90,11 @@ describe "Ride", ->
       expect(r.mode).to.equal("bus")
       expect(r.toGo).to.equal("ready to go :-)")
 
+  
+    it "should pts dingens..", ->
+      r = Ride.new {arr: "1234", dep: "23456", price: "EUR 10", orig: "Kassel", dest: "Bremen"}
+      expect(r.toJson).not.to.equal '{arr: "1234", dep: "23456"}'
+
   afterEach -> redis.quit()
 
 
