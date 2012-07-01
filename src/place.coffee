@@ -1,6 +1,6 @@
 __ = require "../vendor/underscore"
-redis = require("r2gredis").keymap()
-log = require("logging")
+redis = require("redis").createClient()
+log = require("./logging")
 #log.transports.console.level="debug"
 
 #Place = ->

@@ -1,17 +1,25 @@
-{ "name" : "ride2go" ,
-    "version" : "0.0.2" ,
-    "dependencies" : { 
-        "express" : "2.4.3",
-        "jade": "0.13",
-        "socket.io" : "0.7.7",
-        "node.io" : "0.3.6",
-        "redis": "0.6.6",
-        "coffee-script" : "1.1.1",
-        "nodemon" : "0.5.3",
-        "winston" : "0.3.4",
-        "underscore" : "1.1.7",
-        "jasmine-node" : "1.0.6",
-        "csv" : "0.0.9",
-        "request" : "2.9.202",
-        "expresso" : "0.8.1"}
+{
+  "name": "ride2go",
+  "description: "federated mobility broker",
+  "version": "0.0.2",
+  "engines": {
+      "node": "0.5.x"
+  },
+  "dependencies": {
+    "underscore": "1.3.x",
+    "socket.io": "0.9.x",
+    "request": "2.8.x",
+    "node.io": "0.4.x",
+    "winston": "0.6.x",
+    "express": "3.0.x",
+    "redis": "0.7.x",
+    "jade": "0.26.x"
+  },
+  "devDependencies": {
+    "mocha": "1.2.x",
+    "chai": "1.1.x"
+  },
+  "directories": {
+    "lib": "./lib"
+  }
 }

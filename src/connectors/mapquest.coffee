@@ -1,5 +1,5 @@
 nodeio = require 'node.io'
-log = require 'logging'
+log = require '../logging'
 
 url = (query) -> "http://open.mapquestapi.com/directions/v0/route?
 outFormat=json&unit=k&narrativeType=none&shapeFormat=cmp&

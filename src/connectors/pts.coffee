@@ -1,10 +1,10 @@
-redis   = require('redis')
+redis   = require 'redis'
 nodeio  = require 'node.io'
-log     = require 'logging'
 request = require 'request'
+log     = require '../logging'
 
-Ride    = require 'ride'
-Place   = require('place').Place
+Ride    = require '../ride'
+Place   = require('../place').Place
 
 module.exports.details = details =
   mode: "train" # kind of vehicle

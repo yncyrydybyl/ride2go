@@ -1,25 +1,23 @@
 socketIO = require 'socket.io'
 express = require 'express'
-sys = require 'sys'
+sys = require 'util'
 
-Ride = require 'ride'
-City = require('place').City
-RDS = require 'rds'
-log = require 'logging'
+Ride = require './ride'
+City = require('./place').City
+RDS = require './rds'
+log = require './logging'
 
-app = express.createServer()
+app = express()
 app.set 'views', "view"
 app.set 'view engine', 'jade'
 app.set 'view options', {pretty:true}
 app.use express.bodyParser()
 app.use express.static 'public'
 
-app.listen 3000, ->
-  addr = app.address()
-  log.info '  app listening on http://' + addr.address + ':' + addr.port
+server = app.listen 3000
 
-io = socketIO.listen app
-io.set('log level', 1)
+io = socketIO.listen server
+#io.set('log level', 1)
 
 io.sockets.on 'connection', (socket) ->
   log.debug "socket connected"
@@ -32,7 +30,7 @@ io.sockets.on 'connection', (socket) ->
       City.find query.destination, (dest) ->
         log.info "found dest: #{dest.key}"
         RDS.match Ride.new(orig:orig,dest:dest), (matching_ride) ->
-          #log.debug "callback from RDS for #{matching_ride}"
+          log.debug "callback from RDS for #{matching_ride}"
           socket.emit 'ride', matching_ride
 
 app.get "/", (req,res) ->

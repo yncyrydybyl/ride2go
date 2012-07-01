@@ -1,5 +1,5 @@
 fs = require 'fs'
-log = require 'logging'
+winston = require './lib/logging'
 altis = NaN
 nodeio = require 'node.io'
 redis = require('redis').createClient()
@@ -11,20 +11,21 @@ module.exports = new nodeio.Job
   run: (f) ->
     try
       fs.statSync("./redis/dumps/alts.rdb")
+      fs.statSync("/tmp/alternateNames.txt")
       altis = require("redis").createClient(4175)
-      log.notice "alternative names import dump already exists.\n"
+      winston.notice "alternative names import dump already exists.\n"
       importCountry COUNTRY, @emit
     catch error
-      log.error error
-      log.notice "alternative names import dump does NOT exist.\n"
-      start new NamesImport(), () => redis.save () =>
-        fs.renameSync "dump.rdb", "redis/dumps/alts.rdb"
-        importCountry COUNTRY, @emit
+      winston.log error
+      winston.info "alternative names import dump does NOT exist.\n"
+      start new NamesImport(), redis.save () =>
+        fs.renameSync "dump.rdb", "redis/dumps/alts.rdb", () =>
+          importCountry COUNTRY, @emit
 
 importCountry = (country, done) ->
   # ToDo should be import all countries including currency, population etc.
   redis.hset COUNTRY.toUpperCase(), "shortname", "Germany", (err, result) ->
-    log.error err if err
+    winston.error err if err
   start new AdminImport(), () =>
     start new CityImport(), () =>
       importManualKeys(done)
@@ -35,17 +36,17 @@ importManualKeys = (done) ->
       done("fertig.") # TODO find a better solution for manual keys https://www.pivotaltracker.com/story/show/21451669
 
 start = (job, callback) ->
-  log.notice "starting "+job.description
+  winston.info "starting "+job.description
   nodeio.start job, {}, ((err) ->
-      log.error("Error! "+job.description+": "+err+"\n") if err
-      console.log(job.description+" finished.\n")
+      winston.error("Error! "+job.description+": "+err+"\n") if err
+      winston.info(job.description+" finished.\n")
       callback()
   ), false
 
 
 class NamesImport extends nodeio.JobClass
   input: "/tmp/alternateNames.txt"
-  description: "tmp import of alternative geonames"
+  description: "import of tmp alternative geonames"
   run: (row) ->
     data = @parseValues(row,'\t')
     redis.sadd "alt:geoname:#{data[1]}",
@@ -53,7 +54,7 @@ class NamesImport extends nodeio.JobClass
       (error, success) =>
         @emit 42
     null
-  output: false
+  output: -> false
 
 class AdminImport extends nodeio.JobClass
   input: "/tmp/#{COUNTRY}.txt"
@@ -80,7 +81,7 @@ class CityImport extends nodeio.JobClass
         if admin_key && admin_key.substring(0,2) == place[8] # consistency
           store place[0], admin_key, place[1], (=> @emit 1), place[14], place[5], place[4]
         else
-          console.log " - something Kompost in here: "+place[1] +
+          winston.debug " - something Kompost in here: "+place[1] +
             "! adminCode is "+place[10]+", Key is "+admin_key
           @skip()
     else @skip()
@@ -100,28 +101,28 @@ store = (geoname_id, sub_key, name, done, population=false, lat=false, lon=false
   altis.smembers "alt:geoname:#{geoname_id}", (err, alts) =>
     prefered = (a for a in alts when a.match(/^:1:1.*/))
     if prefered && prefered.length > 0
-      console.log " prefered "+p for p in prefered if prefered.length > 1
+      winston.debug " prefered "+p for p in prefered if prefered.length > 1
       better_name = prefered[prefered.length-1].match(/:([^:]*)$/)[1]
-      console.log "  FOUND prefered: "+better_name+" better than:"+name unless better_name == name
+      winston.debug "  FOUND prefered: "+better_name+" better than:"+name unless better_name == name
       name = better_name
     else
       regional = (a for a in alts when a.match(/^de:1:.*/))
       if regional && regional.length > 0
-        console.log " regional "+p for p in regional if regional.length > 1
+        winston.debug " regional "+p for p in regional if regional.length > 1
         better_name = regional[regional.length-1].match(/:([^:]*)$/)[1]
-        console.log "  FOUND regional: "+better_name+" better than: "+name unless better_name == name
+        winston.debug "  FOUND regional: "+better_name+" better than: "+name unless better_name == name
         name = better_name
       else
         shortest = null
         for n in (a for a in alts when a.match(/^de:.*/))
           shortest = n if not shortest or n.length < shortest.length
           better_name = shortest.match(/:([^:]*)$/)[1]
-          console.log "  FOUND shortest: "+better_name+" beitter than: "+name unless better_name == name
+          winston.debug "  FOUND shortest: "+better_name+" beitter than: "+name unless better_name == name
           name = better_name
     primary_key = "#{sub_key}:#{name}"        # DE:Thueringen
     foreign_key = "geoname:id:#{geoname_id}"  # geoname:id:42
     
-    #console.log "+stored "+primary_key
+    #winston.debug "+stored "+primary_key
     for a in alts when not a.match(///.*:#{name}///)
       if a.match /.*wikipedia.*/
         #redis.set "wikipedia:#{a.match(/\/([^\/]*)$/)[1]}", primary_key

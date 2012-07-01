@@ -1,5 +1,5 @@
 nodeio = require 'node.io'
-log = require 'logging'
+log = require '../logging'
 
 url = (query) -> "http://www.raumobil.de/index.php?
 commodities_type=supply&commodity_type=mobile

@@ -1,8 +1,8 @@
 redis = require('redis').createClient()
 nodeio = require 'node.io'
-Ride = require 'ride'
-log = require 'logging'
-Place = require('place').Place
+Ride = require '../ride'
+log = require '../logging'
+Place = require('../place').Place
 
 module.exports.details = details =
   mode: "bus"

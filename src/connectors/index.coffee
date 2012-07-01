@@ -1,11 +1,12 @@
 
 # loading connectors
 exports = module.exports
-log = require 'logging'
-
+log = require '../logging'
+exports.foo = "bar"
 files = require("fs").readdirSync(__dirname)
-for file in files when file != "index.coffee"
-  if (connector = file.match(/(.+)\.coffee$/))
+console.log "hi"+files
+for file in files when file != "index.js"
+  if (connector = file.match(/(.+)\.js$/))
     log.debug " + loading connector: '#{connector[1]}'"
     exports[connector[1]] = require("./"+connector[1])
 

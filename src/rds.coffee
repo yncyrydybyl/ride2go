@@ -15,14 +15,14 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 io   = require 'node.io' # spin off workers for searching the web for rides 
-api  = require 'connectors' # knows how to talk with different service apis
-log  = require 'logging' # logs nice to a console for seeing whats going on
+api  = require './connectors/' # knows how to talk with different service apis
+log  = require './logging' # logs nice to a console for seeing whats going on
 
 
 class RiDeStore extends require('events').EventEmitter # pubsub style msges #
 
   scraping: on # only local RiDeStore is queried if scraping is switched OFF
-  get_connector: (name) ->  JSON.stringify api[name].details
+  get_connector: (name) ->  JSON.stringify api[name.details]
   redis: require('redis').createClient() # memory Ride Data structure Store #
 
   ## RDMS: Ride Data Matcher Scheduler is the core API of the RideDataStore #
@@ -60,5 +60,5 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
 
 
 module.exports = RDS ||= new RiDeStore # singleton
-Ride = require 'ride' # convenience
+Ride = require './ride' # convenience
 RDS = NaN # the single one instance
