@@ -52,7 +52,7 @@ module.exports.findRides = new nodeio.Job
           return
         log.notice "call http"
         stations = JSON.parse(body)
-        orig_id  = stations[0].id
+        orig_id  = stations[0].id 
         log.notice orig_id
         ride.destination().foreignKeyOrCity "#{details.name}:dest", (dest) =>
           dest_path = "#{details.url_path}/location/suggest?q=#{dest}"

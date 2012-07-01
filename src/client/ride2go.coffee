@@ -69,6 +69,10 @@ initInputBox = (params = {region:"de",direction:"to",selector:"#from_input_field
   $(params.selector).autocomplete "search"
 
 displayride = (ride) ->
+  console.log("foook")
+  ride = JSON.parse(ride)
+  console.log(ride)
+  console.log("fooooook")
   ride = JSON.parse(ride)
   arr=new Date(ride.arr)
   dep=new Date(ride.dep)

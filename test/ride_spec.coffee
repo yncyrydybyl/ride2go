@@ -92,8 +92,8 @@ describe "Ride", ->
 
   
     it "should pts dingens..", ->
-      r = Ride.new {arr: "1234", dep: "23456", price: "EUR 10", orig: "Kassel", dest: "Bremen"}
-      expect(r.toJson).not.to.equal '{arr: "1234", dep: "23456"}'
+      r = Ride.new {dep:1341165060000, arr:1341200220000, price:"EUR 10", orig:"Ulm", dest:"Bremen", provider:"pts"}
+      expect(r.toJson).not.to.equal '{"arr":1341161521057,"dep":1341161521057}'
 
   afterEach -> redis.quit()
 

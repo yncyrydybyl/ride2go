@@ -13,11 +13,11 @@ option '-r', '--reporter', 'mocha test reporter'
 
 
 task 'build', 'compile coffee and sass', (options) ->
-  watch = if options.watch then '--watch' else ''
-  server = spawn "coffee", [watch, '-o', 'lib', '--compile', 'src']
+  watch = if options.watch then ' --watch' else ''
+  server = spawn "coffee", ['-o', 'lib', '--compile' + watch, 'src']
   server.stdout.on 'data', (data) -> console.log data.toString().trim()
-  client = spawn "coffee", [watch, '--join', 'public/js/ride2go.js',
-    '--compile', '--bare',
+  client = spawn "coffee", ['--join', 'public/js/ride2go.js',
+    '--compile' + watch, '--bare',
     'src/client/ride2go.coffee',
     'src/client/autocomplete.coffee']
   client.stdout.on 'data', (data) -> console.log data.toString().trim()

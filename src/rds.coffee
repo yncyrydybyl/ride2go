@@ -45,13 +45,14 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
       callback ride for ride in rides
 
     # schedule jobs to run and find even more matching RiDeS
-    for job in ['deinbus', 'mitfahrzentrale'] # ToDo
+    for job in ['pts'] # ToDo
       log.info "RDS starts connector for " + job
       io.start api[job].findRides, query, ((someerror, rides) =>
         log.error someerror if someerror
         i = 0
+        log.notice "RDS received "+ JSON.stringify(rides[0])
         for ride in (Ride.new(r) for r in rides) # store the RiDeS to cache #
-          console.log ride.link()
+          console.log "hier "+ride.toJson()
           @redis.hset route, ride.link(), ride.toJson(), (anothererror, isNew) =>
             log.error anothererror if anothererror
             @emit route, Ride.new(rides[i]).toJson() if isNew # ie. fiRst time DiScovered #
