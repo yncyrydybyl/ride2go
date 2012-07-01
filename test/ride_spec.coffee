@@ -50,9 +50,9 @@ describe "Ride", ->
       expect(r.arr).to.equal(959157720000)
 
     it "should tolerate various terminology", ->
-      r1 = Ride.new(source:"DE:RP:Mainz", ziel:"DE:Berlin:Berlin")
-      r2 = Ride.new(from:"DE:RP:Mainz", to:"DE:Berlin:Berlin")
-      r3 = Ride.new(origin:"DE:RP:Mainz", target:"DE:Berlin:Berlin")
+      r1 = Ride.new(source:"DE:RP:Mainz", dep: 959143320000, ziel:"DE:Berlin:Berlin", arr: 959157720000)
+      r2 = Ride.new(from:"DE:RP:Mainz", dep: 959143320000, to:"DE:Berlin:Berlin", arr: 959157720000)
+      r3 = Ride.new(origin:"DE:RP:Mainz", dep: 959143320000, target:"DE:Berlin:Berlin", arr: 959157720000)
       expect(r1).to.eql(r2)
       expect(r2).to.eql(r3)
 

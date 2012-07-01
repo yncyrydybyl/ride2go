@@ -9,7 +9,7 @@ reset = '\x1B[0m'
 
 
 option '-w', '--watch', 'continually build upon change'
-option '-r', '--reporter', 'mocha test reporter'
+option '-r', '--reporter [STYLE]', 'mocha test reporter'
 
 
 task 'build', 'compile coffee and sass', (options) ->
