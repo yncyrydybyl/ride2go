@@ -12,5 +12,5 @@ describe "Connectors", ->
       done()
     ), true
 
-  it 'there should be 42 tests in total!', ->
+  it 'should have 42 tests in total!', ->
     expect(42).to.exist
