@@ -12,5 +12,7 @@ describe "Connectors", ->
       done()
     ), true
 
+describe "Mocha Specs", ->
+
   it 'should have 42 tests in total!', ->
     expect(42).to.exist
