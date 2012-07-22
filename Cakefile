@@ -31,7 +31,8 @@ task "test", "run tests", (options) ->
     ./node_modules/.bin/mocha 
     --compilers coffee:coffee-script
     --reporter #{options.reporter || 'spec'}
-    --require coffee-script 
+    --require coffee-script
+    --timeout 23000
     --require test/test_helper.coffee
     --colors
   ", (err, output) ->

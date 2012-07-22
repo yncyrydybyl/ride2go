@@ -30,12 +30,16 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
   ## searches for rides that match a query
   ## returns matching rides asynchronously
   match: (query, callback) ->
-    log.notice "RDS.scraping is OFF" unless @scraping
-    log.notice "RDS: received query ride #{JSON.stringify(query)}"
+    
+    RDS.find query, callback
+    RDS.search api[connector], query for connector in ['pts']
 
+
+  ## subscribe to a channel
+  find: (query, callback) ->
+    
     route = "#{query.orig}->#{query.dest}" # hash-key to identify the route #
-    log.notice "route = #{route}"
-    @redis.sadd "query:"+route, "time:"+new Date
+    
     # register for any future rides on that route that might be found later #
     @on route, callback  # notify active browsers or other interested party #
 
@@ -44,22 +48,42 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
       log.info "RDS has " + rides.length + " rides already in cache"
       callback ride for ride in rides
 
-    # schedule jobs to run and find even more matching RiDeS
-    for job in ['pts'] # ToDo
-      log.info "RDS starts connector for " + job
-      io.start api[job].findRides, query, ((someerror, rides) =>
-        log.error someerror if someerror
-        i = 0
-        log.notice "RDS received "+ JSON.stringify(rides[0])
-        for ride in (Ride.new(r) for r in rides) # store the RiDeS to cache #
-          console.log "hier "+ride.toJson()
-          @redis.hset route, ride.link(), ride.toJson(), (anothererror, isNew) =>
-            log.error anothererror if anothererror
-            @emit route, Ride.new(rides[i]).toJson() if isNew # ie. fiRst time DiScovered #
-            i += 1
-      ), true if @scraping # ToDo schedule some more smarter strategy #
+
+  ## publish to a channel
+  store: (ride) ->
+     
+    log.debug "storing ride: " + ride
+    route = "#{ride.orig}->#{ride.dest}" # hash-key to identify the route #
+    @redis.hset route, ride.link(), ride.toJson(), (anothererror, isNew) =>
+      log.error anothererror if anothererror
+      @emit route, ride.toJson() if isNew # ie. fiRst time DiScovered #
 
 
-module.exports = RDS ||= new RiDeStore # singleton
-Ride = require './ride' # convenience
-RDS = NaN # the single one instance
+  ## start node.io job to run connector to fetch and store rides
+  search: (query, connector, done) ->
+    log.info "connecting " + connector.name
+    query = Ride.new query
+    io.start (new io.Job
+      input: (i, j, go) ->
+        return false unless i == 0
+        go [ connector.make_url query ]
+      run: (url) ->
+        log.debug "reading " + url
+        @getHtml url, (err, $, data) =>
+          try
+            connector.read_html $
+            @emit null
+          catch error
+            log.error error
+            @fail()
+        connector.found = (what, thing) =>
+          switch what
+            when 'ride' then RDS.store(Ride.new(thing))
+            when 'url' then @add thing.replace /&amp;/g, '&'
+        null
+    ), query, ((e,r) -> done()), true
+
+
+RDS = new RiDeStore
+module.exports = RDS
+Ride = require './ride'
