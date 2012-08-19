@@ -1,3 +1,0 @@
-2822542	Freistaat Thüringen	Freistaat Thuringen	Free State of Thuringia,Freistaat Thueringen,Freistaat Thuringen,Freistaat Thüringen,Land Thuringen,Land Thüringen,Thueringen,Thuringe,Thuringia,Thüringen,Turingia	50.91667	11	A	ADM1	DE		15				2249882		291	Europe/Berlin	2011-08-07
-2822571	Thundorf in Unterfranken	Thundorf in Unterfranken	Thundorf i. Ufr.,Thundorf i. Unterfranken,Thundorf in Unterfranken	50.2	10.31667	P	PPL	DE		02				1202		327	Europe/Berlin	2011-08-07
-2861322	Regierungsbezirk Oberbayern	Regierungsbezirk Oberbayern	Haute-Baviere,Haute-Bavière,Regierungsbezirk Oberbayern	48	11	A	ADM2	DE		02	091			4346465		644	Europe/Berlin	2011-08-07
