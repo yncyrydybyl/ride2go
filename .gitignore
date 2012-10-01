@@ -13,3 +13,8 @@ public/js/ride2go.js
 *.js
 redis/dumps
 tmp
+.c9revisions
+.idea
+.settings
+.DS_Store
+

@@ -23,12 +23,12 @@ task 'build', 'compile coffee and sass', (options) ->
   client.stdout.on 'data', (data) -> console.log data.toString().trim()
   exec "sass #{watch} sass/main.sass:public/css/main.css", (err, output) ->
     throw err if err
-    console.log green + "Alles gebuildet :)" +reset
+    console.log green + "Alles gebuildet :)" + reset
   
 
 task "test", "run tests", (options) ->
   exec "NODE_ENV=test 
-    ./node_modules/.bin/mocha 
+    mocha
     --compilers coffee:coffee-script
     --reporter #{options.reporter || 'spec'}
     --require coffee-script 

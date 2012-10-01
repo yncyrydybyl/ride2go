@@ -1,8 +1,8 @@
-fs = require 'fs'
+fs      = require 'fs'
 winston = require './lib/logging'
-altis = NaN
-nodeio = require 'node.io'
-redis = require('redis').createClient()
+altis   = NaN
+nodeio  = require 'node.io'
+redis   = require('redis').createClient()
 
 COUNTRY = "DE"
 
@@ -18,9 +18,11 @@ module.exports = new nodeio.Job
     catch error
       winston.log error
       winston.info "alternative names import dump does NOT exist.\n"
-      start new NamesImport(), redis.save () =>
-        fs.renameSync "dump.rdb", "redis/dumps/alts.rdb", () =>
-          importCountry COUNTRY, @emit
+      namesImporter = new NamesImport()
+      start namesImporter, () =>
+        redis.save (err, res) =>
+          namesImporter.exit(err) if err
+          fs.renameSync "./redis/dumps/production.rdb", "./redis/dumps/alts.rdb"
 
 importCountry = (country, done) ->
   # ToDo should be import all countries including currency, population etc.

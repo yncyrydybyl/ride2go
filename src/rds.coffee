@@ -60,6 +60,6 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
       ), true if @scraping # ToDo schedule some more smarter strategy #
 
 
-module.exports = RDS ||= new RiDeStore # singleton
 Ride = require './ride' # convenience
-RDS = NaN # the single one instance
+RDS = new RiDeStore # the single one instance
+module.exports = RDS
