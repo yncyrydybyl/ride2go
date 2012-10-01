@@ -66,22 +66,22 @@ in order for the modules and their executables to be available.
 * `mkdir redis/dumps`
 * Run production redis from the ride2go directory with redis/redis.conf (edit to match your system, keep port number)
 * Run `node.io src/importers/geonames.coffee` and exit the process after you read the line "OK: Job complete"
-* Shutdown production redis and make sure that all data files are deleted
-* Run a fresh production redis from the ride2go directory with redis/redis.conf
-  (edit to match your system, keep port number)
+* Run `redis-cli FLUSHDB`
 * Run altname redis from the ride2go directory with redis/alt.conf (edit to match your system, keep port number)
 * Run `node.io src/importers/geonames.coffee` again
-
-* OK UP TO HERE, NEED TO FIX BELOW
-* Check results with `jasmine-node --coffee --verbose -m geoname_import_ spec`
-
-run tests
-=========
- $ expresso test/*
+* Run `redis-cli SAVE`
+* Shutdown the altname redis
+* Check results with `jasmine-node --coffee --verbose -m geoname_import_ test`
+* Yay, you are done
 
 
+## Run Tests
 
-## development ##
+    expresso test/*
+
+
+
+## Development ##
 
 Awhile back, we used pivotaltracker at https://www.pivotaltracker.com/projects/130935 for planning of next steps
 (use [fixes #storyid] in commit messages if you want to refer to it)
