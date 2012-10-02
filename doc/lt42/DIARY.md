@@ -1,9 +1,11 @@
+* TODO write down specification
+
 2012-09-02
 
 * DONE moved most tests to mocha
 * DONE added AGPL
 * DONE rewrote build script
-* TODO write down specification
+* DONE switche to using styl instead of sass, prolly broke the css
 
 2012-09-01
 
