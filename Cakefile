@@ -10,10 +10,13 @@ active_tests      = ['test',
 # should always work
 active_tests      = ['test']
 
+css_sources       = ['styl/main.styl']
+css_target        = 'public/css'
+
 # binaries
-bin_coffee = "coffee"
-bin_mocha  = "mocha"
-bin_sass   = "sass"
+bin_coffee = "./node_modules/.bin/coffee"
+bin_mocha  = "./node_modules/.bin/mocha"
+bin_stylus = "./node_modules/.bin/stylus"
 
 # ANSI Terminal Colors
 bold  = '\x1B[0;1m'
@@ -26,35 +29,41 @@ option '-C', '--coffee-arg [ARG*]', 'pass extra arguments to coffee'
 option '-r', '--reporter [STYLE]', 'set test reporter to be used by mocha'
 option '-M', '--mocha-arg [ARG*]', 'pass extra arguments to mocha'
 
+run_proc = (name, cmd, args) ->
+  proc = spawn cmd, args
+  proc.stdout.on 'data', (data) -> console.log data.toString().trim()
+  proc.stderr.on 'data', (data) -> console.error data.toString().trim()
+  proc.on 'exit', (code, signal) =>
+    if code is 0
+      console.log "#{green}#{name} has completed#{reset}"
+    else
+      console.error "#{red}#{name} has failed#{reset}"
+
 task 'build', 'compile coffee and sass', (options) ->
-  watch_args  = if options.watch then ['--watch'] else []
+  watch_args  = if options.watch then ['-w'] else []
   coffee_args = if options["coffee-arg"] then options["coffee-arg"].join(' ') else []
 
   server_args = watch_args.concat(['-o', 'lib', '--compile'])
   server_args = server_args.concat(coffee_args)
   server_args = server_args.concat(['src'])
-  server      = spawn bin_coffee, server_args
-  server.stdout.on 'data', (data) -> console.log data.toString().trim()
+  run_proc 'compiling server code', bin_coffee, server_args
 
   client_args = watch_args.concat(['--join', 'public/js/ride2go.js', '--compile', '--bare'])
   client_args = client_args.concat(coffee_args)
   client_args = client_args.concat(['src/client/ride2go.coffee', 'src/client/autocomplete.coffee'])
-  client      = spawn bin_coffee, client_args
-  client.stdout.on 'data', (data) -> console.log data.toString().trim()
+  run_proc 'compiling client code', bin_coffee, client_args
 
-  sass_args   = watch_args.concat(['sass/main.sass:public/css/main.css'])
-  execFile bin_sass, sass_args, null, (err, output) ->
-    console.log "#{green}build complete#{reset}"
-    throw err if err
+  stylus_args = watch_args.concat(['-o', css_target])
+  stylus_args = stylus_args.concat(css_sources)
+  run_proc 'stylesheet building', bin_stylus, stylus_args
 
 task "test", "run all tests", (options) ->
-  console.log options
-  watch_args = if options.watch then ['--watch', '-G'] else []
+  watch_args = if options.watch then ['--watch'] else []
   mocha_args = if options['mocha-arg'] then options['mocha-arg'].join(' ') else []
 
   test_args  = watch_args.concat(['--compilers', 'coffee:coffee-script'])
   test_args  = test_args.concat(['--colors', '--reporter',  options.reporter || 'spec'])
-  test_args  = test_args.concat(['--ui', 'bdd'])
+  test_args  = test_args.concat(['--ui', 'bdd', '-G'])
   test_args  = test_args.concat(['--require', 'coffee-script'])
   test_args  = test_args.concat(['--require', 'test/test_helper.coffee'])
   test_args  = test_args.concat(mocha_args)

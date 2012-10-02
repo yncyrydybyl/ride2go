@@ -1,4 +1,0 @@
-rvm --create 1.9.2@ride2go
-export NODE_PATH=`pwd`/node_modules:`pwd`/lib:/home/t/software/:$NODE_PATH
-export PATH=`pwd`/node_modules/.bin:/home/t/software/bin:$PATH
-# wtf
