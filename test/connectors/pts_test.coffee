@@ -1,5 +1,5 @@
-connectors = require "../lib/connectors"
-io = require "node.io"
+connectors = require "../../lib/connectors"
+io         = require "node.io"
 
 describe "Connectors", ->
 

@@ -1,13 +1,12 @@
 __ = NaN
 redis = NaN
 
-describe "Geonames Import", (done) ->
+describe "Geoname Import", (done) ->
 
   beforeEach ->
     __ = require("underscore")
     redis = require("redis").createClient()
 
-  
   it "should happen at all", (done) ->
     redis.dbsize (err, size) ->
       expect(size).not.to.equal(0)
@@ -73,7 +72,6 @@ describe "Geonames Import", (done) ->
     redis.smembers "geoname:alt:Foehrenwald", (err, alts) ->
       expect(__.include(alts, "DE:Bayern:Waldram")).to.equal(true)
       done()
-
 
   afterEach -> redis.quit()
 

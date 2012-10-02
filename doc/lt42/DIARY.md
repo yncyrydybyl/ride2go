@@ -1,6 +1,23 @@
+2012-09-02
+
+* DONE moved most tests to mocha
+* DONE added AGPL
+* DONE rewrote build script
+* TODO write down specification
+
+2012-09-01
+
+* DONE repaired geoname_import
+* DONE made tests run again
+
+2012-09-30
+
+* DONE updates to stable version of nodes.js (0.6) and updates packages
+* DONE convert docs to markdown
+
 2012-09-26
 
-* DONE Rethought models, wrote down fancy diagrams, identified key problem:
+* DONE rethought models, wrote down fancy diagrams, identified key problem:
   Which voyages should be kept? (all: O(n^2) storage, doable but huge)
   How much route information should be replicated in the graph?
   Remark: 

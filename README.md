@@ -53,7 +53,7 @@ in order for the modules and their executables to be available.
 
 ## Compile coffeescript files ##
 
-* Run `cake build`
+* Run `npm run-script build`
 * To compile the client javascript files manually, run `coffee -w -o src/public/js -c src/client/*.coffee`
   and `find . -not -path "./node_modules*" -not -path "./test*" -not -path "./client*" -name "*coffee" |xargs coffee -w -c`
 
@@ -71,14 +71,23 @@ in order for the modules and their executables to be available.
 * Run `node.io src/importers/geonames.coffee` again
 * Run `redis-cli SAVE`
 * Shutdown the altname redis
-* Check results with `jasmine-node --coffee --verbose -m geoname_import_ test`
 * Yay, you are done
 
 
 ## Run Tests
 
-    expresso test/*
+Run `npm run-script test` to execute all tests (cf. Cakefile to enable what gets tested)
 
+
+## ride2go
+
+* [OPTIONAL] Check RDS.coffee for the list of active conncectors
+* Run
+
+    npm run-script build
+    npm run-script server
+
+* Connect with your favorite http client that is not called Internet Explorer to localhost port 3000
 
 
 ## Development ##

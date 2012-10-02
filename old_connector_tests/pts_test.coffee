@@ -1,8 +1,8 @@
-assert = require 'assert'
-nodeio = require 'node.io'
+assert     = require 'assert'
+nodeio     = require 'node.io'
 connectors = require '../connectors'
 
-exports['test that it dows not crash if no rides are found'] = () ->
+exports['test that it does not crash if no rides are found'] = () ->
   query =
     orig: "DE:Berlin:Berlin"
     dest: "DE:Hamburg:Hamburg"

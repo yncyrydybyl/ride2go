@@ -19,13 +19,20 @@
     "csv": "0.0.19"
   },
   "devDependencies": {
-    "jasmine-node": "1.0.x",
-    "groc": "x",
-    "expresso": "0.9.2",
     "mocha": "1.5.x",
-    "chai": "1.2.x"
+    "chai": "1.2.x",
+    "chai-null": "0.1.x",
+    "sinon-chai": "2.1.x",
+    "chai-as-promised": "3.2.x",
+    "chai-factories": "0.1.x",
+    "chai-http": "0.2.x"
   },
   "directories": {
     "lib": "./lib"
+  },
+  "scripts": {
+      "build": "cake build",
+      "test": "cake test",
+      "server": "node lib/server.js"
   }
 }
