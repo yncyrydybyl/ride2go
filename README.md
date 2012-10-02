@@ -19,7 +19,7 @@ INSTALLATION
 ## Install required node.js dependencies ##
 
 * Install redis (>= 2.2.12) from http://redis.io/download
-* Execute `npm install`. This will install a bunch of modules as required by pacakge.json, including jade, socket.io, coffee, mocha, etc.
+* Execute `npm install`. This will install a bunch of modules as required by package.json, including jade, socket.io, coffee, mocha, etc.
 
 If you are not using nvm, you may have to add node_modules/.bin to your PATH and node_modules to your NODE_PATH
 in order for the modules and their executables to be available.
