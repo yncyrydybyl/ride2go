@@ -1,13 +1,21 @@
-* TODO write down specification
+2012-10-05
 
-2012-09-02
+* DONE Review plan and ride and usage of redis
+* DONE Research datalog papers and think about how this maps on blackboard idea
+
+2012-10-04
+
+* DONE Visit rejectjs
+* DONE Talk about core feature set and blackboard approach
+
+2012-10-02
 
 * DONE moved most tests to mocha
 * DONE added AGPL
 * DONE rewrote build script
 * DONE switche to using styl instead of sass, prolly broke the css
 
-2012-09-01
+2012-10-01
 
 * DONE repaired geoname_import
 * DONE made tests run again
