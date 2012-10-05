@@ -16,23 +16,25 @@ provider
 mode
 : a generally understood means of travelling (car, bus, cab, plane)
 graph model
-: shared graph containing data aggregated over time from traffic information providers
+: shared graph containing data aggregated over time from different providers
 route
 : a waypoint path for a specific provider that does not include time information
-connection
-: a waypoint path for a specific provider that does include time information
+trip
+: a route that does include time information
 waypoint
 : intermediary stops on routes found by an information provider
 spot
-: a waypoint reified by the shared graph model
+: representation of waypoints in the shared graph model
 location
-: an object representing co-located waypoints/spots in the shared graph model
+: an object representing co-located waypoints/spots in the graph model
 connector
 : board component that supports resolving destination names and/or querying a provider for routes and connections
-board
-: shared space that allows connectors to jointly construct a ride
+bowl
+: shared space that allows connectors to jointly construct an answer
 ride
-: set of lists of adjacent connections that correspond to the user's query
+: list of adjacent connections that solve the user's query
+answer
+: set if found trips that allow the construction of rides that match the user's query
 query
 : description of the ride the user was looking for, including start and stop location, times, preferred modes etc.
 
@@ -74,14 +76,23 @@ The graph model part is likely still in a bit of flux...
 
 ## data structure draft ##
 
-* Key decisions
-** Verbs or not?
-* Concurrent updates
-** Order of updates
-** Serialization of updates vs idempotent updates
-** exclusive access: who owns what part of the data structure
+* Blackboard contains data tuples
+* Rules connect required data tuples to connectors that produce output tuples
+* Asynchronicity is solved by registering outstanding tasks with the blackboard engine
+* (opt.) Blackboard keeps track of dependencies
+*
+
+## scenario mit verb
+
+* [EMPTY]
+* [+StartPlace(string) +StartTime] UI
+* [+StartLocation(...) +StartTime]
+
+* ride(START, ZIEL, 'bus') :- bahn(START, M, MODE) if MODE=='bus', meinbus(M, ZIEL)
 
 
 ## execution model ##
 
 * depends on node.io/blackboarding idea
+
+
