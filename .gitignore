@@ -17,4 +17,5 @@ tmp
 .idea
 .settings
 .DS_Store
+doc/api
 

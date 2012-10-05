@@ -16,7 +16,8 @@
     "hiredis": "0.1.x",
     "redis": "0.8.x",
     "jade": "0.26.x",
-    "csv": "0.0.19"
+    "csv": "0.0.19",
+    "yuidocjs": "~0.3.28"
   },
   "devDependencies": {
     "stylus": "0.29.x",

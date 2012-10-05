@@ -1,0 +1,13 @@
+{
+    "name": "ride2go",
+    "description": "ride2go internal API",
+    "version": "0.1",
+    "url": "http://www.ride2go.org",
+    "options": {
+        "paths": ["./src"],
+        "linkNatives": true,
+        "outdir": "doc/api",
+ 	"syntaxtype": "coffee",
+  	"extension": ".coffee"
+    }
+}
