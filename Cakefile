@@ -2,18 +2,19 @@ fs                = require 'fs'
 {spawn, execFile} = require 'child_process'
 
 
-# select tests to be executed
-
-selected_tests    = {
+# configure tests
+selected_tests = {
   base: true
 }
 
-active_tests = []
+active_tests   = []
 
 if selected_tests.base
   active_tests.push 'test/base/objset_test.coffee'
+  active_tests.push 'test/base/leafy_test.coffee'
 
 
+# css config
 css_sources       = ['styl/main.styl']
 css_target        = 'public/css'
 
