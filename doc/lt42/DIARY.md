@@ -1,3 +1,18 @@
+2012-10-08
+
+* DONE Integrate traits.js
+* DONE Write cloneable sets with traits.js
+* TODO Write leafy as a precondition for new location/place instances
+
+2012-10-07
+
+* DONE Design leafy structure
+* DONE Meeting: sven, t, flo, boggle
+
+2012-10-06
+
+* DONE Meeting: sven, flo, t, c_atc, boggle
+
 2012-10-05
 
 * DONE Review plan and ride and usage of redis
