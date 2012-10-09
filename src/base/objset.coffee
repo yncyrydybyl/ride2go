@@ -4,7 +4,7 @@ cloning = require '../../lib/base/cloning'
 module.exports = T.object {
   createTrait: (traitF, items) ->
     THIS   = this
-    result = T {
+    TRAIT  = T {
       has: (e) -> this._items.indexOf(e) >= 0
       add: (e) -> this._items.push(e) if !this.has(e)
       remove: (e) ->
@@ -13,11 +13,11 @@ module.exports = T.object {
         this
       cloneTrait: () -> THIS.createTrait traitF, this.elems
     }
-    result._items     = { enumerable: false, writable: false, value: items}
-    result.elems      = { enumerable: false, get: () -> items.slice 0 }
-    result.size       = { enumerable: false, get: () -> items.length }
-    result            = T.compose cloning.trait, result
-    (traitF && traitF(result)) || result
+    TRAIT._items     = { enumerable: false, writable: false, value: items}
+    TRAIT.elems      = { enumerable: false, get: () -> items.slice 0 }
+    TRAIT.size       = { enumerable: false, get: () -> items.length }
+    TRAIT            = T.compose cloning.trait, TRAIT
+    (traitF && traitF(TRAIT)) || TRAIT
 
   create: (childs = [], traitF = null) ->
     this.create_ Object.prototype, childs, traitF

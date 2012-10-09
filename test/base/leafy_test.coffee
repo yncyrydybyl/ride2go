@@ -15,13 +15,16 @@ describe 'leafy', () ->
     expect(root.newChild().root).to.equal(root)
     expect(root.newChild().newChild().root).to.equal(root)
 
-  it 'instances should support isRoot() and isChild() predicates', () ->
+  it 'instances should support isRoot(), isLeaf() and isChild() predicates', () ->
     r = leafy.create()
     c = r.newChild()
     expect(r.isRoot()).to.be.true
     expect(r.isChild()).to.be.false
     expect(c.isRoot()).to.be.false
     expect(c.isChild()).to.be.true
+    expect(r.isLeaf()).to.be.false
+    expect(c.isLeaf()).to.be.true
+
 
   it 'instances should keep track of their childs', () ->
     root   = leafy.create()
@@ -134,7 +137,7 @@ describe 'leafy', () ->
     expect(r.foo).to.equal(12)
     expect(r.bar).to.equal(13)
 
-  it 'should inherit properties from its parent', () ->
+  it 'instances should inherit properties from their parent', () ->
     r     = leafy.create()
     r.installProperty 'foo'
     r.installProperty 'bar'
@@ -145,7 +148,7 @@ describe 'leafy', () ->
     expect(a.foo).to.equal(20)
     expect(b.foo).to.equal(20)
 
-  it 'should write to undefined inherited properties', () ->
+  it 'instances should write to undefined inherited properties', () ->
     r     = leafy.create()
     r.installProperty 'sip'
     a     = r.newChild()
@@ -155,3 +158,76 @@ describe 'leafy', () ->
     expect(a.sip).to.equal(undefined)
     expect(b.sip).to.equal(42)
     expect(b.newChild().sip).to.equal(42)
+
+  it 'instances with childs should return fresh arrays', () ->
+    r    = leafy.create()
+    a    = r.newChild()
+    b    = r.newChild()
+    c    = r.childs
+    c[0] = 'frodo'
+    c[1] = 'bilbo'
+    t    = r.childs
+    expect(t[0]).to.not.equal('frodo')
+    expect(t[1]).to.not.equal('frodo')
+    expect(t[0]).to.not.equal('bilbo')
+    expect(t[1]).to.not.equal('bilbo')
+
+  it 'root instances should have a JSON representation', () ->
+    r = leafy.create()
+    expect(r.asJSON()).to.eql({ registered: [], values: {}})
+    r.registerProperty 'foo'
+    expect(r.asJSON()).to.eql({ registered: ['foo'], values: {}})
+    r.setProperty 'foo', 12
+    expect(r.asJSON()).to.eql({ registered: ['foo'], values: {foo: 12}})
+    r.installProperty 'bar'
+    expect(r.asJSON()).to.eql({
+      registered: ['foo', 'bar'], values: {foo: 12}})
+    expect(r.asJSON(true, true)).to.eql({
+      registered: ['foo', 'bar'], installed: ['bar'], values: {foo: 12}})
+
+  it 'complex instances childs\' should have a JSON representation', () ->
+    r = leafy.create()
+    a = r.newChild()
+    expect(r.childsAsJSON()).to.eql([{ values: {} }])
+
+  it 'instances with childs should have a JSON representation', () ->
+    r = leafy.create()
+    a = r.newChild()
+    b = r.newChild()
+    json = r.asJSON()
+    expect(json).to.eql({
+      registered: []
+      values: []
+      childs: [ { values: {} }, { values: {} } ]
+    })
+
+  it 'complex instances should have a JSON representation', () ->
+    r        = leafy.create()
+    a        = r.newChild()
+    b        = r.newChild()
+    c        = b.newChild()
+    json     = r.asJSON()
+    # console.log(JSON.stringify(json))
+    expect(json).to.eql({
+      registered: [],
+      values: {},
+      childs: [ {values: { } },{ values: {}, childs: [ { values: {} } ] } ]
+    })
+
+  it 'complex instances should support collecting all properties', () ->
+    r        = leafy.create()
+    r.installProperty 'foo'
+    r.installProperty 'bar'
+    r.installProperty 'baz'
+    r.foo    = 100
+    a        = r.newChild()
+    a.bar    = 200
+    b        = r.newChild()
+    b.bar    = 300
+    c        = b.newChild()
+    c.baz    = 400
+    # console.log(JSON.stringify(r.allValues()))
+    expect(r.allValues()).to.eql({foo: 100})
+    expect(a.allValues()).to.eql({foo: 100, bar: 200})
+    expect(b.allValues()).to.eql({foo: 100, bar: 300})
+    expect(c.allValues()).to.eql({foo: 100, bar: 300, baz: 400})
