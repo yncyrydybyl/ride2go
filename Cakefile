@@ -1,18 +1,8 @@
 fs                = require 'fs'
 {spawn, execFile} = require 'child_process'
 
-
 # configure tests
-selected_tests = {
-  base: true
-}
-
-active_tests   = []
-
-if selected_tests.base
-  active_tests.push 'test/base/objset_test.coffee'
-  active_tests.push 'test/base/leafy_test.coffee'
-
+active_tests      = require './test/active_tests.js'
 
 # css config
 css_sources       = ['styl/main.styl']
@@ -69,8 +59,7 @@ task "test", "run all tests", (options) ->
   test_args  = watch_args.concat(['--compilers', 'coffee:coffee-script'])
   test_args  = test_args.concat(['--colors', '--reporter',  options.reporter || 'spec'])
   test_args  = test_args.concat(['--ui', 'bdd', '-G'])
-  test_args  = test_args.concat(['--require', 'coffee-script'])
-  test_args  = test_args.concat(['--require', 'test/test_helper.coffee'])
+  test_args  = test_args.concat(['--require', 'test/test_helper.js'])
   test_args  = test_args.concat(mocha_args)
   test_args  = test_args.concat(active_tests)
   test_env   = Object.create(process.env)
