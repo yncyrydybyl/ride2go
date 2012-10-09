@@ -7,11 +7,36 @@ objset  = require '../../lib/base/objset'
 
 
 module.exports = T.object {
+  proto: () ->
+    THIS   = this
+    result = Object.create Object.prototype, T({
+      installProperty: (name) ->
+        descr = {
+          enumerable: true
+          configurable: false
+          get: () ->
+            here = this
+            while here
+              log.info "here #{here}"
+              val  = here._values[name]
+              log.info "val #{val}"
+              return val if val
+              here = here.parent
+            undefined
+          set: (newValue) ->
+            this._values[name] = newValue
+        }
+        Object.defineProperty this.proto, name, descr
+    })
+    result
+
   trait: (parent, childs) ->
     THIS   = this
+    proto  = if parent then parent.proto else THIS.proto()
     result = T {
       _childs: objset.create childs
       _parent: parent
+      _values: {}
 
       isBelow: (other) ->
         p = this.parent
@@ -23,10 +48,21 @@ module.exports = T.object {
       hasChild: (c) ->
         this._childs.has(c)
 
+      newRoot: () ->
+        trait = THIS.trait(null)
+        leaf  = Object.create this.proto, trait
+        leaf
+
       newChild: () ->
-        child = Object.create Object.prototype, THIS.trait(this)
-        this._childs.add child
-        child
+        trait = THIS.trait(this)
+        leaf  = Object.create this.proto, trait
+        this._childs.add leaf
+        leaf
+    }
+    result.proto   = {
+      enumerable: false,
+      get: () ->
+        proto
     }
     result.root    = {
       enumerable: false
@@ -50,7 +86,9 @@ module.exports = T.object {
     result.childs = { enumerable: false, get: () -> this._childs.elems }
     result
 
-  create: (childs = []) -> Object.create Object.prototype, this.trait(null, childs)
+  create: (childs = []) ->
+    trait = this.trait(null, childs)
+    Object.create trait.proto.get(), trait
 }
 
 
