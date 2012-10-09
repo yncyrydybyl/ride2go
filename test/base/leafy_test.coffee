@@ -104,7 +104,7 @@ describe 'leafy', () ->
     expect(r.hasRegisteredProperty('foo')).to.be.true
     expect(r.hasRegisteredProperty('bar')).to.be.true
     expect(r.hasRegisteredProperty('baz')).to.be.false
-    expect(r.registeredProperties).to.eql(['foo', 'bar'])
+    expect(r.registeredPropertyNames).to.eql(['foo', 'bar'])
 
   it 'prototype should support property installation', () ->
     r = leafy.create()
@@ -113,7 +113,7 @@ describe 'leafy', () ->
     expect(r.hasInstalledProperty('foo')).to.be.true
     expect(r.hasInstalledProperty('bar')).to.be.true
     expect(r.hasInstalledProperty('baz')).to.be.false
-    expect(r.installedProperties).to.eql(['foo', 'bar'])
+    expect(r.installedPropertyNames).to.eql(['foo', 'bar'])
 
   it 'prototype should register properties upon installation', () ->
     r = leafy.create()
@@ -226,8 +226,73 @@ describe 'leafy', () ->
     b.bar    = 300
     c        = b.newChild()
     c.baz    = 400
-    # console.log(JSON.stringify(r.allValues()))
-    expect(r.allValues()).to.eql({foo: 100})
-    expect(a.allValues()).to.eql({foo: 100, bar: 200})
-    expect(b.allValues()).to.eql({foo: 100, bar: 300})
-    expect(c.allValues()).to.eql({foo: 100, bar: 300, baz: 400})
+    # console.log(JSON.stringify(r.allProperties()))
+    expect(r.allProperties()).to.eql({foo: 100})
+    expect(a.allProperties()).to.eql({foo: 100, bar: 200})
+    expect(b.allProperties()).to.eql({foo: 100, bar: 300})
+    expect(c.allProperties()).to.eql({foo: 100, bar: 300, baz: 400})
+
+  it 'instances can be copied below root', () ->
+    r     = leafy.create()
+    r.installProperty 'foo'
+    r.installProperty 'bar'
+    a     = r.newChild()
+    a.foo = 67
+    a.bar = 68
+    b     = a.copyBelow(r)
+    expect(b.allProperties()).to.eql({foo: 67, bar: 68})
+
+  it 'complex instances can be copied below root', () ->
+    r     = leafy.create()
+    r.installProperty 'foo'
+    r.installProperty 'bar'
+    a     = r.newChild()
+    a.foo = 67
+    b     = a.newChild()
+    b.bar = 68
+    c     = a.copyBelow(r)
+    expect(b.allProperties()).to.eql({foo: 67, bar: 68})
+    expect(c.asJSON()).to.eql(a.asJSON())
+
+  it 'instances should dup roots', () ->
+    r     = leafy.create()
+    r.installProperty 'foo'
+    r.installProperty 'bar'
+    r.foo = 72
+    a     = r.newChild()
+    a.bar = 74
+    c     = r.dup()
+    expect(a.allProperties()).to.eql({foo: 72, bar: 74})
+    expect(r.asJSON()).to.eql(c.asJSON())
+    expect(r.parent == c.parent).to.be.true
+    expect(r.root   == c.root).to.be.true
+
+  it 'instances should dup non-root leaves', () ->
+    r     = leafy.create()
+    r.installProperty 'foo'
+    r.installProperty 'bar'
+    a     = r.newChild()
+    a.foo = 76
+    b     = a.newChild()
+    b.bar = 78
+    c     = a.dup()
+    expect(a.asJSON()).to.eql(c.asJSON())
+    expect(a.parent).to.equal(r)
+    expect(c.parent).to.equal(r)
+
+  it.only 'instances should dup on conflicting set', () ->
+    r     = leafy.create()
+    r.installProperty 'foo'
+    r.installProperty 'bar'
+    r.foo = 80
+    a     = r.newChild()
+    a.bar = 82
+    a.foo = 83
+    expect(r.root.asJSON()).to.eql({
+      values: {},
+      registered: ['foo', 'bar'],
+      childs: [
+        { values: {foo:83}, childs: [ { values: {bar:82} } ] },
+        { values: {foo:80}, childs: [ { values: {bar:82} } ] }
+      ]
+    })

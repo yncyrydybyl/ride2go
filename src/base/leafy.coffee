@@ -5,100 +5,130 @@ T       = require('traits').Trait
 cloning = require '../../lib/base/cloning'
 objset  = require '../../lib/base/objset'
 
+protoProtoTrait = T {
+  isBelow: (other) ->
+    p = this.parent
+    if p == other then true else  (if p then p.isBelow(other) else false)
 
+  uproot: () ->
+    this.parent = null
+
+  isRoot: () ->
+    this.parent == null
+
+  isChild: () ->
+    ! this.isRoot()
+
+  registerProperty: (name) ->
+    this._register.add name
+    name
+
+  hasRegisteredProperty: (name) ->
+    this._register.has(name)
+
+  installProperty: (name) ->
+    this.registerProperty name
+    if ! this._installed.has(name)
+      descr = {
+      enumerable: true
+      configurable: false
+      get: () -> this.getProperty name
+      set: (newValue) -> this.setProperty name, newValue
+      }
+      Object.defineProperty this.__proto__, name, descr
+      this._installed.add name
+    name
+
+  hasInstalledProperty: (name) ->
+    this._register.has(name)
+
+  installMissingProperties: () ->
+    this.installProperty(name) for name in this.registeredPropertyNames
+
+  getPropertyOwner: (name) ->
+    return undefined if !this.hasRegisteredProperty(name)
+    here = this
+    while here
+      return here if here.hasLocal(name)
+      here = here.parent
+    here
+
+  getProperty: (name) ->
+    owner = this.getPropertyOwner name
+    if owner then owner.getLocal(name) else undefined
+
+  setProperty: (name, value) ->
+    result = this.trySetLocal name, value
+    if result == undefined
+      throw new Error("Attempt to set unregistered property #{name}")
+    else
+      if result
+        # set property on root of copy of conflicting parent-tree
+        result.dup().setProperty name, value
+      else
+        null
+
+  allProperties: (result = {}) ->
+    if this.isRoot()
+      this.localProperties(result)
+    else
+      this.localProperties this.parent.allProperties()
+
+  copyBelow: (newParent) ->
+    leaf = newParent.newChild()
+    for name, v of this._values
+      leaf.setProperty name, v if v != undefined
+    for child in this.childs
+      child.copyBelow leaf
+    return leaf
+
+  dup: () ->
+    if this.isRoot()
+      top         = this.newRoot()
+      leaf        = this.copyBelow top
+      this.parent = top
+      leaf
+    else
+      this.copyBelow this.parent
+
+  childsAsJSON: (includeRegistered = false, includeInstalled = false) ->
+    kids = this.childs # this is a fresh array
+    i    = 0
+    while i < kids.length
+      kiddo   = kids[i]
+      kids[i] = kiddo.asJSON includeRegistered, includeInstalled
+      i       = i + 1
+    kids
+
+  asJSON: (includeRegistered = true, includeInstalled = false) ->
+    result               = { values: this.localProperties() }
+    result['registered'] = this.registeredPropertyNames if includeRegistered
+    result['installed']  = this.installedPropertyNames if includeInstalled
+    if !this.isLeaf()
+      kids             = this.childsAsJSON(false, false)
+      result['childs'] = kids
+    result
+}
+
+protoProtoTrait.registeredPropertyNames = { enumerable: true, get: () -> this._register.elems }
+protoProtoTrait.installedPropertyNames  = { enumerable: true, get: () -> this._installed.elems }
+
+protoProto = Object.create Object.prototype, protoProtoTrait
+protoProto.freeze
 
 module.exports = T.object {
   createProtoTrait: (traitF) ->
-    THIS  = this
-    TRAIT = T {
-      registerProperty: (name) ->
-        this._register.add name
-        name
-
-      hasRegisteredProperty: (name) ->
-        this._register.has(name)
-
-      installProperty: (name) ->
-        this.registerProperty name
-        if ! this._installed.has(name)
-          descr = {
-            enumerable: true
-            configurable: false
-            get: () -> this.getProperty name
-            set: (newValue) -> this.setProperty name, newValue
-          }
-          Object.defineProperty this.__proto__, name, descr
-          this._installed.add name
-        name
-
-      hasInstalledProperty: (name) ->
-        this._register.has(name)
-
-      installMissingProperties: () ->
-        this.installProperty(name) for name in this.registeredProperties
-
-      getPropertyOwner: (name) ->
-        return undefined if !this.hasRegisteredProperty(name)
-        here = this
-        while here
-          return here if here.hasLocal(name)
-          here = here.parent
-        here
-
-      getProperty: (name) ->
-        owner = this.getPropertyOwner name
-        if owner then owner.getLocal(name) else undefined
-
-      setProperty: (name, value) ->
-        result = this.trySetLocal name, value
-        if result == undefined
-          throw new Error("Attempt to set unregistered property #{name}")
-        if result
-          throw new Error("Conflict")
-        null
-
-      childsAsJSON: (includeRegistered = false, includeInstalled = false) ->
-        kids = this.childs # this is a fresh array
-        i    = 0
-        while i < kids.length
-          kiddo   = kids[i]
-          kids[i] = kiddo.asJSON includeRegistered, includeInstalled
-          i       = i + 1
-        kids
-
-      asJSON: (includeRegistered = true, includeInstalled = false) ->
-        result               = { values: this.valuesAsJSON() }
-        result['registered'] = this.registeredProperties if includeRegistered
-        result['installed']  = this.installedProperties if includeInstalled
-        if !this.isLeaf()
-          kids             = this.childsAsJSON(false, false)
-          result['childs'] = kids
-        result
+    trait = {
+      _register: { writable: false, value: objset.create() }
+      _installed: { writable: false, value: objset.create() }
     }
-    TRAIT.registeredProperties = { enumerable: true, get: () -> this._register.elems }
-    TRAIT.installedProperties  = { enumerable: true, get: () -> this._installed.elems }
-    TRAIT._register  = { writable: false, value: objset.create() }
-    TRAIT._installed = { writable: false, value: objset.create() }
-    (traitF && traitF(TRAIT)) || TRAIT
+    (traitF && traitF(trait)) || trait
 
   createTrait: (traitF, proto, parent, childs) ->
     THIS  = this
-    TRAIT = T {
-      isBelow: (other) ->
-        p = this.parent
-        if p == other then true else  (if p then p.isBelow(other) else false)
-
-      isRoot: () ->
-        this.parent == null
-
-      isChild: () ->
-        ! this.isRoot()
-
+    trait = T {
       isLeaf: () ->
         this._childs.size == 0
-
-      uproot: () ->
-        this.parent = null
 
       hasLocal: (name) ->
         this._values[name] != undefined
@@ -126,7 +156,7 @@ module.exports = T.object {
             owner
 
       setLocal: (name, value) ->
-        owner = trySetLocal name, value
+        owner = this.trySetLocal name, value
         throw new Error("Attempt to set non-local property #{name}") if owner
         throw new Error("Unregistered property #{name}") if owner == undefined
         null
@@ -142,31 +172,17 @@ module.exports = T.object {
         this._childs.add leaf
         leaf
 
-      dup: () ->
-        if this.isRoot()
-          top         = newRoot()
-          this.parent = top
-          this.dup()
-        else
-          null
-          
-      valuesAsJSON: (result = {}) ->
+      localProperties: (result = {}) ->
         for k, v of this._values
           result[k] = v if v != undefined
         result
-
-      allValues: (result = {}) ->
-        if this.isRoot()
-          this.valuesAsJSON(result)
-        else
-          this.valuesAsJSON this._parent.allValues()
     }
-    TRAIT._childs = { writable: false, value: objset.create(childs) }
-    TRAIT._parent = { writable: true, value: parent }
-    TRAIT._values = { writable: false, value: {} }
-    TRAIT.locals  = { enumerable: true, get: () -> Object.keys this._values }
-    TRAIT.root    = { enumerable: true, get: () -> p = this.parent; (p && p.root) || this }
-    TRAIT.parent  = {
+    trait._childs = { writable: false, value: objset.create(childs) }
+    trait._parent = { writable: true, value: parent }
+    trait._values = { writable: false, value: {} }
+    trait.locals  = { enumerable: true, get: () -> Object.keys this._values }
+    trait.root    = { enumerable: true, get: () -> p = this.parent; (p && p.root) || this }
+    trait.parent  = {
       enumerable: true
       get: () ->
         p = this._parent
@@ -186,11 +202,13 @@ module.exports = T.object {
           p._childs.remove(this) if (p && p._childs.has(this))
           this._parent = newParent
     }
-    TRAIT.childs = { enumerable: true, get: () -> this._childs.elems }
-    (traitF && traitF(TRAIT)) || TRAIT
+    trait.childs = { enumerable: true, get: () -> this._childs.elems }
+    (traitF && traitF(trait)) || trait
 
   createProto: (traitF = null) ->
-    Object.create Object.prototype, this.createProtoTrait(traitF)
+    proto = Object.create protoProto, this.createProtoTrait(traitF)
+    proto.freeze
+    proto
 
   create: (childs = [], traitF = null) ->
     this.create_ this.createProto(), childs, traitF
