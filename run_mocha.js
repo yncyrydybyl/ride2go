@@ -43,10 +43,10 @@ var runner = mocha.run(function () {
 
 runner.on('pass', function (test) {
     passed = passed + 1;
-    console.log('... %s passed', test.title);
+//    console.log('... %s passed', test.title);
 });
 
 runner.on('fail', function (test) {
     failed = failed + 1;
-    console.log('... %s failed', test.title);
+//    console.log('... %s failed', test.title);
 });
