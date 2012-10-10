@@ -25,7 +25,6 @@ describe 'leafy', () ->
     expect(r.isLeaf()).to.be.false
     expect(c.isLeaf()).to.be.true
 
-
   it 'instances should keep track of their childs', () ->
     root   = leafy.create()
     x      = root.newChild()
@@ -280,7 +279,7 @@ describe 'leafy', () ->
     expect(a.parent).to.equal(r)
     expect(c.parent).to.equal(r)
 
-  it.only 'instances should dup on conflicting set', () ->
+  it 'instances should dup on conflicting set', () ->
     r     = leafy.create()
     r.installProperty 'foo'
     r.installProperty 'bar'

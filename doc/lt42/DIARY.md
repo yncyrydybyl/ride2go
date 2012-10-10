@@ -1,3 +1,11 @@
+2012-10-10
+
+* TODO Pull current ride api into single object
+
+2012-10-09
+
+* DONE Finish leafy
+
 2012-10-08
 
 * DONE Integrate traits.js

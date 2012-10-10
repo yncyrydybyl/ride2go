@@ -66,13 +66,15 @@ protoProtoTrait = T {
         # set property on root of copy of conflicting parent-tree
         result.dup().setProperty name, value
       else
-        null
+        this
 
   allProperties: (result = {}) ->
     if this.isRoot()
       this.localProperties(result)
     else
       this.localProperties this.parent.allProperties()
+
+  # copyChainBelow: (newParent) ->
 
   copyBelow: (newParent) ->
     leaf = newParent.newChild()
