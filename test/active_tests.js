@@ -41,3 +41,6 @@ if (selected_tests.import) {
 
 // export
 module.exports = active_tests;
+
+// comment out to only run a single file
+module.exports = ["test/place_test.coffee"];

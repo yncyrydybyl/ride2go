@@ -1,130 +1,176 @@
-__ = require "../vendor/underscore"
-redis = require("redis").createClient()
-log = require("./logging")
-#log.transports.console.level="debug"
+__    = require "../vendor/underscore"
+log   = require("./logging")
 
-#Place = ->
-#Place.prototype =
+
 class Place
-  
-  constructor: (@key) -> # syntactig sugar to ignore
-    (@states={}).find = (name, done) => @findState(name, done)
-    (@cities={}).find = (name, done) => @findCity(name, done)
 
-  toJson: ->
-    JSON.stringify @
-  
-  country: -> @key.substring(0,2)
-  
-  city: ->
-    if c = @key.match(/^\w{2}:[^:]+:([^:]*).*/)
-      return c[1]
-    else
-      log.debug("city not found")
-      return undefined
-  
+  constructor: (@props = {}) ->
+    @
+
+  update: (update) ->
+    result = {}
+    for k, v of @props
+      result[k] = v if v != undefined
+    for k, v of update
+      if v == undefined then delete result[k] else result[k] = v
+
+    new Place(result)
+
+  updateCallback: (callback) ->
+    self = @
+    (batch) ->
+      callback self.update(batch)
+
+  toJSON: ->
+    JSON.stringify @props
+
+  userText: ->
+    @props.user_text
+
+  addressComponents: ->
+    @props.addr_components
+
+  country: ->
+    @props.gs_country || log.debug('country not found')
+
   state: ->
-    if c = @key.match(/(^\w{2}:[^:]+).*/)
-      return new State(c[1])
-    else
-      log.debug("state not found")
-      return undefined
+    @props.gs_state || log.debug('state not found')
 
-  seperators: ->
-    if s = @key.match(/:/g)
-      return s.length
-    else
-      return 0
-  
+  city: ->
+    @props.gs_city || log.debug('city not found')
+
+  hasCountry: ->
+    if @props.gs_country then true else false
+
+  hasState: ->
+    if @props.gs_state then true else false
+
+  hasCity: ->
+    if @props.gs_city then true else false
+
   isCountry: ->
-    return @seperators() == 0
+    @hasCountry()
+
   isState: ->
-    return @seperators() == 1
+    @hasCountry() && @hasState()
+
   isCity: ->
-    return @seperators() == 2
+    @hasCountry() && @hasState() && @hasCity()
 
-  foreignKeyOrCity: (namespace_prefix, done) ->
-    redis.hget @key, namespace_prefix, (err,foreign_key) =>
-      if foreign_key == null
-        log.debug "no #{namespace_prefix} foreign key for #{@key}"
-        done @city()
-      else
-        log.debug "found #{foreign_key} foreign key for #{@key}"
-        done foreign_key
-    
-Place.find = (egal, callback) ->
-  if __.isString(egal)
-    #log.debug "find parameter is a string"
-    @findByKeyPattern egal, callback
+  asCountry: ->
+    @update({ gs_state: undefined, gs_city: undefined })
 
-  else if __.isObject(egal)
-    #log.debug "find parameter is an object"
-    if egal.city and egal.country
-      @findByKeyPattern "#{egal.country()}:*:#{egal.city()}", callback
+  asState: ->
+    @update({ gs_city: undefined })
 
-    else if egal.address_components
-      @fromGoogleGeocoder egal, callback
 
-Place.findByName = (name,subkey,callback) ->
-  redis.exists (key = subkey+":"+name), (err, exists) =>
-    if exists == 1
-      log.debug "#{key} is a primary key."
-      callback(@new(key))
+class GeoStore
+
+  constructor: (@redis) ->
+    @
+
+  placeToCountryKey: (place) ->
+    throw new Error("Not a country") if !place.isCountry()
+    place.props.gs_country
+
+  placeToCityPattern: (place, gs_city) ->
+    throw new Error("Not a country") if !place.isCountry()
+    "#{place.props.gs_country}:*:#{gs_city}"
+
+  placeToStateKey: (place) ->
+    throw new Error("Not a state") if !place.isState()
+    gs_country = place.props.gs_country
+    gs_state   = place.props.gs_state
+    "#{gs_country}:#{gs_state}"
+
+  placeToCityKey: (place, missing = '') ->
+    gs_country = place.props.gs_country || missing
+    gs_state   = place.props.gs_state || missing
+    gs_city    = place.props.gs_city || missing
+    "#{gs_country}:#{gs_state}:#{gs_city}"
+
+  keyToPlaceProps: (key, target = {}) ->
+    result = key.split ':'
+    len    = result.length
+    if len > 0
+      target.gs_orig_key = key
+      target.gs_country  = result[0] if result[0] != '*'
+      target.gs_state    = result[1] if len > 1 && result[1].length > 0 && result[1] != '*'
+      target.gs_city     = result[2] if len > 2 && result[2].length > 0 && result[2] != '*'
+    target
+
+  placePropsCallback: (callback) ->
+    self = @
+    (key) ->
+      callback self.keyToPlaceProps(key)
+
+  keyToPlace: (key) ->
+    new Place keyToProps(key)
+
+  keyWithoutFirstEncodingError: (key) ->
+    i = key.indexOf '�'
+    if i >= 0
+      "#{key.substr(0, i)}*#{key.substr(i+1, key.length)}"
     else
-      log.debug "#{key} is NO primary key."
-      if (i = name.indexOf("�")) != -1
-        log.debug "#{name} contains enc�ding �rrors!!"
-        name = name.substr(0,i)+"*"+name.substr(i+1,name.length)
-        log.debug "trying #{name} with wildcard"
-        redis.keys subkey+":"+name, (err, matches) =>
-          if matches.length == 1
-            log.debug "found #{matches[0]}"
-            callback(@new(matches[0]))
-          else if matches.length > 1
-            log.debug "found more primary keys matching #{subkey}:#{name}"
-            @chooseByStrategy(matches, callback)
-          else # alts.length == 0
-            log.debug "no matches found for #{subkey}:#{name}"
-            callback undefined
+      null
+
+  findByKey: (key_prefix, name, strategy, callback) ->
+    key = "#{key_prefix}:#{name}"
+    @redis.exists key, (err, exists) =>
+      if exists == 1
+        log.debug "#{key} is a primary key."
+        callback key
       else
-        log.debug "trying alternatives"
-        redis.smembers "geoname:alt:"+name, (err, alts) =>
-          alts = (a for a in alts when a.indexOf(subkey) == 0)
-          if alts.length == 1
-            log.debug "found geoname:alt:#{name} mapping to #{alts[0]}"
-            callback(@new(alts[0]))
-          else if alts.length > 1
-            log.debug "found more primary keys for geoname:alt:#{name}"
-            # TODO more determination of the place by coords or zip code
-            log.debug "NOT handled yet: #{alts}"
-            callback undefined
-          else # alts.length == 0
-            log.debug "no alternative name for geoname:alt:#{name}"
-            callback undefined
-
-Place.findByKeyPattern = (pattern,callback) ->
-  log.debug "trying key pattern "+pattern
-  redis.keys pattern, (err, keys) =>
-    if keys.length == 0
-      log.debug ".. no key."
-      callback undefined
-    else if keys.length == 1
-      log.debug "..exactly 1 key."
-      redis.exists keys[0], (err, exists) =>
-        if exists == 1
-          callback(@new(keys[0]))
+        log.debug "#{key} is NO primary key."
+        if newKey = keyWithoutFirstEncodingError(key)
+          log.debug "#{key} contains enc�ding �rrors; trying #{newKey}"
+          @redis.keys newKey, (err, matches) =>
+            if matches.length == 1
+              log.debug "found #{matches[0]}"
+              callback matches[0]
+            else
+              if matches.length > 1
+                log.debug "found more primary keys matching #{newKey}"
+                strategy matches, callback
+              else
+                log.debug "no matches found for #{newKey}"
+                callback undefined
         else
-          callback undefined
+          log.debug "trying alternatives"
+          @redis.smembers "geoname:alt:#{name}", (err, alts) =>
+            alts = (a for a in alts when a.indexOf(subkey) == 0)
+            if alts.length == 1
+              log.debug "found geoname:alt:#{name} mapping to #{alts[0]}"
+              callback alts[0]
+            else 
+              if alts.length > 1
+                log.debug "found more primary keys for geoname:alt:#{name}"
+                # TODO more determination of the place by coords or zip code
+                log.debug "NOT handled yet: #{alts}"
+                callback undefined
+              else # alts.length == 0
+                log.debug "no alternative name for geoname:alt:#{name}"
+                callback undefined
 
-    else if keys.length >= 1
-      log.debug "more than one key"
-      @chooseByStrategy(keys,callback)
+  findByKeyPattern: (pattern, strategy, callback) ->
+    log.debug "trying key pattern #{pattern}"
+    @redis.keys pattern, (err, keys) =>
+    if keys.length == 0
+      log.debug "..no key"
+      callback undefined
+    else 
+      if keys.length == 1
+        log.debug "..exactly 1 key"
+        @redis.exists keys[0], (err, exists) =>
+          callback (if exists == 1 then keys[0] else undefined)
+      else 
+        log.debug "more than one key"
+        strategy keys, callback
 
-Place.chooseByStrategy = (keys,callback, strategy = "population") ->
-  if strategy == "population"
+  chooseByPopulation: (keys, callback) ->
     log.debug "population strategy"
-    redis.multi(["HGET", k, "population"] for k in keys).exec (err, results) =>
-      i = 0
+    @redis.multi(["HGET", k, "population"] for k in keys).exec (err, results) =>
+      i   = 0
       idx = 0
       max = 0
       for p in results
@@ -133,49 +179,99 @@ Place.chooseByStrategy = (keys,callback, strategy = "population") ->
           max = p
           idx = i
         i += 1
-      @find(keys[idx],callback)
+      callback keys[idx]
 
-#Place.findByCityAndCountry city, country, callback
-#  fromString "#{country}:*:#{city}"
-
-# builderFromGeoObject
-Place.fromGoogleGeocoder = (obj, callback) ->
-  log.debug "using from Place.fromGoogleGeocoder"
-  gcountry = gstate = gcity = {}
-  stateterm = "administrative_area_level_1"
-  cityterm = "locality"
-
-  for component in obj.address_components
-    gcountry = component.short_name if __.include(component.types, "country")
-    gcity = component.long_name if __.include(component.types, cityterm)
-    gstate = component.long_name if __.include(component.types, stateterm)
-  Country.find (gcountry), (country) ->
-    log.debug "found country #{country.key}"
-    country.states.find gstate, (state) ->
-      log.debug "found state #{state.key}"
-      state.cities.find gcity, (city) ->
-        log.debug "found city #{city.key}"
-        callback city
-
-class Country extends Place
-  findState: (name, callback) ->
-    State.findByName name, @key, callback
-  findCity: (name, callback) ->
-    City.findByKeyPattern @key+":*:"+name, callback
-
-class State extends Place
-  findCity: (name, callback) ->
-    City.findByName name, @key, callback
-
-class City extends Place
+  foreignKeyOrCity: (key, namespace_prefix, city_name, done) ->
+    @redis.hget key, namespace_prefix, (err, foreign_key) =>
+      if foreign_key == null
+        log.debug "no #{namespace_prefix} foreign key for #{key}"
+        done city_name
+      else
+        log.debug "found #{foreign_key} foreign key for #{key}"
+        done foreign_key
 
 
-Place.new = (key)-> new Place(key)
-Country.new = (key)-> new Country(key)
-State.new = (key)-> new State(key)
-City.new = (key)-> new City(key)
+class ForeignKeyResolver
+  constructor: (@geoStore, @namespace_prefix) ->
+    @
 
-module.exports.Country = Country
-module.exports.Place = Place
-module.exports.State = State
-module.exports.City = City
+  resolve: (place, callback) ->
+    @geoStore.foreignKeyOrCity @geoStore.placeToCityKey(place), @namespace_prefix, place.city(), callback
+
+
+class CountryStateResolver
+  constructor: (@geoStore, @name) ->
+    @
+
+  resolve: (place, callback) ->
+    placeCallback = @geoStore.placePropsCallback(place.updateCallback(callback))
+    @geoStore.findByName @geoStore.placeToCountryKey(place), @name, placeCallback
+
+
+class CountryCityResolver
+  constructor: (@geoStore, @name) ->
+    @
+
+  resolve: (place, callback) ->
+    placeCallback = @geoStore.placePropsCallback(place.updateCallback(callback))
+    @geoStore.findByKeyPattern @geoStore.placeToCityPattern(place, @name), placeCallback
+
+
+class StateCityResolver
+  constructor: (@geoStore, @name) ->
+    @
+
+  resolve: (place, callback) ->
+    placeCallback = @geoStore.placePropsCallback(place.updateCallback(callback))
+    @geoStore.findByName @geoStore.placeToStateKey(place), @name, placeCallback
+
+
+class DefaultResolver
+  constructor: (@geoStore) ->
+    @
+
+  resolve: (place, callback) ->
+    placeCallback = @geoStore.placePropsCallback(place.updateCallback(callback))
+    if place.userText()
+      @geoStore.findByKeyPattern place.userText(), callback
+    else
+      if place.hasCity() && place.hasCountry()
+        @geoStore.findByKeyPattern @geoStore.placeToCityPattern(place, place.city()), callback
+      else
+        if place.addressComponents()
+          new GoogleGeocoder().resolve(place, callback)
+
+
+class GoogleGeocoder
+  constructor: (@geoStore) ->
+    @
+
+  resolve: (place, callback) ->
+    log.debug "using from Place.fromGoogleGeocoder"
+    gcountry = gstate = gcity = {}
+    stateterm = "administrative_area_level_1"
+    cityterm = "locality"
+
+    for component in place.addressComponents()
+      gcountry = component.short_name if __.include(component.types, "country")
+      gcity = component.long_name if __.include(component.types, cityterm)
+      gstate = component.long_name if __.include(component.types, stateterm)
+
+    Country.find (gcountry), (country) ->
+      log.debug "found country #{country.key}"
+      country.states.find gstate, (state) ->
+        log.debug "found state #{state.key}"
+        state.cities.find gcity, (city) ->
+          log.debug "found city #{city.key}"
+          callback city
+
+module.exports = {
+  Place: Place
+  GeoStore: GeoStore
+  DefaultResolver: DefaultResolver
+  ForeignKeyResolver: ForeignKeyResolver
+  GoogleGeocoder: GoogleGeocoder
+  CountryStateResolver: CountryStateResolver
+  CountryCityResolver: CountryCityResolver
+  StateCityResolver: StateCityResolver
+}

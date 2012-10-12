@@ -16,7 +16,7 @@ class Ride
   ziel: -> new Place @dest
   to: -> new Place @dest
  
-  toJson: -> JSON.stringify(@)
+  toJSON: -> JSON.stringify(@)
   departure: -> new Date(@dep)
   arrival: -> new Date(@arr)
  

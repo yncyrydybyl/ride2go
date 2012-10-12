@@ -52,10 +52,10 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
         i = 0
         log.notice "RDS received "+ JSON.stringify(rides[0])
         for ride in (Ride.new(r) for r in rides) # store the RiDeS to cache #
-          console.log "hier "+ride.toJson()
-          @redis.hset route, ride.link(), ride.toJson(), (anothererror, isNew) =>
+          console.log "hier "+ride.toJSON()
+          @redis.hset route, ride.link(), ride.toJSON(), (anothererror, isNew) =>
             log.error anothererror if anothererror
-            @emit route, Ride.new(rides[i]).toJson() if isNew # ie. fiRst time DiScovered #
+            @emit route, Ride.new(rides[i]).toJSON() if isNew # ie. fiRst time DiScovered #
             i += 1
       ), true if @scraping # ToDo schedule some more smarter strategy #
 

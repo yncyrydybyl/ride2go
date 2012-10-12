@@ -1,110 +1,155 @@
-__ = NaN
-redis = NaN
-Place = require('../lib/place').Place
-Country = require('../lib/place').Country
-State = require('../lib/place').State
-City = require('../lib/place').City
+__       = NaN
 
+libRedis = require 'redis'
+libPlace = require '../lib/place'
 
-describe "Place", (done) ->
+GeoStore = libPlace.GeoStore
+Place    = libPlace.Place
+
+redis    = NaN
+store    = NaN
+
+# TODO Pull into separate tests
+describe 'GeoStore', () ->
   
   beforeEach ->
-    redis = require("redis").createClient()
+    redis = libRedis.createClient()
+    store = new GeoStore(redis)
 
+  it 'should constructy proper placeProps callbacks', () ->
+    cb = store.placePropsCallback (props) ->
+      expect(props.gs_country).to.equal('DE')
+      expect(props.gs_state).to.equal('Brandenburg')
+      expect(props.gs_city).to.equal('Potsdam')
+    cb 'DE:Brandenburg:Potsdam'
 
-  it "should know that is a city", ->
-    c = new City("DE:Hessen:Frankfurt am Main")
-    expect(c.isCity()).to.equal(true)
-    expect(c.isCountry()).to.equal(false)
-    expect(c.isState()).to.equal(false)
+  describe 'Place', () ->
 
-  it "should know that is a state", ->
-    s = new State("DE:Hessen")
-    expect(s.isState()).to.equal(true)
-    expect(s.isCity()).to.equal(false)
-    expect(s.isCountry()).to.equal(false)
-    
-  it "should know that is a country", ->
-    c = new Country("DE")
-    expect(c.isCountry()).to.equal(true)
-    expect(c.isCity()).to.equal(false)
-    expect(c.isState()).to.equal(false)
+    it 'should handle city keys correctly', ->
+      place = new Place(store.keyToPlaceProps('DE:Hessen:Frankfurt am Main'))
+      expect(place).to.be.ok
+      expect(place.hasCountry()).to.be.true
+      expect(place.hasState()).to.be.true
+      expect(place.hasCity()).to.be.true
+      expect(place.isCountry()).to.be.true
+      expect(place.isState()).to.be.true
+      expect(place.isCity()).to.be.true
 
-  it "should have a convenience getter for state", ->
-    p = new City("DE:Bayern:München")
-    expect(p.state().key).to.equal "DE:Bayern"
-    p = new City("DE:Bayern")
-    expect(p.state().key).to.equal "DE:Bayern"
+    it 'should construct proper update callbacks', () ->
+      place = new Place(store.keyToPlaceProps('DE:Hessen:Frankfurt am Main'))
+      cb    = place.updateCallback (newPlace) ->
+        expect(newPlace.state()).to.equal('Babbel')
+      cb { 'gs_state': 'Babbel' }
 
+    it 'should handle state keys correctly', ->
+      place = new Place(store.keyToPlaceProps('DE:Hessen'))
+      expect(place).to.be.ok
+      expect(place.hasCountry()).to.be.true
+      expect(place.hasState()).to.be.true
+      expect(place.hasCity()).to.be.false
+      expect(place.isCountry()).to.be.true
+      expect(place.isState()).to.be.true
+      expect(place.isCity()).to.be.false
 
-  describe "Find", (done) ->
+    it 'should know that is a country', ->
+      place = new Place(store.keyToPlaceProps('DE'))
+      expect(place).to.be.ok
+      expect(place.hasCountry()).to.be.true
+      expect(place.hasState()).to.be.false
+      expect(place.hasCity()).to.be.false
+      expect(place.isCountry()).to.be.true
+      expect(place.isState()).to.be.false
+      expect(place.isCity()).to.be.false
 
-    it "should find a country by key", (done) ->
+    it 'should have a convenience getter for state from city', ->
+      place = new Place(store.keyToPlaceProps('DE:Bayern:München'))
+      place = place.asState()
+      key   = store.placeToStateKey(place)
+      expect(place.isState()).to.be.true
+      expect(place.hasCity()).to.be.false
+      expect(key).to.equal "DE:Bayern"
+
+    it 'should have a convenience getter for state from state', ->
+      place = new Place(store.keyToPlaceProps('DE:Bayern'))
+      place = place.asState()
+      key   = store.placeToStateKey(place)
+      expect(place.isState()).to.be.true
+      expect(place.hasCity()).to.be.false
+      expect(key).to.equal "DE:Bayern"
+
+    it 'should construct proper key', ->
+      place     = new Place(store.keyToPlaceProps('DE:Hessen:Frankfurt am Main'))
+      key       = store.placeToCityKey(place)
+      expect(key).to.be.equal('DE:Hessen:Frankfurt am Main')
+
+  describe 'Resolving', (done) ->
+
+    xit "should find a country by key", (done) ->
       Country.find "DE", (country) ->
         expect(country.key).to.equal("DE")
         expect(country).instanceOf(Country)
         done()
     
-    it "should find a city by key", (done) ->
+    xit "should find a city by key", (done) ->
       City.find "DE:Berlin:Berlin", (city) ->
         expect(city.key).to.equal("DE:Berlin:Berlin")
         expect(city).instanceOf(City)
         done()
     
-    it "should find a state in a country", (done) ->
+    xit "should find a state in a country", (done) ->
       new Country("DE").states.find "Berlin", (state) ->
         expect(state.key).to.equal("DE:Berlin")
         expect(state).instanceOf(State)
         done()
         
-    it "should find a city in a country", (done) ->
+    xit "should find a city in a country", (done) ->
       new Country("DE").cities.find "Hamburg", (city) ->
         expect(city.key).to.equal("DE:Hamburg:Hamburg")
         expect(city).instanceOf(City)
         done()
     
-    it "should choose the city with max population if not unique", (done) ->
+    xit "should choose the city with max population if not unique", (done) ->
       new Country("DE").cities.find "München", (city) ->
         expect(city.key).to.equal("DE:Bayern:München")
         done()
 
-    it "should find a city in a state", (done) ->
+    xit "should find a city in a state", (done) ->
       new State("DE:Berlin").cities.find "Berlin", (city) ->
         expect(city.key).to.equal("DE:Berlin:Berlin")
         done()
 
-    it "should find a city in a state with enc�ding �rrors in its name", (done) ->
+    xit "should find a city in a state with enc�ding �rrors in its name", (done) ->
       new State("DE:Berlin").cities.find "B�rlin", (city) ->
         expect(city.key).to.equal("DE:Berlin:Berlin")
         done()
 
-    it "should pick by population if more cities match the enc�ding �rror", (done) ->
+    xit "should pick by population if more cities match the enc�ding �rror", (done) ->
       new State("DE:Bayern").cities.find "N�rnberg", (city) ->
         expect(city.key).to.equal("DE:Bayern:Nürnberg")
         done()
 
-    it "should find a city in a state by alternative name", (done) ->
+    xit "should find a city in a state by alternative name", (done) ->
       new State("DE:Rheinland-Pfalz").cities.find "Mayence", (city) ->
         expect(city.key).to.equal("DE:Rheinland-Pfalz:Mainz")
         done()
 
-    it "should find by google geocoder object", (done) ->
+    xit "should find by google geocoder object", (done) ->
       go = require("./fixtures/googleobject").results[0]
       City.find go, (city) ->
         expect(city.key).to.equal("DE:Rheinland-Pfalz:Mainz")
         done()
  
-    it "should return undefined if place does not exist", (done) ->
+    xit "should return undefined if place does not exist", (done) ->
       new State("DE:Bayern").cities.find "Oachkatzleschwoafhausen", (city) ->
         expect(city).to.equal(undefined)
         done()
 
-    it "should find Baden-Wurttemberg (manual foreign key)", (done) ->
+    xit "should find Baden-Wurttemberg (manual foreign key)", (done) ->
       new Country("DE").states.find "Baden-Wurttemberg", (state) ->
         expect(state.key).to.equal("DE:Baden-Württemberg")
         done()
 
-    it "should find Stuttgart", (done) ->
+    xit "should find Stuttgart", (done) ->
       new State("DE:Baden-Württemberg").cities.find "Stuttgart", (city) ->
         expect(city.key).to.equal("DE:Baden-Württemberg:Stuttgart")
         done()
@@ -116,18 +161,6 @@ describe "Place", (done) ->
         expect(city.key).to.equal("DE:Berlin:Berlin")
 
 
-    it "should return foreign key for a city", (done) ->
-      c = new City("DE:Hessen:Frankfurt am Main")
-      c.foreignKeyOrCity "mitfahrzentrale:id", (fkoc) ->
-        expect(fkoc).to.equal("Frankfurt/ Main")
-        done()
-    
-    it "should return city if foreign key does not exists", (done) ->
-      c = new City("DE:Hessen:Frankfurt am Main")
-      c.foreignKeyOrCity "nonexistent:id", (fkoc) ->
-        expect(fkoc).to.equal("Frankfurt am Main")
-        done()
-
     xit "should work with search parameters", (done) ->
       params =
         city: "München"
@@ -136,8 +169,24 @@ describe "Place", (done) ->
         expect(p.key).to.equal("DE:Bayern:München")
         done()
 
-  
-  afterEach -> redis.quit()
+    describe 'ForeignKeyResolver', () ->
+
+      it 'should return foreign key for a city', (done) ->
+        place     = new Place(store.keyToPlaceProps('DE:Hessen:Frankfurt am Main'))
+        resolver  = new libPlace.ForeignKeyResolver(store, 'mitfahrzentrale:id')
+        resolver.resolve place, (fkoc) ->
+          expect(fkoc).to.equal('Frankfurt/ Main')
+          done()
+
+      it 'should return city if foreign key does not exits', (done) ->
+        place     = new Place(store.keyToPlaceProps('DE:Hessen:Frankfurt am Main'))
+        resolver  = new libPlace.ForeignKeyResolver(store, 'nonexistent:id')
+        resolver.resolve place, (fkoc) ->
+          expect(fkoc).to.equal('Frankfurt am Main')
+          done()
+
+  afterEach ->
+    redis.quit()
 
 
 
