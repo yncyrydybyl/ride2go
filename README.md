@@ -66,5 +66,32 @@ Edit the Cakefile to enable what gets tested.
 
 ## Development ##
 
-Awhile back, we used pivotaltracker at https://www.pivotaltracker.com/projects/130935 for planning of next steps
+* We recommend you to
+
+    npm install -g node-inspector
+    npm install -g yuidocjs
+    npm install -g forever
+
+* Awhile back, we used pivotaltracker at https://www.pivotaltracker.com/projects/130935 for planning of next steps
 (use [fixes #storyid] in commit messages if you want to refer to it)
+
+
+### Debugging using node-inspector ###
+
+Let's say you need to debug a mocha test
+
+* First, add a `debugger;` statement wherever you need a breakpoint
+* Second, run `node-inspector` (perhaps using `forever $(which node-inspector)` to avoid restarting the inspector)
+* Third, run mocha using
+
+    cake build && cake -M --debug-brk -M -t -M 2000000 test
+
+  This halts on the first line and bumps up all mocha timeouts towards infinity
+
+* Fourth, point a webkit-based browser to the url given by node-inspector
+* Fifth, hit 'continue' in the debugger
+* Finally the debugger should arrive at your first breakpoint. Refresh the browser window in oder for your actual
+  javascript code to be available and start debugging.
+
+
+

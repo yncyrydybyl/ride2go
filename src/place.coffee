@@ -231,6 +231,7 @@ class DefaultResolver
     @
 
   resolve: (place, callback) ->
+    debugger;
     placeCallback = @geoStore.placePropsCallback(place.updateCallback(callback))
     if place.userText()
       @geoStore.findByKeyPattern place.userText(), callback

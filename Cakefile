@@ -36,7 +36,7 @@ run_proc = (name, cmd, args) ->
 
 task 'build', 'compile coffee and sass', (options) ->
   watch_args  = if options.watch then ['-w'] else []
-  coffee_args = if options["coffee-arg"] then options["coffee-arg"].join(' ') else []
+  coffee_args = if options["coffee-arg"] then options['coffee-arg'] else []
 
   server_args = watch_args.concat(['-o', 'lib', '--compile'])
   server_args = server_args.concat(coffee_args)
@@ -54,7 +54,7 @@ task 'build', 'compile coffee and sass', (options) ->
 
 task "test", "run all tests", (options) ->
   watch_args = if options.watch then ['--watch'] else []
-  mocha_args = if options['mocha-arg'] then options['mocha-arg'].join(' ') else []
+  mocha_args = if options['mocha-arg'] then options['mocha-arg'] else []
 
   test_args  = watch_args.concat(['--compilers', 'coffee:coffee-script'])
   test_args  = test_args.concat(['--colors', '--reporter',  options.reporter || 'spec'])

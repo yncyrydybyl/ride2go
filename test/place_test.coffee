@@ -82,14 +82,17 @@ describe 'GeoStore', () ->
       key       = store.placeToCityKey(place)
       expect(key).to.be.equal('DE:Hessen:Frankfurt am Main')
 
-  describe 'Resolving', (done) ->
+  describe 'Resolving', () ->
 
-    xit "should find a country by key", (done) ->
-      Country.find "DE", (country) ->
-        expect(country.key).to.equal("DE")
-        expect(country).instanceOf(Country)
-        done()
-    
+    describe 'DefaultResolver', () ->
+
+      it.only 'should find a country by key', (done) ->
+        debugger;
+        place    = new Place(store.keyToPlaceProps('DE'))
+        resolver = new libPlace.DefaultResolver place, (newPlace) ->
+          expect(newPlace.country).to.equal('DE')
+          done()
+
     xit "should find a city by key", (done) ->
       City.find "DE:Berlin:Berlin", (city) ->
         expect(city.key).to.equal("DE:Berlin:Berlin")
