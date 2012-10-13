@@ -67,7 +67,7 @@ describe 'GeoStore', () ->
       key   = store.placeToStateKey(place)
       expect(place.isState()).to.be.true
       expect(place.hasCity()).to.be.false
-      expect(key).to.equal "DE:Bayern"
+      expect(key).to.equal 'DE:Bayern'
 
     it 'should have a convenience getter for state from state', ->
       place = new Place(store.keyToPlaceProps('DE:Bayern'))
@@ -75,7 +75,7 @@ describe 'GeoStore', () ->
       key   = store.placeToStateKey(place)
       expect(place.isState()).to.be.true
       expect(place.hasCity()).to.be.false
-      expect(key).to.equal "DE:Bayern"
+      expect(key).to.equal 'DE:Bayern'
 
     it 'should construct proper key', ->
       place     = new Place(store.keyToPlaceProps('DE:Hessen:Frankfurt am Main'))
@@ -89,7 +89,8 @@ describe 'GeoStore', () ->
       it.only 'should find a country by key', (done) ->
         debugger;
         place    = new Place(store.keyToPlaceProps('DE'))
-        resolver = new libPlace.DefaultResolver place, (newPlace) ->
+        resolver = new libPlace.DefaultResolver store
+        resolver.resolve place, (newPlace) ->
           expect(newPlace.country).to.equal('DE')
           done()
 
