@@ -86,20 +86,39 @@ describe 'GeoStore', () ->
 
     describe 'DefaultResolver', () ->
 
-      it.only 'should find a country by key', (done) ->
-        debugger;
+      it 'should find a country by key', (done) ->
         place    = new Place(store.keyToPlaceProps('DE'))
         resolver = new libPlace.DefaultResolver store
         resolver.resolve place, (newPlace) ->
-          expect(newPlace.country).to.equal('DE')
+          expect(newPlace).to.be.ok
+          expect(newPlace.country()).to.equal('DE')
           done()
 
-    xit "should find a city by key", (done) ->
-      City.find "DE:Berlin:Berlin", (city) ->
-        expect(city.key).to.equal("DE:Berlin:Berlin")
-        expect(city).instanceOf(City)
+      it 'should find a city by key', (done) ->
+        place    = new Place(store.keyToPlaceProps('DE:Berlin:Berlin'))
+        resolver = new libPlace.DefaultResolver store
+        resolver.resolve place, (newPlace) ->
+          expect(newPlace).to.be.ok
+          expect(newPlace.isCity()).to.be.true
+          expect(newPlace.country()).to.equal('DE')
+          expect(newPlace.state()).to.equal('Berlin')
+          expect(newPlace.city()).to.equal('Berlin')
+          done()
+
+      xit 'should find by geoip geocoder objects', (done) ->
+        debugger;
+        geo_ip_obj = require('./fixtures/googleobject')
+        place      = Place.fromGeoIpObj geo_ip_obj
+        expect(place).to.be.ok
+        expect(place.addressComponents()).to.be.ok
+#        resolver = new libPlace.DefaultResolver store
+#        resolver.resolve place, (newPlace) ->
+#          done()
+#        City.find go, (city) ->
+#          expect(city.key).to.equal("DE:Berlin:Berlin")
         done()
-    
+
+
     xit "should find a state in a country", (done) ->
       new Country("DE").states.find "Berlin", (state) ->
         expect(state.key).to.equal("DE:Berlin")
@@ -157,12 +176,6 @@ describe 'GeoStore', () ->
       new State("DE:Baden-Württemberg").cities.find "Stuttgart", (city) ->
         expect(city.key).to.equal("DE:Baden-Württemberg:Stuttgart")
         done()
-
-
-    xit "should find by geoip geocoder objects", (done) ->
-      go = require("./fixtures/geoipobject")
-      City.find go, (city) ->
-        expect(city.key).to.equal("DE:Berlin:Berlin")
 
 
     xit "should work with search parameters", (done) ->

@@ -1,7 +1,6 @@
 __    = require "../vendor/underscore"
 log   = require("./logging")
 
-
 class Place
 
   constructor: (@props = {}) ->
@@ -26,6 +25,14 @@ class Place
 
   userText: ->
     @props.user_text
+
+  textKey: ->
+    user_text = @userText()
+    orig_key  = @props.gs_orig_key
+    if orig_key && orig_key.indexOf('*') < 0
+      orig_key
+    else
+      user_text
 
   addressComponents: ->
     @props.addr_components
@@ -63,6 +70,9 @@ class Place
   asState: ->
     @update({ gs_city: undefined })
 
+Place.fromGeoIpObj = (geo_ip_obj) ->
+  new Place({addr_components: geo_ip_obj.address_components})
+
 
 class GeoStore
 
@@ -93,6 +103,7 @@ class GeoStore
     result = key.split ':'
     len    = result.length
     if len > 0
+      target.user_text   = key if len == 1
       target.gs_orig_key = key
       target.gs_country  = result[0] if result[0] != '*'
       target.gs_state    = result[1] if len > 1 && result[1].length > 0 && result[1] != '*'
@@ -152,20 +163,20 @@ class GeoStore
                 log.debug "no alternative name for geoname:alt:#{name}"
                 callback undefined
 
-  findByKeyPattern: (pattern, strategy, callback) ->
+  findByKeyPattern: (pattern, strategy, callback) =>
     log.debug "trying key pattern #{pattern}"
     @redis.keys pattern, (err, keys) =>
-    if keys.length == 0
-      log.debug "..no key"
-      callback undefined
-    else 
-      if keys.length == 1
-        log.debug "..exactly 1 key"
-        @redis.exists keys[0], (err, exists) =>
-          callback (if exists == 1 then keys[0] else undefined)
-      else 
-        log.debug "more than one key"
-        strategy keys, callback
+      if keys.length == 0
+        log.debug "..no key"
+        callback undefined
+      else
+        if keys.length == 1
+          log.debug "..exactly 1 key"
+          @redis.exists keys[0], (err, exists) =>
+            callback (if exists == 1 then keys[0] else undefined)
+        else
+          log.debug "more than one key"
+          strategy keys, callback
 
   chooseByPopulation: (keys, callback) ->
     log.debug "population strategy"
@@ -227,20 +238,21 @@ class StateCityResolver
 
 
 class DefaultResolver
-  constructor: (@geoStore) ->
+  constructor: (@geoStore, @strategy = null) ->
+    @strategy = @geoStore.chooseByPopulation if !@strategy
     @
 
-  resolve: (place, callback) ->
-    debugger;
-    placeCallback = @geoStore.placePropsCallback(place.updateCallback(callback))
-    if place.userText()
-      @geoStore.findByKeyPattern place.userText(), callback
+  resolve: (place, placeCallback) ->
+    keyCallback = @geoStore.placePropsCallback(place.updateCallback(placeCallback))
+    textKey     = place.textKey()
+    if textKey
+      @geoStore.findByKeyPattern textKey, @strategy, keyCallback
     else
       if place.hasCity() && place.hasCountry()
-        @geoStore.findByKeyPattern @geoStore.placeToCityPattern(place, place.city()), callback
+        @geoStore.findByKeyPattern @geoStore.placeToCityPattern(place, place.city()), @strategy, keyCallback
       else
         if place.addressComponents()
-          new GoogleGeocoder().resolve(place, callback)
+          new GoogleGeocoder().resolve(place, placeCallback)
 
 
 class GoogleGeocoder
