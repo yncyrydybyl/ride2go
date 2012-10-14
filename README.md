@@ -46,11 +46,20 @@ in order for the modules and their executables to be available.
 * Yay, you are done
 
 
+## Prepare the connectors you want to use
+
+* Edit `src/connectors/index.coffee` to enable specific connectors.  Consult comments in each connector's
+  top-level source file for advice on how to set them up properly. For some connectors, this is explained here:
+
+*deinbus* `node_modules/.bin/node.io lib/connectors/deinbus.js`
+
+
 ## Run Tests
 
 Run `npm run-script test` to execute all tests (requires running production redis).
 
-Edit the Cakefile to enable what gets tested.
+Edit `test/active-tests.js` to enable what gets tested (especially which connectors you want to test, note that
+this may require connector preparation as described before).
 
 
 ## ride2go
