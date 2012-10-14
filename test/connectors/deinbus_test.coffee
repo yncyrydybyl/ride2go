@@ -24,7 +24,7 @@ describe 'connectors', () ->
         expect(rides).to.be.ok
         expect(rides.length > 0).to.be.true
         expect(rides[0].orig).to.equal('Köln')
-        expect(rides[0].dest).to.equal('Main')
+        expect(rides[0].dest).to.equal('Frankfurt am Main')
         for ride in rides
           expect(ride.arr).to.be.ok
           expect(ride.arr > 0).to.be.true

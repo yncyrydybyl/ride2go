@@ -1,8 +1,10 @@
-redis = require('redis').createClient()
+redis  = require('redis').createClient()
 nodeio = require 'node.io'
-Ride = require '../ride'
-log = require '../logging'
-Place = require('../place').Place
+Ride   = require '../ride'
+log    = require '../logging'
+Place  = require('../place').Place
+moment = require 'moment'
+moment.lang 'de'
 
 module.exports.enabled = true
 module.exports.details = details =
@@ -21,6 +23,7 @@ module.exports.details = details =
   #specifics
   prefix: "mitfahrzentrale:id"
 
+timeFormat = 'dddd, D. MMM YYYY hh:mm Uhr'
 
 regexx = ///
         Ab\s(\w{2},\s\d{2}\.\d{2}\.\d{4})
@@ -58,9 +61,12 @@ module.exports.findRides = new nodeio.Job
       try
         $('#product-serach-list tbody tr').odd (tr) ->
           if (r = tr.fulltext.match regex)
+            moment.lang 'de'
+            dep = moment(r[1], timeFormat).utc()
+            arr = moment(r[2], timeFormat).utc()
             rides.push
-              dep: r[1]
-              arr: r[2]
+              dep: dep.unix()
+              arr: arr.unix()
               st_price: r[3]
               sp_price: r[4]
               orig: orig

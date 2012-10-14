@@ -17,7 +17,8 @@
     "redis": "~0.8.1",
     "jade": "~0.27.6",
     "csv": "0.0.19",
-    "traits": "~0.4.0"
+    "traits": "~0.4.0",
+    "moment": "~1.7.2"
   },
   "devDependencies": {
     "stylus": "~0.29.0",

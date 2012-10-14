@@ -18,7 +18,6 @@ io   = require 'node.io' # spin off workers for searching the web for rides
 api  = require './connectors/' # knows how to talk with different service apis
 log  = require './logging' # logs nice to a console for seeing whats going on
 
-
 class RiDeStore extends require('events').EventEmitter # pubsub style msges #
 
   scraping: on # only local RiDeStore is queried if scraping is switched OFF
