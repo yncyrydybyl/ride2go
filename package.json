@@ -34,7 +34,7 @@
   },
   "scripts": {
     "build": "./node_modules/.bin/cake build",
-    "test": "./node_modules/.bin/cake test",
+    "test": "./node_modules/.bin/cake  -M -t -M 10000 test",
     "start": "node lib/server.js"
   }
 }
