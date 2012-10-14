@@ -15,17 +15,17 @@ switchmode = (mode, lastmode=App.mode) ->
     console.log("switchmode changed nothin'. because lastmode was: "+ lastmode + " and new mode is " +mode)
     return
   if mode == "to"
-    $("#from_input").hide()
+	  #    $("#from_input").hide()
     $("#to_input, #middle_overlay").show()
     activatepanel("#to_panel")
     $("to_input_field").autocomplete "search"
   else if mode == "from"
-    $("#to_input").hide()
+	  #    $("#to_input").hide()
     $("#from_input, #middle_overlay").show()
     activatepanel("#from_panel")
     $("from_input_field").autocomplete "search"
   else if mode == "result"
-    $("#middle_overlay, #to_input, #from_input").hide()
+	  #    $("#middle_overlay, #to_input, #from_input").hide()
     $("#options").show()
     $("#rides").show()
   if lastmode is "to" or lastmode is "from"
