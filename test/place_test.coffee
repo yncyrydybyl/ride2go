@@ -107,7 +107,7 @@ describe 'GeoStore', () ->
 
       xit 'should find by geoip geocoder objects', (done) ->
         debugger;
-        geo_ip_obj = require('./fixtures/googleobject')
+        geo_ip_obj = require('./fixtures/googleobject').results[0]
         place      = Place.fromGeoIpObj geo_ip_obj
         expect(place).to.be.ok
         expect(place.addressComponents()).to.be.ok
@@ -116,7 +116,6 @@ describe 'GeoStore', () ->
 #          done()
 #        City.find go, (city) ->
 #          expect(city.key).to.equal("DE:Berlin:Berlin")
-        done()
 
 
     xit "should find a state in a country", (done) ->
