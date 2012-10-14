@@ -14,9 +14,9 @@ active_tests.push("test/mocha_test.coffee");
 
 if (selected_tests.connectors) {
     active_tests.push("test/load_connectors_test.coffee");
-//    active_tests.push("test/connectors/pts_test.coffee");
-//    active_tests.push("test/connectors/citynetz_test.coffee");
     active_tests.push("test/connectors/deinbus_test.coffee");
+    active_tests.push("test/connectors/pts_test.coffee");
+//    active_tests.push("test/connectors/citynetz_test.coffee");
 //    active_tests.push("test/connectors/geoname_test.coffee");
 //    active_tests.push("test/connectors/mapquest_test.coffee");
 //    active_tests.push("test/connectors/mitfahrzentrale_test.coffee");

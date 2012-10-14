@@ -1,6 +1,6 @@
 describe 'connector setup', () ->
 
-  it.only 'should load all connectors', () ->
+  it 'should load all connectors', () ->
     api = require '../lib/connectors/index'
     expect(api).to.be.ok
     connector_index = api.active_connectors.indexOf('deinbus')
