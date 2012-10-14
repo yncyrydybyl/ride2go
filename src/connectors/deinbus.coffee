@@ -4,6 +4,7 @@ Ride = require '../ride'
 log = require '../logging'
 Place = require('../place').Place
 
+module.exports.enabled = true
 module.exports.details = details =
   mode: "bus"
   name: "deinbus.de" # uniq primary key
