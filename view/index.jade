@@ -12,8 +12,8 @@ html
     script(src='/js/bootstrap.js')
               
     link(type='text/css', href='/css/smoothness/jquery-ui-1.8.14.custom.css', rel='stylesheet')
-    link(type='text/css', href='/css/main.css', rel='stylesheet')
     link(type='text/css', href='/css/bootstrap.css', rel='stylesheet')
+    link(type='text/css', href='/css/main.css', rel='stylesheet')
     
     style(type='text/css')
                   .ui-autocomplete { overflow-y: auto; width:300px; } * html .ui-autocomplete { /*
@@ -26,21 +26,21 @@ html
         .container
           a.brand(href='#') ride2go
           span#status status: disconnected 
-    .container 
-      
-      #top
-        #from 
-          h1 from:
-        #to 
-          h2 to:
-          
-      div#route
+    .container#main 
+     #route
           span#from_label From
           span#from startort
           span#to_label To
           span#to zielort
-          div#when When
-            input when
+     #top
+       #to_input
+         h1 Where to?
+         #to_input_field_wrapper
+           input#to_input_field(type='text')
+       #from_input
+         h1 From where?
+         input#from_input_field(type='text')
+          
       #from_panel
         h2 departing
         h3.cityname Berlin
@@ -72,11 +72,4 @@ html
       #middle_overlay
         #inputbox
         
-        #to_input
-          h1 Where to?
-          #to_input_field_wrapper
-            input#to_input_field(type='text')
-        #from_input
-          h1 From where?
-          input#from_input_field(type='text')
 
