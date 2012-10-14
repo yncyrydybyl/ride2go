@@ -10,7 +10,7 @@ log = require './logging'
 app = express()
 app.set 'views', "view"
 app.set 'view engine', 'jade'
-app.set 'view options', {pretty:true}
+app.locals.pretty = true
 app.use express.bodyParser()
 app.use express.static 'public'
 
