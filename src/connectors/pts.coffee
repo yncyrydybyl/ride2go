@@ -6,6 +6,7 @@ log     = require '../logging'
 Ride    = require '../ride'
 Place   = require('../place').Place
 
+module.exports.enabled = true
 module.exports.details = details =
   mode: "train" # kind of vehicle
   name: "pts" # uniq primary key, should be a domain name
@@ -22,7 +23,7 @@ module.exports.details = details =
   tel: ""
   # specifics
   url_host: "localhost"
-  url_port: 8082
+  url_port: 8080
   url_path: "public-transport-service-1.0-SNAPSHOT"
   match_strategy: "default" # used for matching places when importing city ids
   tz: ""     # timezone of all times returns by connector (unimplemented)
@@ -64,16 +65,17 @@ module.exports.findRides = new nodeio.Job
             dest_id    = stations[0].id
             #log.notice dest_id
             fin_url = "http://#{details.url_host}:#{details.url_port}/#{details.url_path}/connection?fromId=#{orig_id}&toId=#{dest_id}&fromType=STATION&toType=STATION&num=1"
-            #log.notice fin_url
+            log.notice fin_url
             run [fin_url]
 #        run ["http://.../?"+"fromn=#{orig}&"+"to=#{dest}"]
 
   run: (url) ->
     rides = []
-    orig = Place.new(@options.orig).city()
-    dest = Place.new(@options.dest).city()
+    orig  = Place.new(@options.orig).city()
+    dest  = Place.new(@options.dest).city()
 
     @get url, (err, body) =>
+      debugger;
       log.error "DOOF conn: #{err}" if err
       
       routes = JSON.parse(body)

@@ -1,18 +1,35 @@
 connectors = require "../../lib/connectors"
-io         = require "node.io"
+nodeio     = require "node.io"
 
-describe "Connectors", ->
+describe 'connectors', () ->
 
-  it 'PTE should work and not crash', (done) ->
-    query =
-      orig: "DE:Berlin:Berlin"
-      dest: "DE:Hamburg:Hamburg"
-    io.start connectors.pts.findRides, query, ((err, rides) ->
-      expect(rides.length).to.equal 1
-      done()
-    ), true
+  describe 'pts', () ->
 
-describe "Mocha Specs", ->
+    it 'should not crash if no rides are found', (done) ->
+      query =
+        orig: 'DE:Berlin:Berlin'
+        dest: 'DE:Berlin:Hamburg'
+      nodeio.start connectors.deinbus.findRides, query, ((err, rides) ->
+        expect(err || rides.length == 0).to.be.true
+        done()
+      ), true
 
-  it 'should have 42 tests in total!', ->
-    expect(42).to.exist
+
+    it 'should find rides', (done) ->
+      query =
+        orig: 'DE:Berlin:Berlin'
+        dest: 'DE:Berlin:Hamburg'
+      nodeio.start connectors.pts.findRides, query, ((err, rides) ->
+        debugger;
+        expect(rides).to.be.ok
+        expect(rides.length > 0).to.be.true
+        expect(rides[0].orig).to.equal('Berlin')
+        expect(rides[0].dest).to.equal('Hamburg')
+        for ride in rides
+          expect(ride.arr).to.be.ok
+          expect(ride.arr > 0).to.be.true
+          expect(ride.dep).to.be.ok
+          expect(ride.dep > 0).to.be.true
+        done()
+      ), true
+

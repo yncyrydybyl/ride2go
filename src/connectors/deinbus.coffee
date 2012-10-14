@@ -4,6 +4,7 @@ Ride = require '../ride'
 log = require '../logging'
 Place = require('../place').Place
 
+module.exports.enabled = true
 module.exports.details = details =
   mode: "bus"
   name: "deinbus.de" # uniq primary key
@@ -58,8 +59,8 @@ module.exports.findRides = new nodeio.Job
         $('#product-serach-list tbody tr').odd (tr) ->
           if (r = tr.fulltext.match regex)
             rides.push
-              dep_date: r[1]
-              dep_time: r[2]
+              dep: r[1]
+              arr: r[2]
               st_price: r[3]
               sp_price: r[4]
               orig: orig

@@ -49,9 +49,19 @@ in order for the modules and their executables to be available.
 ## Prepare the connectors you want to use
 
 * Edit `src/connectors/index.coffee` to enable specific connectors.  Consult comments in each connector's
-  top-level source file for advice on how to set them up properly. For some connectors, this is explained here:
+  top-level source file for advice on how to set them up properly. For some connectors, this is explained below
 
-*deinbus* `node_modules/.bin/node.io lib/connectors/deinbus.js`
+### deinbus
+
+Execute `node_modules/.bin/node.io lib/connectors/deinbus.js`
+
+### public-transport-enabler
+
+* Get PTS
+* Edit ConnectionController.java and LocationController.java to set the PTE NetworkProvider that should be used
+* Build PTS
+* Run PTS by executing in `service`: `mvn org.codehaus.cargo:cargo-maven2-plugin:deploy`
+* Edit `connectors/pts.coffee` to match your setup
 
 
 ## Run Tests
