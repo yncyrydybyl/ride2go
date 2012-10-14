@@ -34,7 +34,7 @@ run_proc = (name, cmd, args) ->
     else
       console.error "#{red}#{name} has failed#{reset}"
 
-task 'build', 'compile coffee and sass', (options) ->
+task 'build', 'compile coffee and stylus', (options) ->
   watch_args  = if options.watch then ['-w'] else []
   coffee_args = if options["coffee-arg"] then options["coffee-arg"].join(' ') else []
 
