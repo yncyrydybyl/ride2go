@@ -1,6 +1,6 @@
-__ = require "../vendor/underscore"
-redis = require("redis").createClient()
-log = require("./logging")
+__    = require '../vendor/underscore'
+redis = require('redis').createClient()
+log   = require('./logging')
 #log.transports.console.level="debug"
 
 #Place = ->

@@ -20,7 +20,6 @@ describe 'connectors', () ->
         orig: 'DE:Berlin:Berlin'
         dest: 'DE:Berlin:Hamburg'
       nodeio.start connectors.pts.findRides, query, ((err, rides) ->
-        debugger;
         expect(rides).to.be.ok
         expect(rides.length > 0).to.be.true
         expect(rides[0].orig).to.equal('Berlin')

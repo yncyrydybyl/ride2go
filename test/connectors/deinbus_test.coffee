@@ -1,5 +1,5 @@
-assert = require 'assert'
-nodeio = require 'node.io'
+assert     = require 'assert'
+nodeio     = require 'node.io'
 connectors = require '../../lib/connectors'
 
 describe 'connectors', () ->

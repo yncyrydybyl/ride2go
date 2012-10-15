@@ -5,6 +5,7 @@ log     = require '../logging'
 
 Ride    = require '../ride'
 Place   = require('../place').Place
+moment  = require 'moment'
 
 module.exports.enabled = true
 module.exports.details = details =
@@ -75,21 +76,20 @@ module.exports.findRides = new nodeio.Job
     dest  = Place.new(@options.dest).city()
 
     @get url, (err, body) =>
-      debugger;
       log.error "DOOF conn: #{err}" if err
       
       routes = JSON.parse(body)
 
       for route in routes.connections
-        dep_date = route.firstTripDepartureTime
-        arr_date = route.lastTripArrivalTime
+        dep_date =moment(route.firstTripDepartureTime)
+        arr_date = moment(route.lastTripArrivalTime)
         rides.push
-          dep: dep_date
-          arr: arr_date
-          price: "EUR 10"
+          dep: dep_date.unix()
+          arr: arr_date.unix()
+          price: '?'
           orig: orig       # you may want to replace this
           dest: dest       # with better matches from your query result
           provider: "#{details.name}"
 
-      #log.notice ">>>>> #{JSON.stringify(rides)}"
+      log.notice ">>>>> #{JSON.stringify(rides)}"
       @emit rides

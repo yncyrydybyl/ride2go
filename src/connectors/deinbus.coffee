@@ -67,7 +67,7 @@ module.exports.findRides = new nodeio.Job
             rides.push
               dep: dep.unix()
               arr: arr.unix()
-              st_price: r[3]
+              price: r[3]
               sp_price: r[4]
               orig: orig
               dest: dest
