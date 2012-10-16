@@ -4,7 +4,7 @@ connectors = require '../../lib/connectors'
 
 describe 'mapquest', () ->
 
-  it.only 'should lookup distances by coordinate', (done) ->
+  it 'should lookup distances by coordinate', (done) ->
     debugger;
     query =
       orig: '48.1,11.5'

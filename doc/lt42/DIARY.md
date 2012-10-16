@@ -1,6 +1,31 @@
+2012-10-16
+
+* TODO Write standalone route for new UI
+* TODO Adapt for fg integration
+* DONE Document REDIS structure
+
+2012-10-15
+
+* DONE Setup server
+* DONE Fix mapquest
+
+2012-10-14
+
+* DONE Repair master and merge what is ready from platzhirsch
+* DONE Fix pts
+* DONE Fix deinbus
+
+2012-10-12
+
+* DONE Work on rides tests for new places API
+
+2012-10-11
+
+* DONE Fix places tests for new places API
+
 2012-10-10
 
-* TODO Pull current ride api into single object
+* DONE Seprate places and geostore api
 
 2012-10-09
 
@@ -19,7 +44,7 @@
 
 2012-10-06
 
-* DONE Meeting: sven, flo, t, c_atc, boggle
+* DONE Meeting: sven, flo, t, schatz, boggle
 
 2012-10-05
 
@@ -40,7 +65,7 @@
 
 2012-10-01
 
-* DONE repaired geoname_import
+* DONE repaired geoname import
 * DONE made tests run again
 
 2012-09-30

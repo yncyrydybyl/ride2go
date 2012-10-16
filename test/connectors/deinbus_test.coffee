@@ -16,11 +16,12 @@ describe 'connectors', () ->
       ), true
 
 
-    it 'should find rides', (done) ->
+    it.only 'should find rides', (done) ->
       query =
         orig: "DE:Nordrhein-Westfalen:Köln"
         dest: "DE:Hessen:Frankfurt am Main"
       nodeio.start connectors.deinbus.findRides, query, ((err, rides) ->
+        console.log "RIDES #{rides}"
         expect(rides).to.be.ok
         expect(rides.length > 0).to.be.true
         expect(rides[0].orig).to.equal('Köln')

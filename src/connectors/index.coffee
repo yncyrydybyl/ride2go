@@ -25,4 +25,4 @@ module.exports.active_connectors = __.keys module.exports
 # !!! overwrite list of active connectors manually here
 # module.exports.active_connectors = ['deinbus']
 
-log.debug "+ list of active connectors: #{module.exports.active_connectors}"
+log.notice "list of active connectors: [#{__.map(module.exports.active_connectors, (x) -> " '#{x}'" )} ]"
