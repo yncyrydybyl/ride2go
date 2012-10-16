@@ -10,45 +10,8 @@ App =
   mode: "splash"
 
 
-switchmode = (mode, lastmode=App.mode) ->
-  if mode is lastmode
-    console.log("switchmode changed nothin'. because lastmode was: "+ lastmode + " and new mode is " +mode)
-    return
-  if mode == "to"
-    $("#from_input").hide()
-    $("#to_input, #middle_overlay").show()
-    activatepanel("#to_panel")
-    $("to_input_field").autocomplete "search"
-  else if mode == "from"
-    $("#to_input").hide()
-    $("#from_input, #middle_overlay").show()
-    activatepanel("#from_panel")
-    $("from_input_field").autocomplete "search"
-  else if mode == "result"
-    $("#middle_overlay, #to_input, #from_input").hide()
-    $("#options").show()
-    $("#rides").show()
-  if lastmode is "to" or lastmode is "from"
-    deactivatepanel "##{lastmode}_panel"
-  App.mode = mode
- 
-  # for debugging
-  console.log("switching from "+lastmode+" to " +mode)
-
-activatepanel = (panel_id) ->
-  $(panel_id).fadeTo "20000", 0.33 
-deactivatepanel = (panel_id) ->
-  console.log(panel_id + " deactivated")
-  $(panel_id).fadeTo "20000" ,1 
-
-
-initInputBox = (params = {region:"de",direction:"to",selector:"#from_input_field", showpanel:true}) ->
-  if not $("#"+params.direction+"_panel").is(":visible") and params.showpanel
-    activatepanel("#"+params.direction+"_panel")
-    console.log("showing panel")
-  console.log "initInputBox called with parameter: "
-  #removing any autocomplete functionality 
-  console.log($(params.selector))
+initInputBox = (params) ->
+  alert "dsjka"
   inputbox = $(params.selector).geo_autocomplete
     geocoder_region: params.region
     geocoder_address: true
@@ -59,59 +22,38 @@ initInputBox = (params = {region:"de",direction:"to",selector:"#from_input_field
     MapTypeIdaptype: "hybrid"
     select: (event, ui) ->
       inputdone params.direction, ui.item
-      #console.log ui.item.viewport.getCenter()
     params: params
-  $(params.selector).focus()
-  $(params.selector).keydown ->
-    if not $("#"+params.direction+"_panel").is(":visible")
-      activatepanel("#"+params.direction+"_panel")
-  
-  $(params.selector).autocomplete "search"
 
 displayride = (ride) ->
   console.log("foook")
   ride = JSON.parse(ride)
   console.log(ride)
-  console.log("fooooook")
-  ride = JSON.parse(ride)
   arr=new Date(ride.arr)
   dep=new Date(ride.dep)
   #$("#rides ul").append $("<li>#{dep.toLocaleDateString()}:#{dep.toLocaleTimeString()}:#{ride.orig} -> #{ride.dest} provider: #{ride.provider} <a target='_blank' href='#{ride.id}'>visit</a></li>")
   $("#rides").dataTable().fnAddData( [
-    dep.toLocaleTimeString()
+    ride.dep
     ride.orig
     ride.dest
     ride.provider
-    arr.toLocaleDateString()
+    ride.arr
   ]
   )
 
 inputdone = (d, item) ->
-  console.log(d+" selected")
   # show the panel as selected
-  $("#"+d+"_panel").fadeTo("slow", 1)
   if d is "to"
     App.to = item
     App.to_choosen = true
-    $("#to_input").hide()
-    if not App.from_choosen
-      switchmode "from", "to"
-      initInputBox
-        region: "de"
-        direction: "from"
-        selector: "#from_input_field"
-        showpanel: true
   if d is "from"
     App.from_choosen = true
     App.from = item
-    switchmode "result", "from"
 
   console.log("from and to")
   sendquery()
 setupsocket = ->
   App.socket = io.connect()
   App.socket.on "ride", (ride) ->
-    console.log(ride)
     displayride(ride)
    
   App.socket.on "connect", ->
@@ -135,15 +77,6 @@ sendquery = ->
 
 $().ready ->
   setupsocket()
-  # manual switcher for debugging
-  $("#mode .to").click -> switchmode "to", App.mode
-  $("#mode .from").click -> switchmode "from", App.mode
-  $("#mode .splash").click -> switchmode "splash", App.mode
-  $("#mode .result").click -> switchmode "result", App.mode
-  $("#edit_from_input").click -> switchmode "from", App.mode
-  $("#from").click -> switchmode "from", App.mode
-  $("#to").click -> switchmode "to", App.mode
-  $("#edit_to_input").click -> switchmode "to", App.mode
   $("#rides").dataTable(
     "bPaginate": false
     "bLengthChange": false
@@ -154,3 +87,4 @@ $().ready ->
   )
   $("#to_input_field").focus()
   initInputBox({region:"de",direction:"to",selector:"#to_input_field",showpanel:false})
+  initInputBox({region:"de",direction:"from",selector:"#from_input_field",showpanel:false})
