@@ -32,7 +32,8 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
   match: (query, callback) ->
     
     RDS.find query, callback
-    RDS.search api[connector], query for connector in ['pts']
+    for connector in ['pts']
+      RDS.search api[connector], query
 
 
   ## subscribe to a channel
@@ -45,23 +46,24 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
 
     # return cached rides available in ReDiS RiDeStore
     @redis.hvals route, (err, rides) ->
-      log.info "RDS has " + rides.length + " rides already in cache"
+      log.debug "RDS has " + rides.length + " rides already in cache"
       callback ride for ride in rides
 
 
   ## publish to a channel
-  store: (ride) ->
+  store: (ride, callback) ->
      
-    log.debug "storing ride: " + ride
     route = "#{ride.orig}->#{ride.dest}" # hash-key to identify the route #
+    log.debug "storing ride: " + route
     @redis.hset route, ride.link(), ride.toJson(), (anothererror, isNew) =>
       log.error anothererror if anothererror
       @emit route, ride.toJson() if isNew # ie. fiRst time DiScovered #
+      callback?()
 
 
   ## start node.io job to run connector to fetch and store rides
   search: (query, connector, done) ->
-    log.info "connecting " + connector.name
+    log.debug "connecting " + connector.name
     query = Ride.new query
     io.start (new io.Job
       input: (i, j, go) ->
@@ -74,7 +76,7 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
             connector.read_html $
             @emit null
           catch error
-            log.error error
+            log.info error
             @fail()
         connector.found = (what, thing) =>
           switch what

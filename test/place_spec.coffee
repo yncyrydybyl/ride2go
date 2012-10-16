@@ -50,7 +50,12 @@ describe "Place", (done) ->
         expect(city.key).to.equal("DE:Berlin:Berlin")
         expect(city).instanceOf(City)
         done()
-    
+   
+    it "should find a city by name", (done) ->
+      City.find "Berlin", (city) ->
+        expect(city.key).to.equal("DE:Berlin:Berlin")
+        done()
+
     it "should find a state in a country", (done) ->
       new Country("DE").states.find "Berlin", (state) ->
         expect(state.key).to.equal("DE:Berlin")

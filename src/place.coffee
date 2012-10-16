@@ -107,7 +107,7 @@ Place.findByKeyPattern = (pattern,callback) ->
   redis.keys pattern, (err, keys) =>
     if keys.length == 0
       log.debug ".. no key."
-      callback undefined
+      @findByKeyPattern "*:"+pattern, callback
     else if keys.length == 1
       log.debug "..exactly 1 key."
       redis.exists keys[0], (err, exists) =>
@@ -117,12 +117,12 @@ Place.findByKeyPattern = (pattern,callback) ->
           callback undefined
 
     else if keys.length >= 1
-      log.debug "more than one key"
+      log.debug "..more than one key"
       @chooseByStrategy(keys,callback)
 
 Place.chooseByStrategy = (keys,callback, strategy = "population") ->
   if strategy == "population"
-    log.debug "population strategy"
+    log.debug "-> population strategy"
     redis.multi(["HGET", k, "population"] for k in keys).exec (err, results) =>
       i = 0
       idx = 0
@@ -133,6 +133,7 @@ Place.chooseByStrategy = (keys,callback, strategy = "population") ->
           max = p
           idx = i
         i += 1
+      log.debug keys[idx] + " has the largest population"
       @find(keys[idx],callback)
 
 #Place.findByCityAndCountry city, country, callback
