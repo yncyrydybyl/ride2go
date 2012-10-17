@@ -3,6 +3,8 @@ html
     head
         title ride2go
         meta(http-equiv='content-type', content='text/html; charset=iso-8859-1')
+
+        script(src='/css/ridestream.css')
         script(src='/js/underscore/underscore-min.js')
         script(src='/js/jquery/jquery.js')
         script(src='/js/jquery-ui/jquery-ui.min.js')
@@ -12,11 +14,13 @@ html
         script(src='/socket.io/socket.io.js')
         script(src='/js/ridestream.js')
 
+        link(type='text/css', href='/css/reset.css', rel='stylesheet')
+        link(type='text/css', href='/css/ridestream.css', rel='stylesheet')
 
     body
         #query(fromKey=locals.fromKey, toKey=locals.toKey, depature=locals.departure)
 
-        table#rides
+        table#rides.pretty(padding=0, cellspacing=0, cellpadding=0, border=0)
             thead
                 tr
                     th
@@ -46,12 +50,3 @@ html
                     th
                         strong
                         | Details
-            tbody
-                tr
-                    td
-                    td
-                    td
-                    td
-                    td
-                    td
-                    td

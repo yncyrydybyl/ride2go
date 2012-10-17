@@ -1,7 +1,8 @@
 $(document).ready ->
   table = $('#rides')
-  table.dataTable()
-
+  table.dataTable( {
+    "sPaginationType": "full_numbers"
+  } );
   socket = io.connect()
   socket.on 'connect', ->
     query   = $('#query')
