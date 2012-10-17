@@ -17,7 +17,7 @@ app.locals.pretty = true
 app.use express.bodyParser()
 app.use express.static 'public'
 
-server = app.listen 3000
+server = app.listen config.server
 
 io = socketIO.listen server
 #io.set('log level', 1)

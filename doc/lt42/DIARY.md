@@ -1,3 +1,10 @@
+2012-10-18
+
+* TODO Bahn Link
+* TODO Integration
+* TODO Fake Route
+* TODO Lokale Anbieter
+
 2012-10-17
 
 * DONE Revamp javascript asset management with bower
