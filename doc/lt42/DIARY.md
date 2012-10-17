@@ -1,8 +1,17 @@
+2012-10-17
+
+* DONE Revamp javascript asset management with bower
+
 2012-10-16
 
-* TODO Write standalone route for new UI
-* TODO Adapt for fg integration
+* DONE javascript assets get symlinked by cake link
+* DONE details links for deinbus
+* DONE new ids for pts and deinbus
+* DONE Use moments in ridestream
+* DONE Write standalone route for new UI
+* DONE Adapt for fg integration
 * DONE Document REDIS structure
+* DONE Lots of help from flo. Thanks!
 
 2012-10-15
 
@@ -53,7 +62,7 @@
 
 2012-10-04
 
-* DONE Visit rejectjs
+* DONE Visit rejectjs conference
 * DONE Talk about core feature set and blackboard approach
 
 2012-10-02

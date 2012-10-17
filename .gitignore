@@ -18,4 +18,5 @@ tmp
 .settings
 .DS_Store
 doc/api
-
+components
+npm-debug.log

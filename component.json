@@ -1,0 +1,11 @@
+{
+    "name": "ride2go",
+    "version": "0.0.2",
+    "dependencies": {
+        "underscore": "˜1.4.2",
+        "jquery": "~1.8.1",
+        "jquery-ui": "",
+        "datatables": "˜1.9.4",
+        "moment": "˜1.7.2"
+    }
+}

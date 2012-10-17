@@ -1,4 +1,4 @@
-__      = require '../../vendor/underscore'
+__      = require 'underscore'
 log     = require '../../lib/logging'
 
 T       = require('traits').Trait

@@ -35,6 +35,7 @@ run_proc = (name, cmd, args) ->
       console.error "#{red}#{name} has failed#{reset}"
 
 task 'build', 'compile coffee and stylus', (options) ->
+  invoke 'link'
   watch_args  = if options.watch then ['-w'] else []
   coffee_args = if options["coffee-arg"] then options['coffee-arg'] else []
 
@@ -45,12 +46,38 @@ task 'build', 'compile coffee and stylus', (options) ->
 
   client_args = watch_args.concat(['--join', 'public/js/ride2go.js', '--compile', '--bare'])
   client_args = client_args.concat(coffee_args)
-  client_args = client_args.concat(['src/client/ride2go.coffee', 'src/client/autocomplete.coffee'])
-  run_proc 'compiling client code', bin_coffee, client_args
+  client_args = client_args.concat([
+    'src/client/ride2go.coffee',
+    'src/client/ridestream.coffee',
+    'src/client/autocomplete.coffee'])
+  run_proc 'compiling joint client code', bin_coffee, client_args
+
+  client_args = watch_args.concat(['--join', 'public/js/ridestream.js', '--compile', '--bare'])
+  client_args = client_args.concat(coffee_args)
+  client_args = client_args.concat(['src/client/ridestream.coffee'])
+  run_proc 'compiling ridestream client code', bin_coffee, client_args
 
   stylus_args = watch_args.concat(['-o', css_target])
   stylus_args = stylus_args.concat(css_sources)
   run_proc 'stylesheet building', bin_stylus, stylus_args
+
+task "link", () ->
+  updateLink = (src, dst) ->
+    try
+      stats = fs.lstatSync dst
+    catch error
+      console.log(error) if error.code != 'ENOENT'
+      stats = null
+    if stats && stats.isSymbolicLink()
+      fs.unlinkSync dst
+    console.log "Updating link #{dst} -> #{src}"
+    fs.symlinkSync src, dst
+
+  updateLink '../../components/DataTables', './public/js/DataTables'
+  updateLink '../../components/jquery', './public/js/jquery'
+  updateLink '../../components/jquery-ui', './public/js/jquery-ui'
+  updateLink '../../components/moment', './public/js/moment'
+  updateLink '../../components/underscore', './public/js/underscore'
 
 task "test", "run all tests", (options) ->
   watch_args = if options.watch then ['--watch'] else []

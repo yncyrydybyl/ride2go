@@ -65,15 +65,20 @@ module.exports.findRides = new nodeio.Job
             stations   = JSON.parse(body)
             dest_id    = stations[0].id
             #log.notice dest_id
-            fin_url = "http://#{details.url_host}:#{details.url_port}/#{details.url_path}/connection?fromId=#{orig_id}&toId=#{dest_id}&fromType=STATION&toType=STATION&num=1"
-            log.notice fin_url
-            run [fin_url]
+            if orig_id != dest_id
+              fin_url = "http://#{details.url_host}:#{details.url_port}/#{details.url_path}/connection?fromId=#{orig_id}&toId=#{dest_id}&fromType=STATION&toType=STATION&num=1"
+              log.debug fin_url
+              run [fin_url]
+            else
+              log.notice "skipped searching self-loop ride for #{orig_id}"
 #        run ["http://.../?"+"fromn=#{orig}&"+"to=#{dest}"]
 
   run: (url) ->
     rides = []
-    orig  = Place.new(@options.orig).city()
-    dest  = Place.new(@options.dest).city()
+    dest_key = @options.dest
+    dest     = Place.new(dest_key).city()
+    orig_key = @options.orig
+    orig     = Place.new(orig_key).city()
 
     @get url, (err, body) =>
       log.error "DOOF conn: #{err}" if err
@@ -81,15 +86,16 @@ module.exports.findRides = new nodeio.Job
       routes = JSON.parse(body)
 
       for route in routes.connections
-        dep_date =moment(route.firstTripDepartureTime)
-        arr_date = moment(route.lastTripArrivalTime)
+        dep_date = moment(route.firstTripDepartureTime).unix()
+        arr_date = moment(route.lastTripArrivalTime).unix()
         rides.push
-          dep: dep_date.unix()
-          arr: arr_date.unix()
+          dep: dep_date
+          arr: arr_date
           price: '?'
           orig: orig       # you may want to replace this
           dest: dest       # with better matches from your query result
           provider: "#{details.name}"
+          id: "pts:#{orig_key}@#{arr_date}->#{dest_key}@#{dep_date}"
 
       log.notice ">>>>> #{JSON.stringify(rides)}"
       @emit rides

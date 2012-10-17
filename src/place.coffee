@@ -1,4 +1,4 @@
-__    = require '../vendor/underscore'
+__    = require 'underscore'
 redis = require('redis').createClient()
 log   = require('./logging')
 #log.transports.console.level="debug"

@@ -1,6 +1,6 @@
-__    = require "../vendor/underscore"
-redis = require("redis").createClient()
-log   = require("./logging")
+__    = require 'underscore'
+redis = require('redis').createClient()
+log   = require('./logging')
 
 ###*
 # @class Store

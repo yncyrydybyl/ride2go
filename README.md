@@ -1,6 +1,7 @@
 INSTALLATION
 ============
 
+
 ## Install node.js and npm ##
 
 * Consult package.json to determine the required version of node.js and proceed with (A) or (B)
@@ -21,8 +22,27 @@ INSTALLATION
 * Install redis (>= 2.2.12) from http://redis.io/download
 * Execute `npm install`. This will install a bunch of modules as required by package.json, including jade, socket.io, coffee, mocha, etc.
 
+
 If you are not using nvm, you may have to add node_modules/.bin to your PATH and node_modules to your NODE_PATH
 in order for the modules and their executables to be available.
+
+
+## Install bower and required brower components ##
+
+* Just for this step, install and use a second node.js with a version >= 0.8 via
+
+    nvm install v0.8.12
+    nvm use v0.8.12
+
+* Install bower
+
+    npm -g install bower
+
+* Install bower components
+
+    bower install
+
+* Switch back to the regular node.js via `nvm use $VERSION`
 
 
 ## Compile coffeescript files ##
@@ -72,7 +92,7 @@ Edit `test/active-tests.js` to enable what gets tested (especially which connect
 this may require connector preparation as described before).
 
 
-## ride2go
+## Setup and run ride2go service
 
 * [OPTIONAL] Check RDS.coffee for the list of active conncectors
 * Run

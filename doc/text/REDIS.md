@@ -27,17 +27,25 @@ The 'id-type' typically is 'id' unless a data provider supports multiple ids for
     'DE:Bayern:München' -> {
         lat: 1234,
         lon: 4567,
+        population: 5,
         geoname:id: 'geoname-id',
         hafas:id: 'hafas-id'
         provider:id-type: 'provider-place-id'
     }
 
-* Additionally, we map foreign keys ('provider-name:provider-place-ids') to non-empty sets of primary keys
+* Additionally, we map foreign keys ('provider-name:provider-place-ids') individually to a single primary key
 
-    'geoname:id:1234' -> { 'DE:Bayern:München' }
+    'geoname:id:1234' -> 'DE:Bayern:München'
 
 
 ## Special case: deinbus
 
 * 'deinbus' uses different ids for the same location depending on wether it is an origin or a destination
 * This is encoded by using 'deinbus:orig' and 'deinbus:dest' fake providers
+
+
+## Special case: altnames
+
+altnames are alternative names for primary keys. It is of the form
+
+    'geoname:alt:name' -> Set of primary keys

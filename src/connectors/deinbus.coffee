@@ -54,24 +54,27 @@ module.exports.findRides = new nodeio.Job
   run: (url) ->
     rides = []
     log.notice url
-    dest = Place.new(@options.dest).city()
-    orig = Place.new(@options.orig).city()
-    log.notice "orig: #{orig} dest: #{dest}"
+    dest_key = @options.dest
+    dest     = Place.new(dest_key).city()
+    orig_key = @options.orig
+    orig     = Place.new(orig_key).city()
+    log.debug "orig: #{orig} dest: #{dest}"
     @getHtml url, (err, $, data) =>
       try
         $('#product-serach-list tbody tr').odd (tr) ->
           if (r = tr.fulltext.match regex)
             moment.lang 'de'
-            dep = moment(r[1], timeFormat).utc()
-            arr = moment(r[2], timeFormat).utc()
+            dep = moment(r[1], timeFormat).utc().unix()
+            arr = moment(r[2], timeFormat).utc().unix()
             rides.push
-              dep: dep.unix()
-              arr: arr.unix()
+              dep: dep
+              arr: arr
               price: r[3]
               sp_price: r[4]
               orig: orig
               dest: dest
               provider: details.name
+              id: "deinbus:#{orig_key}@#{dep}->#{dest_key}@#{arr}"
           else
             log.error "Regex did NOT match! "+tr.fulltext
         i = 0

@@ -1,4 +1,4 @@
-__      = require '../../vendor/underscore'
+__      = require 'underscore'
 log     = require '../logging'
 
 # module.exports.mapquest = require('./mapquest').findRides

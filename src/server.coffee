@@ -1,11 +1,12 @@
 socketIO = require 'socket.io'
-express = require 'express'
-sys = require 'util'
+express  = require 'express'
+sys      = require 'util'
 
 Ride = require './ride'
 City = require('./place').City
-RDS = require './rds'
-log = require './logging'
+RDS  = require './rds'
+log  = require './logging'
+mom  = require 'moment'
 
 app = express()
 app.set 'views', "view"
@@ -30,7 +31,7 @@ io.sockets.on 'connection', (socket) ->
       City.find query.destination, (dest) ->
         log.info "found dest: #{dest.key}"
         RDS.match Ride.new(orig:orig,dest:dest), (matching_ride) ->
-          log.debug "callback from RDS for #{matching_ride}"
+          log.debug "emitting ride to client: #{matching_ride}"
           socket.emit 'ride', matching_ride
 
 app.get "/", (req,res) ->
@@ -49,3 +50,20 @@ app.get "/rides/:from/:to", (req, res) ->
 app.post "/rides", (req, res) ->
   browser.emit 'ride', {some: req.body.ride}
   res.send "foo"
+
+app.get '/ridestream', (req, res) ->
+  fromKey   = req.query.fromKey
+  toKey     = req.query.toKey
+  departure = req.query.departure
+  if departure
+    departure = parseInt departure
+  else
+    departure = mom().utc().unix()
+  debugger;
+  res.render 'ridestream', {
+    layout: false
+    locals: {
+      fromKey: fromKey
+      toKey: toKey
+    }
+  }
