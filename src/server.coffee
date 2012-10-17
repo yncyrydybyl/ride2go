@@ -17,9 +17,9 @@ app.locals.pretty = true
 app.use express.bodyParser()
 app.use express.static 'public'
 
-server = app.listen config.server
-
-io = socketIO.listen server
+log.notice "ride2go: starts with config: \n#{JSON.stringify(config, null, 2)}"
+server = app.listen config.server.port
+io     = socketIO.listen server
 #io.set('log level', 1)
 
 io.sockets.on 'connection', (socket) ->

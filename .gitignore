@@ -21,4 +21,6 @@ doc/api
 components
 npm-debug.log
 apikeys.json
+config/apikeys.json
+config/server.json
 

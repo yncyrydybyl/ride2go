@@ -1,16 +1,16 @@
 fs   = require 'fs'
 log  = require './logging'
 
-apikeys = {}
-server  = { port: 3000 }
-
-readConfig: (name, default) ->
+readConfig = (fname, defaults) ->
   try
     content = fs.readFileSync fname
-    return JSON.parse content
+    result  = JSON.parse content
+    for k, v in defaults
+	    result[k] = v if !result[k]
+    return result
   catch error
     log.error "Error reading #{fname}: #{error}"
-  default
+  defaults
 
 module.exports = {
   apikeys: readConfig "./config/apikeys.json", {}

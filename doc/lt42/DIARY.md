@@ -4,6 +4,7 @@
 * TODO Integration
 * TODO Fake Route
 * TODO Lokale Anbieter
+* TODO nginx redirect to port 3000
 
 2012-10-17
 
