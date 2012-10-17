@@ -1,12 +1,14 @@
 socketIO = require 'socket.io'
 express  = require 'express'
 sys      = require 'util'
+mom      = require 'moment'
 
-Ride = require './ride'
-City = require('./place').City
-RDS  = require './rds'
-log  = require './logging'
-mom  = require 'moment'
+Ride    = require './ride'
+City    = require('./place').City
+RDS     = require './rds'
+log     = require './logging'
+config  = require './config'
+omqapi  = require './services/openmapquest_api'
 
 app = express()
 app.set 'views', "view"
@@ -23,16 +25,25 @@ io = socketIO.listen server
 io.sockets.on 'connection', (socket) ->
   log.debug "socket connected"
   socket.on 'query', (query) ->
-    log.info "query received -> #{JSON.stringify(query)}"
-    unless query.origin
-      query.origin = new City("DE:Berlin:Berlin") # geocoding serverbased
-    City.find query.origin, (orig) ->
-      log.info "found orig: #{orig.key} "
-      City.find query.destination, (dest) ->
-        log.info "found dest: #{dest.key}"
-        RDS.match Ride.new(orig:orig,dest:dest), (matching_ride) ->
-          log.debug "emitting ride to client: #{matching_ride}"
-          socket.emit 'ride', matching_ride
+    try
+      log.info "query received -> #{JSON.stringify(query)}"
+      unless query.origin
+        query.origin = new City("DE:Berlin:Berlin") # geocoding serverbased
+      City.find query.origin, (orig) ->
+        try
+          log.info "found orig: #{orig.key} "
+          City.find query.destination, (dest) ->
+            try
+              log.info "found dest: #{dest.key}"
+              RDS.match Ride.new(orig:orig,dest:dest), (matching_ride) ->
+                log.debug "emitting ride to client: #{matching_ride}"
+                socket.emit 'ride', matching_ride
+            catch error
+              log.notice "on connection: found dest: #{error}"
+        catch error
+          log.notice "on connection: found orig: #{error}"
+    catch error
+      log.notice "on connection: #{error}"
 
 app.get "/", (req,res) ->
   res.render 'index',  { layout: false, locals: {
@@ -52,18 +63,61 @@ app.post "/rides", (req, res) ->
   res.send "foo"
 
 app.get '/ridestream', (req, res) ->
-  fromKey   = req.query.fromKey
-  toKey     = req.query.toKey
-  departure = req.query.departure
-  if departure
-    departure = parseInt departure
-  else
-    departure = mom().utc().unix()
-  debugger;
-  res.render 'ridestream', {
-    layout: false
-    locals: {
-      fromKey: fromKey
-      toKey: toKey
-    }
+  getLocation = (key, lat, lon, placemark_str) ->
+    return { key: key } if key
+    return { lat: lat, lon: lon } if lat && lon
+    return undefined if !placemark_str
+    placemark = JSON.parse placemark_str
+    return { lat: placemark.Latitude, lon: placemark.Longitude }
+
+  putLocation = (locals, keyName, latName, lonName, location) ->
+    locals[keyName] = location.key if location.key
+    locals[latName] = location.lat if location.lat
+    locals[lonName] = location.lon if location.lon
+
+  departure     = req.query.departure
+  departure     = if departure then parseInt(departure) else mom().utc().unix()
+  tolerancedays = req.query.tolerancedays
+  tolerancedays = if tolerancedays then parseInt(tolerancedays) else 3
+
+  from   = getLocation req.query.fromKey, req.query.fromLat, req.query.fromLon, req.query.fromplacemark
+  to     = getLocation req.query.toKey, req.query.toLat, req.query.toLon, req.query.toplacemark
+
+  locals        = {
+    departure: departure,
+    tolerancedays: tolerancedays
   }
+
+  fromKeyResolved = false
+  toKeyResolved   = false
+
+  sendOutput    = () =>
+    if fromKeyResolved && toKeyResolved
+      putLocation locals, 'fromKey', 'fromLat', 'fromLon', from
+      putLocation locals, 'toKey', 'toLat', 'toLon', to
+
+      console.log "server/ridestream: locals: #{JSON.stringify(locals)}"
+
+      res.render 'ridestream', {
+        layout: false,
+        locals: locals
+      }
+      rendered = true
+
+  if from.key
+    fromKeyResolved   = true
+  else
+    omqapi.default.reverseGeocode from.lat, from.lon, (resolvedKey) =>
+      from.key        = resolvedKey
+      fromKeyResolved = true
+      sendOutput()
+
+  if to.key
+    toKeyResolved = true
+  else
+    omqapi.default.reverseGeocode to.lat, to.lon, (resolvedKey) =>
+      to.key        = resolvedKey
+      toKeyResolved = true
+      sendOutput()
+
+  sendOutput()

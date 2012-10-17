@@ -20,3 +20,5 @@ tmp
 doc/api
 components
 npm-debug.log
+apikeys.json
+

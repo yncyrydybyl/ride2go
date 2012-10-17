@@ -1,6 +1,9 @@
 2012-10-17
 
 * DONE Revamp javascript asset management with bower
+* DONE Implement reverse geocoding via mapquest
+* DONE Add configuration method for apikeys
+* DONE Add better error handling
 
 2012-10-16
 
