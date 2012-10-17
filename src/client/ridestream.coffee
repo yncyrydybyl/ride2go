@@ -1,7 +1,24 @@
 $(document).ready ->
   table = $('#rides')
   table.dataTable( {
-    "sPaginationType": "full_numbers"
+    "sPaginationType": "full_numbers",
+    "oLanguage": {
+      "sProcessing":   "Bitte warten...",
+      "sLengthMenu":   "_MENU_ Einträge anzeigen",
+      "sZeroRecords":  "Keine Einträge vorhanden.",
+      "sInfo":         "_START_ bis _END_ von _TOTAL_ Einträgen",
+      "sInfoEmpty":    "0 bis 0 von 0 Einträgen",
+      "sInfoFiltered": "(gefiltert von _MAX_  Einträgen)",
+      "sInfoPostFix":  "",
+      "sSearch":       "Suchen",
+      "sUrl":          "",
+      "oPaginate": {
+        "sFirst":    "Erste",
+        "sPrevious": "Zurück",
+        "sNext":     "Nächste",
+        "sLast":     "Letzte"
+      }
+    }
   } );
   socket = io.connect()
   socket.on 'connect', ->

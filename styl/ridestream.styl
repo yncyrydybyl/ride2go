@@ -6,11 +6,10 @@ body
   font-family: Arial, helvetica, sans-serif
   line-height: 1em
   font-size: 12px
-  width: 760
 
 table.pretty
-  width: 760
   clear: both
+  width: 100%
 
 .dataTables_wrapper:after
   content: "."
@@ -29,15 +28,15 @@ html[xmlns] .dataTables_wrapper
 table.pretty th
   vertical-align: text-top
   text-align: left
-  border-bottom: 1px solid #ececec
+  border-bottom: 1px solid #dddddd
   height: 24px
 
 table.pretty tbody td
   text-align: left
-  border-bottom: 1px solid #ececec
   height: 32px
   color: #111
   background: #ececec
+  border-bottom: 1px solid #dddddd
 
 table.pretty tbody tr.odd td
   background: #fff
@@ -59,3 +58,33 @@ table.pretty tbody tr.odd td
 .dataTables_paginate,
 .dataTables_info
   padding: 6px
+
+a.paginate_button,
+a.paginate_active
+  display: inline-block
+  background-color: #ececec
+  padding: 2px 6px
+  margin-left: 2px
+  cursor: pointer
+  *cursor: hand
+
+a.paginate_active
+  background-color: transparent
+  border: 1px solid black
+
+a.paginate_button_disabled
+  background-color: #fff
+  color: #ececec
+
+.paging_full_numbers a:active
+  outline: none
+
+.paging_full_numbers a:hover
+  text-decoration: none
+
+.dataTables_paginate span>a
+  width: 15px
+  text-align: center
+
+.dataTables_info
+  padding: 9px 6px 6px 6px
