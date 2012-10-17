@@ -1,0 +1,61 @@
+body
+  margin: 0
+  background-color: #FFF !important
+  height: 100%
+  padding: 0
+  font-family: Arial, helvetica, sans-serif
+  line-height: 1em
+  font-size: 12px
+  width: 760
+
+table.pretty
+  width: 760
+  clear: both
+
+.dataTables_wrapper:after
+  content: "."
+  display: block
+  clear: both
+  visibility: hidden
+  line-height: 0
+  height: 0
+
+html[xmlns] .dataTables_wrapper
+  display: block
+
+* html .dataTables_wrapper
+  height: 1%
+
+table.pretty th
+  vertical-align: text-top
+  text-align: left
+  border-bottom: 1px solid #ececec
+  height: 24px
+
+table.pretty tbody td
+  text-align: left
+  border-bottom: 1px solid #ececec
+  height: 32px
+  color: #111
+  background: #ececec
+
+table.pretty tbody tr.odd td
+  background: #fff
+
+.dataTables_length
+  float: left
+
+.dataTables_filter
+  float: right
+
+.dataTables_info
+  float: left
+
+.dataTables_paginate
+  float: right
+
+.dataTables_length,
+.dataTables_filter,
+.dataTables_paginate,
+.dataTables_info
+  padding: 6px
