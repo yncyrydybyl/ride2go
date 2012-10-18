@@ -33,10 +33,13 @@ The 'id-type' typically is 'id' unless a data provider supports multiple ids for
         provider:id-type: 'provider-place-id'
     }
 
-* Additionally, we map foreign keys ('provider-name:provider-place-ids') individually to a single primary key
+* We map unique foreign keys ('provider-name:provider-place-ids') individually to a single primary key
 
     'geoname:id:1234' -> 'DE:Bayern:München'
 
+* We map alternative name foreign keys ('altnames') to a set of primary keys
+
+    'geoname:altname:Kirchdorf' -> { 'DE:Bayern:Kirchdorf im Wald', 'DE:Bayern:Kirchdorf am Inn' }
 
 ## Special case: deinbus
 

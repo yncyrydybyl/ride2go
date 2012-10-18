@@ -22,7 +22,7 @@ class Place
     else
       log.debug("city not found")
       return undefined
-  
+
   state: ->
     if c = @key.match(/(^\w{2}:[^:]+).*/)
       return new State(c[1])
@@ -42,6 +42,19 @@ class Place
     return @seperators() == 1
   isCity: ->
     return @seperators() == 2
+
+  countryName: ->
+    @country()
+
+  stateName: ->
+    if c = @key.match(/(^\w{2}:[^:]+).*/)
+      return c[1]
+    else
+      log.debug("state not found")
+      return undefined
+
+  cityName: ->
+    @city()
 
   foreignKeyOrCity: (namespace_prefix, done) ->
     redis.hget @key, namespace_prefix, (err,foreign_key) =>

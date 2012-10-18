@@ -1,16 +1,18 @@
 2012-10-18
 
-* TODO Remove wrong entries
-* TODO altnames lookup
-
+* TODO dauer anzeigen
 * TODO Fake Route @me
 * TODO Unique ride ids @me
 * TODO Remove double entries @me
 * TODO Filter too many entries @me
 * TODO Lokale Anbieter (?)
+
 * DONE Bahn Link
 * DONE nginx redirect to port 3000
 * DONE Integration
+* DONE ausfaktorieren von place lookup
+* DONE Remove wrong entries
+* DONE altnames lookup
 
 
 2012-10-17

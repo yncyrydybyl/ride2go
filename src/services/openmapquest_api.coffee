@@ -8,12 +8,14 @@ class OpenMapquestApi
     @
 
   reverseGeocode: (lat, lon, cb) ->
-    host   = 'nominatim.openstreetmap.org'
-    path   = 'reverse'
+    host    = 'nominatim.openstreetmap.org'
+    path    = 'reverse'
     url     = "http://#{host}/#{path}?format=json&lat=#{lat}&lon=#{lon}"
-    log.debug url
-    request url, (err, resp, json) =>
-      debugger;
+    options =
+      url: url
+      headers: { 'accept-language': 'de,en' }
+    log.debug options
+    request options, (err, resp, json) =>
       key = undefined
       if err
         log.error err
@@ -25,22 +27,21 @@ class OpenMapquestApi
             address  = body.address
             if address
               country  = address.country_code?.toUpperCase()
-              state    = address.state || '*'
-              # TODO Kill this quickhack
-              debugger;
-              if state.indexOf(' ') >= 0
-                state = state.split ' '
-                state = state[state.length-1]
+              state    = address.state
               location = address.city || address.village || address.county || state
               throw "openmapquest_api: Failed to reverse geocode a country for (#{lat},#{lon})" if !country
               throw "openmapquest_api: Failed to reverse geocode a location for (#{lat},#{lon})" if !location
-              key      = "#{country}:#{state}:#{location}"
+              key      =
+                  countryName: () -> country,
+                  stateName: () -> state,
+                  cityName: () -> location
           catch error
             log.notice "openmapquest_api: #{error}"
         else
           log.notice "openmapquest_api: status code #{resp.statusCode}"
-      log.info "openmapquest_api: Resolved (#{lat},#{lon}) to #{key}"
+      log.info "openmapquest_api: Resolved (#{lat},#{lon}) to #{JSON.stringify(key)}"
       cb key
+
 
 module.exports         = OpenMapquestApi
 module.exports.default = new OpenMapquestApi()

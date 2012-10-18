@@ -3,12 +3,15 @@ express  = require 'express'
 sys      = require 'util'
 mom      = require 'moment'
 
-Ride    = require './ride'
-City    = require('./place').City
-RDS     = require './rds'
-log     = require './logging'
-config  = require './config'
-omqapi  = require './services/openmapquest_api'
+Ride     = require './ride'
+Place    = require('./place').Place
+City     = require('./place').City
+Country  = require('./place').Country
+RDS      = require './rds'
+log      = require './logging'
+config   = require './config'
+omqapi   = require './services/openmapquest_api'
+Location = require('./location').Location
 
 app = express()
 app.set 'views', "view"
@@ -28,7 +31,7 @@ io.sockets.on 'connection', (socket) ->
     try
       log.info "query received -> #{JSON.stringify(query)}"
       unless query.origin
-        query.origin = new City("DE:Berlin:Berlin") # geocoding serverbased
+        query.origin = new City("DE:Berlin:Berlin")
       City.find query.origin, (orig) ->
         try
           log.info "found orig: #{orig.key} "
@@ -63,38 +66,25 @@ app.post "/rides", (req, res) ->
   res.send "foo"
 
 app.get '/ridestream', (req, res) ->
-  getLocation = (key, lat, lon, placemark_str) ->
-    return { key: key } if key
-    return { lat: lat, lon: lon } if lat && lon
-    return undefined if !placemark_str
-    placemark = JSON.parse placemark_str
-    return { lat: placemark.Latitude, lon: placemark.Longitude }
-
-  putLocation = (locals, keyName, latName, lonName, location) ->
-    locals[keyName] = location.key if location.key
-    locals[latName] = location.lat if location.lat
-    locals[lonName] = location.lon if location.lon
-
-  departure     = req.query.departure
+  q             = req.query
+  departure     = q.departure
   departure     = if departure then parseInt(departure) else mom().utc().unix()
-  tolerancedays = req.query.tolerancedays
+  tolerancedays = q.tolerancedays
   tolerancedays = if tolerancedays then parseInt(tolerancedays) else 3
 
-  from   = getLocation req.query.fromKey, req.query.fromLat, req.query.fromLon, req.query.fromplacemark
-  to     = getLocation req.query.toKey, req.query.toLat, req.query.toLon, req.query.toplacemark
+  placed = (key) -> if key then Place.new(key) else undefined
+  from   = new Location placed(q.fromKey), q.fromLat, q.fromLon, q.fromplacemark
+  to     = new Location placed(q.toKey), q.toLat, q.toLon, q.toplacemark
 
-  locals        = {
+  locals     =
     departure: departure,
     tolerancedays: tolerancedays
-  }
 
-  fromKeyResolved = false
-  toKeyResolved   = false
-
-  sendOutput    = () =>
-    if fromKeyResolved && toKeyResolved
-      putLocation locals, 'fromKey', 'fromLat', 'fromLon', from
-      putLocation locals, 'toKey', 'toLat', 'toLon', to
+  sendOutput = () ->
+    debugger;
+    if from.resolved && to.resolved && !@rendered
+      from.putIntoLocals locals, 'fromKey', 'fromLat', 'fromLon', from
+      to.putIntoLocals locals, 'toKey', 'toLat', 'toLon', to
 
       console.log "server/ridestream: locals: #{JSON.stringify(locals)}"
 
@@ -102,22 +92,7 @@ app.get '/ridestream', (req, res) ->
         layout: false,
         locals: locals
       }
-      rendered = true
+      @rendered = true
 
-  if from.key
-    fromKeyResolved   = true
-  else
-    omqapi.default.reverseGeocode from.lat, from.lon, (resolvedKey) =>
-      from.key        = resolvedKey
-      fromKeyResolved = true
-      sendOutput()
-
-  if to.key
-    toKeyResolved = true
-  else
-    omqapi.default.reverseGeocode to.lat, to.lon, (resolvedKey) =>
-      to.key        = resolvedKey
-      toKeyResolved = true
-      sendOutput()
-
-  sendOutput()
+  from.resolve omqapi.default, sendOutput
+  to.resolve omqapi.default, sendOutput
