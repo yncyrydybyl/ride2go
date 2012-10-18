@@ -2,18 +2,19 @@ redis   = require 'redis'
 nodeio  = require 'node.io'
 request = require 'request'
 log     = require '../logging'
+qs      = require 'querystring'
 
 Ride    = require '../ride'
 Place   = require('../place').Place
 moment  = require 'moment'
 
-module.exports.enabled = false
+module.exports.enabled = true
 module.exports.details = details =
   mode: "train" # kind of vehicle
-  name: "pts" # uniq primary key, should be a domain name
+  name: "bahn.de" # uniq primary key, should be a domain name
   country: "DE" # upper case two letter short code
   source: "http://public-transport-enabler.googlecode.com"
-  author: ["andy"]
+  author: ["andy", "boggle"]
   icon: "pts.png"
   update_freq: "10" # in minutes, currently unused
   expires: ""
@@ -86,16 +87,29 @@ module.exports.findRides = new nodeio.Job
       routes = JSON.parse(body)
 
       for route in routes.connections
-        dep_date = moment(route.firstTripDepartureTime).unix()
-        arr_date = moment(route.lastTripArrivalTime).unix()
+        dep_date = moment(route.firstTripDepartureTime)
+        arr_date = moment(route.lastTripArrivalTime)
+
+        params   = qs.stringify {
+          country: 'DEU',
+          f: 2,
+          s: orig,
+          o: 2,
+          z: dest,
+          d: dep_date.format('DDMMYY')
+          t: dep_date.format('HHmm')
+        }
+        link     = "http://reiseauskunft.bahn.de/bin/query2.exe/dn?#{params}"
+
         rides.push
-          dep: dep_date
-          arr: arr_date
+          dep: dep_date.unix()
+          arr: arr_date.unix()
           price: '?'
           orig: orig       # you may want to replace this
           dest: dest       # with better matches from your query result
           provider: "#{details.name}"
-          id: "pts:#{orig_key}@#{arr_date}->#{dest_key}@#{dep_date}"
+          link: link
+          id: "bahn.de:#{orig_key}@#{arr_date}->#{dest_key}@#{dep_date}"
 
       log.notice ">>>>> #{JSON.stringify(rides)}"
       @emit rides

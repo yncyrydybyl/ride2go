@@ -1,10 +1,17 @@
 2012-10-18
 
-* TODO Bahn Link
-* TODO Integration
-* TODO Fake Route
-* TODO Lokale Anbieter
-* TODO nginx redirect to port 3000
+* TODO Remove wrong entries
+* TODO altnames lookup
+
+* TODO Fake Route @me
+* TODO Unique ride ids @me
+* TODO Remove double entries @me
+* TODO Filter too many entries @me
+* TODO Lokale Anbieter (?)
+* DONE Bahn Link
+* DONE nginx redirect to port 3000
+* DONE Integration
+
 
 2012-10-17
 
@@ -12,6 +19,7 @@
 * DONE Implement reverse geocoding via mapquest
 * DONE Add configuration method for apikeys
 * DONE Add better error handling
+
 
 2012-10-16
 
@@ -24,10 +32,12 @@
 * DONE Document REDIS structure
 * DONE Lots of help from flo. Thanks!
 
+
 2012-10-15
 
 * DONE Setup server
 * DONE Fix mapquest
+
 
 2012-10-14
 
@@ -35,13 +45,16 @@
 * DONE Fix pts
 * DONE Fix deinbus
 
+
 2012-10-12
 
 * DONE Work on rides tests for new places API
 
+
 2012-10-11
 
 * DONE Fix places tests for new places API
+
 
 2012-10-10
 
@@ -66,15 +79,18 @@
 
 * DONE Meeting: sven, flo, t, schatz, boggle
 
+
 2012-10-05
 
 * DONE Review plan and ride and usage of redis
 * DONE Research datalog papers and think about how this maps on blackboard idea
 
+
 2012-10-04
 
 * DONE Visit rejectjs conference
 * DONE Talk about core feature set and blackboard approach
+
 
 2012-10-02
 
@@ -83,15 +99,18 @@
 * DONE rewrote build script
 * DONE switche to using styl instead of sass, prolly broke the css
 
+
 2012-10-01
 
 * DONE repaired geoname import
 * DONE made tests run again
 
+
 2012-09-30
 
 * DONE updates to stable version of nodes.js (0.6) and updates packages
 * DONE convert docs to markdown
+
 
 2012-09-26
 
@@ -108,6 +127,7 @@
 * DONE skimmed existing code @boggle
 * DONE discussed architecture proposal @boggle @t
 * DONE setup daily log @boggle
+
 
 2012-09-24
 

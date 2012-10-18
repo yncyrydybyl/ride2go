@@ -17,7 +17,8 @@ $(document).ready ->
         "sPrevious": "Zurück",
         "sNext":     "Nächste",
         "sLast":     "Letzte"
-      }
+      },
+      "aSorting": [[ 3, "asc" ]]
     }
   } );
   socket = io.connect()
@@ -34,8 +35,8 @@ $(document).ready ->
       ride    = JSON.parse rideJson
 
       moment.lang 'de'
-      dep     = moment.unix(ride.dep).format('LLL')
-      arr     = moment.unix(ride.arr).format('LLL')
+      dep     = moment.unix(ride.dep).format('DD.MM.YYYY HH:MM')
+      arr     = moment.unix(ride.arr).format('DD.MM.YYYY HH:MM')
 
       link    = ride.link
       link    = if link then "<a href=\"#{link}\"><img src=\"http://test.fahrgemeinschaft.de/gfx/ico/info.gif\" /></a>" else '--'
