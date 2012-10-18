@@ -22,6 +22,7 @@ $(document).ready ->
   table = $ '#rides'
   table.dataTable( {
     "sPaginationType": "full_numbers",
+    "aaSorting": [[ 2, "asc" ]]
     "oLanguage": {
       "sProcessing":   "Bitte warten...",
       "sLengthMenu":   "_MENU_ Einträge anzeigen",
@@ -38,7 +39,6 @@ $(document).ready ->
         "sNext":     "Nächste",
         "sLast":     "Letzte"
       },
-      "aSorting": [[ 3, "desc" ]]
     }
   } );
   socket = io.connect()
@@ -69,9 +69,10 @@ $(document).ready ->
       else if Cache.default.addRide(ride)
         moment.lang 'de'
         dep     = moment.unix(ride.dep)
-        dep_str = dep.format 'DD.MM.YYYY HH:mm'
+        # TODO Add year
+        dep_str = dep.format 'DD.MM. HH:mm'
         arr     = moment.unix(ride.arr)
-        arr_str = arr.format 'DD.MM.YYYY HH:mm'
+        arr_str = arr.format 'DD.MM. HH:mm'
         dur     = ride.arr - ride.dep
         dur_str = moment.unix(dur).utc().format 'HH:mm'
         link    = ride.link
@@ -90,8 +91,10 @@ $(document).ready ->
         ]
 
         table.dataTable().fnAddData dataRow
+        table.dataTable().fnSort [[ 2, "asc" ]]
 
     socket.emit 'query', msg
+    table.dataTable().fnSort [[ 2, "asc" ]]
 
 
 
