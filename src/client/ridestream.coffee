@@ -5,6 +5,7 @@ class Cache
   addRide: (ride) ->
     console.log 'cache: new ride'
     console.log ride
+
     if ride.id
       if @cache[ride.id]
         console.log "cache: skipped double ride #{ride.id}"
@@ -42,10 +43,12 @@ $(document).ready ->
   } );
   socket = io.connect()
   socket.on 'connect', ->
-    query   = $ '#query'
-    fromKey = query.attr 'fromKey'
-    toKey   = query.attr 'toKey'
-    msg     =
+    query    = $ '#query'
+    fromKey  = query.attr 'fromKey'
+    toKey    = query.attr 'toKey'
+    fromName = query.attr 'fromName'
+    toName   = query.attr 'toName'
+    msg      =
       origin: fromKey
       destination: toKey
       departure: query.attr 'departure'
@@ -59,7 +62,11 @@ $(document).ready ->
         ride.dep = ride.arr
         ride.arr = swp
 
-      if Cache.default.addRide(ride)
+      if ride.orig != fromKey
+        console.log "Ride is not starting at #{fromKey}"
+      else if ride.dest != toKey
+        console.log "Ride is not leading to #{toKey}"
+      else if Cache.default.addRide(ride)
         moment.lang 'de'
         dep     = moment.unix(ride.dep)
         dep_str = dep.format 'DD.MM.YYYY HH:mm'
@@ -73,8 +80,8 @@ $(document).ready ->
         price   = ride.price
         price   = undefined if price && price.length == 0
         dataRow = [
-          ride.orig,              # Start
-          ride.dest,              # Ziel
+          fromName,               # Start
+          toName,                 # Ziel
           dep_str,                # Abfahrt
           arr_str,                # Ankunft
           dur_str,                # Dauer

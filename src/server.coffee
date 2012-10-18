@@ -93,6 +93,8 @@ app.get '/ridestream', (req, res) ->
 
         # console.log "server/ridestream: locals: #{JSON.stringify(locals)}"
 
+        locals.fromName = from.obj.cityName()
+        locals.toName   = to.obj.cityName()
         res.render 'ridestream', {
           layout: false,
           locals: locals

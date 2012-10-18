@@ -2,19 +2,21 @@
 
 2012-10-18
 
-* DONE Dauer stimmt nicht (tbd.)
-* DONE Kosten tbd.
-* TODO Anbieter raus -> Logos
-* TODO Abfahrtssort
-* TODO Ankunftszeit stimmt nicht
-* TODO Falsche Abfahrtszeit
 
 * TODO Fake Route @me
-* TODO Lokale Anbieter (?) - WVG
 * TODO BS - Wolfsburg
-* TODO Filter wrong keys
-* TODO Filter times
+* TODO Lokale Anbieter (?) - WVG
 
+* TODO Falsche Abfahrtszeit -> was kommt von fg
+* TODO Zeiten bei deinbus
+
+* DONE Filter wrong keys
+* POSTPONED Filter times
+* POSTPONED Abfahrtssort
+* DONE Dauer stimmt nicht (tbd.)
+* DONE Kosten tbd.
+* DONE Anbieter raus -> Logos
+* DONE Ankunftszeit stimmt nicht
 * POSTPONED Filter too many entries
 * DONE Proper error when unresolvable
 * DONE Why resolve fails second time

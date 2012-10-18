@@ -77,9 +77,9 @@ module.exports.findRides = new nodeio.Job
   run: (url) ->
     rides = []
     dest_key = @options.dest
-    dest     = Place.new(dest_key).city()
+    dest     = Place.new(dest_key)
     orig_key = @options.orig
-    orig     = Place.new(orig_key).city()
+    orig     = Place.new(orig_key)
 
     @get url, (err, body) =>
       log.error "DOOF conn: #{err}" if err

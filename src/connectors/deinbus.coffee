@@ -55,9 +55,9 @@ module.exports.findRides = new nodeio.Job
     rides = []
     log.notice url
     dest_key = @options.dest
-    dest     = Place.new(dest_key).city()
+    dest     = Place.new(dest_key)
     orig_key = @options.orig
-    orig     = Place.new(orig_key).city()
+    orig     = Place.new(orig_key)
     log.debug "orig: #{orig} dest: #{dest}"
     @getHtml url, (err, $, data) =>
       try
