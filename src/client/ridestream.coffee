@@ -75,7 +75,7 @@ $(document).ready ->
         dur     = ride.arr - ride.dep
         dur_str = moment.unix(dur).utc().format 'HH:mm'
         link    = ride.link
-        link    = link && "<a href=\"#{link}\"><img class=\"logo\" src=\"/images/connectors/logo_#{ride.provider}.png\" /></a>"
+        link    = link && "<a target=\"_blank\" href=\"#{link}\"><img class=\"logo\" src=\"/images/connectors/logo_#{ride.provider}.png\" /></a>"
         link    = '--' if !link
         price   = ride.price
         price   = undefined if price && price.length == 0
