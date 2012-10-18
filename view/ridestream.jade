@@ -4,7 +4,6 @@ html
         title ride2go
         meta(http-equiv='content-type', content='text/html; charset=iso-8859-1')
 
-        script(src='/css/ridestream.css')
         script(src='/js/underscore/underscore-min.js')
         script(src='/js/jquery/jquery.js')
         script(src='/js/jquery-ui/jquery-ui.min.js')
@@ -14,7 +13,7 @@ html
         script(src='/socket.io/socket.io.js')
         script(src='/js/ridestream.js')
 
-        link(type='text/css', href='/css/reset.css', rel='stylesheet')
+        link(type='text/css', href='http://yui.yahooapis.com/3.3.0/build/cssreset/reset-min.css', rel='stylesheet')
         link(type='text/css', href='/css/ridestream.css', rel='stylesheet')
 
     body
@@ -44,6 +43,9 @@ html
                         | &nbsp;
                         strong
                             | Ankunft
+                    th
+                        strong
+                            | Dauer
                     th
                         strong
                         | Kosten

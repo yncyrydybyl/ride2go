@@ -72,27 +72,33 @@ app.get '/ridestream', (req, res) ->
   tolerancedays = q.tolerancedays
   tolerancedays = if tolerancedays then parseInt(tolerancedays) else 3
 
-  placed = (key) -> if key then Place.new(key) else undefined
+  placed = (key) -> if key then City.new(key) else undefined
   from   = new Location placed(q.fromKey), q.fromLat, q.fromLon, q.fromplacemark
   to     = new Location placed(q.toKey), q.toLat, q.toLon, q.toplacemark
 
-  locals     =
+  locals =
     departure: departure,
     tolerancedays: tolerancedays
 
+  rendered   = false
   sendOutput = () ->
     debugger;
-    if from.resolved && to.resolved && !@rendered
-      from.putIntoLocals locals, 'fromKey', 'fromLat', 'fromLon', from
-      to.putIntoLocals locals, 'toKey', 'toLat', 'toLon', to
+    if from.resolved && to.resolved && !rendered
+      if !from.obj
+        res.send 500, 'Could not resolve origin'
+      else if !to.obj
+        res.send 500, 'Could not resolve destination'
+      else
+        from.putIntoLocals locals, 'fromKey', 'fromLat', 'fromLon', from
+        to.putIntoLocals locals, 'toKey', 'toLat', 'toLon', to
 
-      console.log "server/ridestream: locals: #{JSON.stringify(locals)}"
+        console.log "server/ridestream: locals: #{JSON.stringify(locals)}"
 
-      res.render 'ridestream', {
-        layout: false,
-        locals: locals
-      }
-      @rendered = true
+        res.render 'ridestream', {
+          layout: false,
+          locals: locals
+        }
+        rendered = true
 
   from.resolve omqapi.default, sendOutput
   to.resolve omqapi.default, sendOutput

@@ -10,17 +10,19 @@ class PlaceResolver
     @
 
   resolve: (cb) ->
-    debugger;
-    source = @dataSource
-    Country.find source.countryName(), (resolvedCountry) =>
+    source      = @dataSource
+    countryName = source.countryName()
+    stateName   = source.stateName()
+    cityName    = source.cityName()
+    Country.find countryName, (resolvedCountry) =>
       if resolvedCountry
-        resolvedCountry.states.find source.stateName(), (resolvedState) =>
+        resolvedCountry.states.find stateName, (resolvedState) =>
           if resolvedState
-            resolvedState.cities.find source.cityName(), cb
+            resolvedState.cities.find cityName, cb
           else
-            resolvedCountry.cities.find source.cityName(), cb
+            resolvedCountry.cities.find cityName, cb
       else
-        City.find source.cityName(), cb
+        City.find cityName, cb
 
 
 module.exports.new          = (aDataSource = undefined) -> new PlaceResolver(aDataSource)

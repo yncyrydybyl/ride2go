@@ -95,7 +95,7 @@ module.exports.findRides = new nodeio.Job
           orig: orig       # you may want to replace this
           dest: dest       # with better matches from your query result
           provider: "#{details.name}"
-          id: "pts:#{orig_key}@#{arr_date}->#{dest_key}@#{dep_date}"
+          id: "#{module.exports.details.mode}:#{orig_key}@#{arr_date}->#{dest_key}@#{dep_date}"
 
       log.notice ">>>>> #{JSON.stringify(rides)}"
       @emit rides

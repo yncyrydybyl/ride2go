@@ -74,7 +74,7 @@ module.exports.findRides = new nodeio.Job
               orig: orig
               dest: dest
               provider: details.name
-              id: "deinbus:#{orig_key}@#{dep}->#{dest_key}@#{arr}"
+              id: "#{module.exports.details.mode}:#{orig_key}@#{dep}->#{dest_key}@#{arr}"
           else
             log.error "Regex did NOT match! "+tr.fulltext
         i = 0

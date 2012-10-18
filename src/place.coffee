@@ -47,7 +47,7 @@ class Place
     @country()
 
   stateName: ->
-    if c = @key.match(/(^\w{2}:[^:]+).*/)
+    if c = @key.match(/^\w{2}:([^:]+).*/)
       return c[1]
     else
       log.debug("state not found")

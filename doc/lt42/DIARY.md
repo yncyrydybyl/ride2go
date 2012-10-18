@@ -1,12 +1,15 @@
 2012-10-18
 
-* TODO dauer anzeigen
 * TODO Fake Route @me
-* TODO Unique ride ids @me
-* TODO Remove double entries @me
-* TODO Filter too many entries @me
 * TODO Lokale Anbieter (?)
 
+* POSTPONED Filter too many entries
+* DONE Proper error when unresolvable
+* DONE why resolve fails second time
+* DONE Unique ride ids
+* DONE Remove double entries
+* DONE dauer anzeigen
+* DONE Language preference openmapquest api
 * DONE Bahn Link
 * DONE nginx redirect to port 3000
 * DONE Integration

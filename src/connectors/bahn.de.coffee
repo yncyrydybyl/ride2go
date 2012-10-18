@@ -84,11 +84,11 @@ module.exports.findRides = new nodeio.Job
     @get url, (err, body) =>
       log.error "DOOF conn: #{err}" if err
       
-      routes = JSON.parse(body)
+      routes = JSON.parse body
 
       for route in routes.connections
-        dep_date = moment(route.firstTripDepartureTime)
-        arr_date = moment(route.lastTripArrivalTime)
+        dep_date = moment route.firstTripDepartureTime
+        arr_date = moment route.lastTripArrivalTime
 
         params   = qs.stringify {
           country: 'DEU',
@@ -96,8 +96,8 @@ module.exports.findRides = new nodeio.Job
           s: orig,
           o: 2,
           z: dest,
-          d: dep_date.format('DDMMYY')
-          t: dep_date.format('HHmm')
+          d: dep_date.format 'DDMMYY'
+          t: dep_date.format 'HHmm'
         }
         link     = "http://reiseauskunft.bahn.de/bin/query2.exe/dn?#{params}"
 
@@ -109,7 +109,7 @@ module.exports.findRides = new nodeio.Job
           dest: dest       # with better matches from your query result
           provider: "#{details.name}"
           link: link
-          id: "bahn.de:#{orig_key}@#{arr_date}->#{dest_key}@#{dep_date}"
+          id: "#{module.exports.details.mode}:#{orig_key}@#{arr_date}->#{dest_key}@#{dep_date}"
 
       log.notice ">>>>> #{JSON.stringify(rides)}"
       @emit rides

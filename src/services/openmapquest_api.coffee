@@ -7,6 +7,9 @@ class OpenMapquestApi
   constructor: () ->
     @
 
+  valFn: (val) ->
+    () -> val
+
   reverseGeocode: (lat, lon, cb) ->
     host    = 'nominatim.openstreetmap.org'
     path    = 'reverse'
@@ -32,14 +35,18 @@ class OpenMapquestApi
               throw "openmapquest_api: Failed to reverse geocode a country for (#{lat},#{lon})" if !country
               throw "openmapquest_api: Failed to reverse geocode a location for (#{lat},#{lon})" if !location
               key      =
-                  countryName: () -> country,
-                  stateName: () -> state,
-                  cityName: () -> location
+                  countryName: country,
+                  stateName: state,
+                  cityName: location
           catch error
             log.notice "openmapquest_api: #{error}"
         else
           log.notice "openmapquest_api: status code #{resp.statusCode}"
       log.info "openmapquest_api: Resolved (#{lat},#{lon}) to #{JSON.stringify(key)}"
+      if key
+        key.countryName = @valFn key.countryName
+        key.stateName   = @valFn key.stateName
+        key.cityName    = @valFn key.cityName
       cb key
 
 
