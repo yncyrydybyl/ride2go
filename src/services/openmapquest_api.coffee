@@ -31,7 +31,11 @@ class OpenMapquestApi
             if address
               country  = address.country_code?.toUpperCase()
               state    = address.state
-              location = address.city || address.village || address.county || state
+              if address.city && address.city == address.county && address.suburb
+                # location = "#{address.city} #{address.suburb}"
+                location = address.suburb
+              else
+                location = address.city || address.village || address.county || state
               throw "openmapquest_api: Failed to reverse geocode a country for (#{lat},#{lon})" if !country
               throw "openmapquest_api: Failed to reverse geocode a location for (#{lat},#{lon})" if !location
               key      =

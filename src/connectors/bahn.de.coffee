@@ -86,9 +86,10 @@ module.exports.findRides = new nodeio.Job
       
       routes = JSON.parse body
 
-      for route in routes.connections
-        dep_date = moment route.firstTripDepartureTime
-        arr_date = moment route.lastTripArrivalTime
+      if routes.connections
+        for route in routes.connections
+          dep_date = moment route.firstTripDepartureTime
+          arr_date = moment route.lastTripArrivalTime
 
         params   = qs.stringify {
           country: 'DEU',
