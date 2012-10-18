@@ -23,7 +23,7 @@ module.exports.details = details =
   #specifics
   prefix: "mitfahrzentrale:id"
 
-timeFormat = 'dddd, D. MMM YYYY hh:mm Uhr'
+timeFormat = 'dddd, D. MMM YYYY hh:mm'
 
 regexx = ///
         Ab\s(\w{2},\s\d{2}\.\d{2}\.\d{4})
@@ -64,8 +64,8 @@ module.exports.findRides = new nodeio.Job
         $('#product-serach-list tbody tr').odd (tr) ->
           if (r = tr.fulltext.match regex)
             moment.lang 'de'
-            dep = moment(r[1], timeFormat).utc().unix()
-            arr = moment(r[2], timeFormat).utc().unix()
+            dep = moment(r[1], timeFormat).unix()
+            arr = moment(r[2], timeFormat).unix()
             rides.push
               dep: dep
               arr: arr
