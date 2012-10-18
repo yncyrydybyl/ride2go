@@ -86,30 +86,31 @@ module.exports.findRides = new nodeio.Job
       
       routes = JSON.parse body
 
-      for route in routes.connections
-        dep_date = moment route.firstTripDepartureTime
-        arr_date = moment route.lastTripArrivalTime
+      if routes.connections
+        for route in routes.connections
+          dep_date = moment route.firstTripDepartureTime
+          arr_date = moment route.lastTripArrivalTime
 
-        params   = qs.stringify {
-          country: 'DEU',
-          f: 2,
-          s: orig,
-          o: 2,
-          z: dest,
-          d: dep_date.format 'DDMMYY'
-          t: dep_date.format 'HHmm'
-        }
-        link     = "http://reiseauskunft.bahn.de/bin/query2.exe/dn?#{params}"
+          params   = qs.stringify {
+            country: 'DEU',
+            f: 2,
+            s: orig,
+            o: 2,
+            z: dest,
+            d: dep_date.format 'DDMMYY'
+            t: dep_date.format 'HHmm'
+          }
+          link     = "http://reiseauskunft.bahn.de/bin/query2.exe/dn?#{params}"
 
-        rides.push
-          dep: dep_date.unix()
-          arr: arr_date.unix()
-          price: ''
-          orig: orig       # you may want to replace this
-          dest: dest       # with better matches from your query result
-          provider: "#{details.name}"
-          link: link
-          id: "#{module.exports.details.mode}:#{orig_key}@#{arr_date}->#{dest_key}@#{dep_date}"
+          rides.push
+            dep: dep_date.unix()
+            arr: arr_date.unix()
+            price: ''
+            orig: orig       # you may want to replace this
+            dest: dest       # with better matches from your query result
+            provider: "#{details.name}"
+            link: link
+            id: "#{module.exports.details.mode}:#{orig_key}@#{arr_date}->#{dest_key}@#{dep_date}"
 
       log.notice ">>>>> #{JSON.stringify(rides)}"
       @emit rides

@@ -81,6 +81,7 @@ Execute `node_modules/.bin/node.io lib/connectors/deinbus.js`
 * Edit ConnectionController.java and LocationController.java to set the PTE NetworkProvider that should be used
 * Build PTS
 * Run PTS by executing in `service`: `mvn org.codehaus.cargo:cargo-maven2-plugin:run`
+  (you can change the port via `-Dcargo.servlet.port=<port>`)
 * Edit `connectors/pts.coffee` to match your setup
 
 
