@@ -12,7 +12,7 @@ module.exports.details = details =
   name: "deinbus.de" # uniq primary key
   source: "http://deinbus.de"
   author: ["flo","t"]
-  icon: "deinbus.de.png"
+  icon: "logo_deinbus.de.png"
   update_frequenz: "10" # in minutes
   expires: ""
   #defaults

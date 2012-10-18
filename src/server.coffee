@@ -70,7 +70,7 @@ app.get '/ridestream', (req, res) ->
   departure     = q.departure
   departure     = if departure then parseInt(departure) else mom().utc().unix()
   tolerancedays = q.tolerancedays
-  tolerancedays = if tolerancedays then parseInt(tolerancedays) else 3
+  tolerancedays = if tolerancedays then parseInt(tolerancedays) else config.tolerancedays
 
   placed = (key) -> if key then City.new(key) else undefined
   from   = new Location placed(q.fromKey), q.fromLat, q.fromLon, q.fromplacemark
@@ -82,17 +82,16 @@ app.get '/ridestream', (req, res) ->
 
   rendered   = false
   sendOutput = () ->
-    debugger;
     if from.resolved && to.resolved && !rendered
       if !from.obj
         res.send 500, 'Could not resolve origin'
       else if !to.obj
         res.send 500, 'Could not resolve destination'
       else
-        from.putIntoLocals locals, 'fromKey', 'fromLat', 'fromLon', from
-        to.putIntoLocals locals, 'toKey', 'toLat', 'toLon', to
+        from.putIntoLocals locals, 'fromKey', 'fromLat', 'fromLon'
+        to.putIntoLocals locals, 'toKey', 'toLat', 'toLon'
 
-        console.log "server/ridestream: locals: #{JSON.stringify(locals)}"
+        # console.log "server/ridestream: locals: #{JSON.stringify(locals)}"
 
         res.render 'ridestream', {
           layout: false,

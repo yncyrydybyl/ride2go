@@ -13,6 +13,6 @@ readConfig = (fname, defaults) ->
   defaults
 
 module.exports = {
-  apikeys: readConfig "./config/apikeys.json", {}
-  server: readConfig "./config/server.json", {port: 3000}
+  apikeys: readConfig './config/apikeys.json', {}
+  server: readConfig './config/server.json', {port: 3000, tolerancedays: 3}
 }

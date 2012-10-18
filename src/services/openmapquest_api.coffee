@@ -7,7 +7,7 @@ class OpenMapquestApi
   constructor: () ->
     @
 
-  valFn: (val) ->
+  _valFn: (val) ->
     () -> val
 
   reverseGeocode: (lat, lon, cb) ->
@@ -44,9 +44,9 @@ class OpenMapquestApi
           log.notice "openmapquest_api: status code #{resp.statusCode}"
       log.info "openmapquest_api: Resolved (#{lat},#{lon}) to #{JSON.stringify(key)}"
       if key
-        key.countryName = @valFn key.countryName
-        key.stateName   = @valFn key.stateName
-        key.cityName    = @valFn key.cityName
+        key.countryName = @_valFn key.countryName
+        key.stateName   = @_valFn key.stateName
+        key.cityName    = @_valFn key.cityName
       cb key
 
 

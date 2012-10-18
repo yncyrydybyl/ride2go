@@ -1,25 +1,39 @@
+
+
 2012-10-18
 
+* DONE Dauer stimmt nicht (tbd.)
+* DONE Kosten tbd.
+* TODO Anbieter raus -> Logos
+* TODO Abfahrtssort
+* TODO Ankunftszeit stimmt nicht
+* TODO Falsche Abfahrtszeit
+
 * TODO Fake Route @me
-* TODO Lokale Anbieter (?)
+* TODO Lokale Anbieter (?) - WVG
+* TODO BS - Wolfsburg
+* TODO Filter wrong keys
+* TODO Filter times
 
 * POSTPONED Filter too many entries
 * DONE Proper error when unresolvable
-* DONE why resolve fails second time
+* DONE Why resolve fails second time
 * DONE Unique ride ids
 * DONE Remove double entries
-* DONE dauer anzeigen
+* DONE Dauer anzeigen
 * DONE Language preference openmapquest api
-* DONE Bahn Link
+* DONE Bahn link
+* DONE replaced nginx with simpleproxy
 * DONE nginx redirect to port 3000
 * DONE Integration
-* DONE ausfaktorieren von place lookup
 * DONE Remove wrong entries
+* DONE ausfaktorieren von place lookup
 * DONE altnames lookup
 
 
 2012-10-17
 
+* DONE Made server port configurable
 * DONE Revamp javascript asset management with bower
 * DONE Implement reverse geocoding via mapquest
 * DONE Add configuration method for apikeys
@@ -34,7 +48,7 @@
 * DONE Use moments in ridestream
 * DONE Write standalone route for new UI
 * DONE Adapt for fg integration
-* DONE Document REDIS structure
+* DONE Document REDIS structure in REDIS.md
 * DONE Lots of help from flo. Thanks!
 
 

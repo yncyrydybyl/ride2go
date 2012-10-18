@@ -29,7 +29,7 @@ $(document).ready ->
       "sInfoEmpty":    "0 bis 0 von 0 Einträgen",
       "sInfoFiltered": "(gefiltert von _MAX_  Einträgen)",
       "sInfoPostFix":  "",
-      "sSearch":       "Suchen",
+      "sSearch":       "Suche eingrenzen",
       "sUrl":          "",
       "oPaginate": {
         "sFirst":    "Erste",
@@ -37,7 +37,7 @@ $(document).ready ->
         "sNext":     "Nächste",
         "sLast":     "Letzte"
       },
-      "aSorting": [[ 3, "asc" ]]
+      "aSorting": [[ 3, "desc" ]]
     }
   } );
   socket = io.connect()
@@ -52,27 +52,34 @@ $(document).ready ->
 
     socket.on 'ride', (rideJson) ->
       ride = JSON.parse rideJson
+      # in backend: fail-fast
+      # in frontend: fail-smooth
+      if ride.arr < ride.dep
+        swp      = ride.dep
+        ride.dep = ride.arr
+        ride.arr = swp
+
       if Cache.default.addRide(ride)
         moment.lang 'de'
-        mom_dep = moment.unix ride.dep
-        dep     = mom_dep.format 'DD.MM.YYYY HH:MM'
-        mom_arr = moment.unix ride.arr
-        arr     = mom_arr.format 'DD.MM.YYYY HH:MM'
-        mom_dur = moment.unix mom_dep.diff(mom_arr)
-        dur     = mom_dur.format 'HH:MM'
-
+        dep     = moment.unix(ride.dep)
+        dep_str = dep.format 'DD.MM.YYYY HH:mm'
+        arr     = moment.unix(ride.arr)
+        arr_str = arr.format 'DD.MM.YYYY HH:mm'
+        dur     = ride.arr - ride.dep
+        dur_str = moment.unix(dur).utc().format 'HH:mm'
         link    = ride.link
-        link    = if link then "<a href=\"#{link}\"><img src=\"http://test.fahrgemeinschaft.de/gfx/ico/info.gif\" /></a>" else '--'
-
+        link    = link && "<a href=\"#{link}\"><img class=\"logo\" src=\"/images/connectors/logo_#{ride.provider}.png\" /></a>"
+        link    = '--' if !link
+        price   = ride.price
+        price   = undefined if price && price.length == 0
         dataRow = [
-          ride.orig,        # Start
-          ride.provider,    # Anbieter
-          ride.dest,        # Ziel
-          dep,              # Abfahrt
-          arr,              # Ankunft
-          dur,              # Dauer
-          ride.price || '', # Kosten
-          link              # Details
+          ride.orig,              # Start
+          ride.dest,              # Ziel
+          dep_str,                # Abfahrt
+          arr_str,                # Ankunft
+          dur_str,                # Dauer
+          ride.price || 't.b.d.', # Kosten
+          link                    # Details
         ]
 
         table.dataTable().fnAddData dataRow

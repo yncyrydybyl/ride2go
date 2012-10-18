@@ -15,7 +15,7 @@ module.exports.details = details =
   country: "DE" # upper case two letter short code
   source: "http://public-transport-enabler.googlecode.com"
   author: ["andy", "boggle"]
-  icon: "pts.png"
+  icon: "logo_bahn.de.png"
   update_freq: "10" # in minutes, currently unused
   expires: ""
   # defaults
@@ -104,7 +104,7 @@ module.exports.findRides = new nodeio.Job
         rides.push
           dep: dep_date.unix()
           arr: arr_date.unix()
-          price: '?'
+          price: ''
           orig: orig       # you may want to replace this
           dest: dest       # with better matches from your query result
           provider: "#{details.name}"
