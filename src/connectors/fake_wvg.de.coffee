@@ -5,7 +5,7 @@ moment = require 'moment'
 Ride   = require '../ride'
 Place  = require('../place').Place
 
-module.exports.enabled = false
+module.exports.enabled = true
 module.exports.details = details =
   mode: "fake"
   fake: true
