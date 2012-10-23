@@ -3,6 +3,7 @@
 2012-10-23
 
 * DONE Better logging of rides (skips links)
+* DONE Refactor ridestream code for separate use
 * TODO Standalone ui
 
 

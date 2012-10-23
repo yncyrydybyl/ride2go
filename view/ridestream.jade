@@ -12,6 +12,10 @@ html
         script(src='/js/moment/min/lang-all.min.js')
         script(src='/socket.io/socket.io.js')
         script(src='/js/ridestream.js')
+        script
+            $(document).ready(function() {
+                initRidestreamTable($('#query'));
+            });
 
         link(type='text/css', href='http://yui.yahooapis.com/3.3.0/build/cssreset/reset-min.css', rel='stylesheet')
         link(type='text/css', href='/css/ridestream.css', rel='stylesheet')

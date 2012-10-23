@@ -18,9 +18,10 @@ class Cache
     else
       console.log 'cache: ignored ride without an id'
       false
+
 Cache.default = new Cache()
 
-$(document).ready ->
+initRidestreamTable = (query) ->
   # Builder for column renderers for column colNr that contain moments that should be displayed
   # using formatStr
   momColData = (colNr, formatStr) =>
@@ -68,7 +69,6 @@ $(document).ready ->
   } );
   socket = io.connect()
   socket.on 'connect', ->
-    query     = $ '#query'
     fromKey   = query.attr 'fromKey'
     toKey     = query.attr 'toKey'
     fromName  = query.attr 'fromName'
@@ -126,7 +126,7 @@ $(document).ready ->
 
     socket.emit 'query', msg
     table.dataTable().fnSort [[ 2, "asc" ]]
-
+    return socket
 
 
 
