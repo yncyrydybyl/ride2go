@@ -13,6 +13,8 @@ config   = require './config'
 omqapi   = require './services/openmapquest_api'
 Location = require('./location').Location
 
+intify   = (val, cb) -> if val then parseInt(val) else cb()
+
 app = express()
 app.set 'views', "view"
 app.set 'view engine', 'jade'
@@ -39,7 +41,7 @@ io.sockets.on 'connection', (socket) ->
             try
               log.info "found dest: #{dest.key}"
               RDS.match Ride.new(orig:orig,dest:dest), (matching_ride) ->
-                log.debug "emitting ride to client: #{matching_ride}"
+                log.debug "emitting ride to client: #{Ride.showcase(matching_ride)}"
                 socket.emit 'ride', matching_ride
             catch error
               log.notice "on connection: found dest: #{error}"
@@ -66,11 +68,11 @@ app.post "/rides", (req, res) ->
   res.send "foo"
 
 app.get '/ridestream', (req, res) ->
-  q             = req.query
-  departure     = q.departure
-  departure     = if departure then parseInt(departure) else mom().utc().unix()
-  tolerancedays = q.tolerancedays
-  tolerancedays = if tolerancedays then parseInt(tolerancedays) else config.tolerancedays
+  q         = req.query
+  departure = intify q.departure, () -> mom().utc().unix()
+  tdays     = intify q.tolerancedays, () -> config.server.tolerancedays
+  leftcut   = intify q.leftcut, () => mom.unix(departure).subtract('days', tdays).unix()
+  rightcut  = intify q.rightcut, () => mom.unix(departure).add('days', tdays).unix()
 
   placed = (key) -> if key then City.new(key) else undefined
   from   = new Location placed(q.fromKey), q.fromLat, q.fromLon, q.fromplacemark
@@ -78,7 +80,8 @@ app.get '/ridestream', (req, res) ->
 
   locals =
     departure: departure,
-    tolerancedays: tolerancedays
+    leftcut: leftcut,
+    rightcut: rightcut,
 
   rendered   = false
   sendOutput = () ->
@@ -91,7 +94,7 @@ app.get '/ridestream', (req, res) ->
         from.putIntoLocals locals, 'fromKey', 'fromLat', 'fromLon'
         to.putIntoLocals locals, 'toKey', 'toLat', 'toLon'
 
-        # console.log "server/ridestream: locals: #{JSON.stringify(locals)}"
+        log.notice "server/ridestream: locals: #{JSON.stringify(locals)}"
 
         locals.fromName = from.obj.cityName()
         locals.toName   = to.obj.cityName()

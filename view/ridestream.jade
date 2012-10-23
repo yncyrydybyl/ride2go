@@ -17,7 +17,9 @@ html
         link(type='text/css', href='/css/ridestream.css', rel='stylesheet')
 
     body
-        #query(fromName=locals.fromName, fromKey=locals.fromKey, toName=locals.toName, toKey=locals.toKey, depature=locals.departure)
+        #query(fromName=locals.fromName, fromKey=locals.fromKey,
+            toName=locals.toName, toKey=locals.toKey, departure=locals.departure,
+            leftcut=locals.leftcut, rightcut=locals.rightcut)
 
         table#rides.pretty(padding=0, cellspacing=0, cellpadding=2, border=0)
             thead

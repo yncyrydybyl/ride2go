@@ -1,7 +1,9 @@
-__    = require 'underscore'
-log   = require './logging'
-Place = require('./place').Place
-City  = require('./place').City
+__       = require 'underscore'
+log      = require './logging'
+Place    = require('./place').Place
+City     = require('./place').City
+showcase = require './base/showcase'
+
 #log.transports.console.level="debug"
 
 class Ride
@@ -16,7 +18,8 @@ class Ride
   ziel: -> new Place @dest
   to: -> new Place @dest
  
-  toJson: -> JSON.stringify(@)
+  toJson: -> JSON.stringify @
+
   departure: -> new Date(@dep)
   arrival: -> new Date(@arr)
   image: -> "http://ride2go.com/images/providers/#{@provider}.png"
@@ -24,6 +27,9 @@ class Ride
   displayPrice: -> "#{@price.toFixed(2)} #{@currency}"
 
   toGo: "ready to go :-)"
+
+Ride.showcase = (ride) ->
+  showcase.without ride, ['link']
 
 # generic factory
 Ride.new = (o) ->

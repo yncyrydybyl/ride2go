@@ -1,28 +1,53 @@
+# Cache of rides that have been delivered to the browser before,
+# mainly used to filter out duplicates and rides that errorneously
+# do not have a unique id
+#
 class Cache
   constructor: () ->
     @cache = {}
 
   addRide: (ride) ->
-    console.log 'cache: new ride'
-    console.log ride
-
     if ride.id
       if @cache[ride.id]
         console.log "cache: skipped double ride #{ride.id}"
         false
       else
+        console.log "cache: added new ride #{ride.id}"
         @cache[ride.id] = ride
         true
     else
-      console.log 'cache: ride has no id'
+      console.log 'cache: ignored ride without an id'
       false
 Cache.default = new Cache()
 
 $(document).ready ->
+  # Builder for column renderers for column colNr that contain moments that should be displayed
+  # using formatStr
+  momColData = (colNr, formatStr) =>
+    # Actual renderer for row arrays src
+    (src, type, val) =>
+      if type == 'set'
+        src[colNr] = moment val, formatStr
+      else
+        if (type == 'display') || (type == 'filter')
+          src[colNr].format formatStr
+        else
+          src[colNr]
+
   table = $ '#rides'
   table.dataTable( {
     "sPaginationType": "full_numbers",
-    "aaSorting": [[ 2, "asc" ]]
+    "aaSorting": [[ 2, "asc" ]],
+    "aoColumnDefs": [ {
+      "aTargets": [ 2 ],
+      "mData": momColData 2, 'DD.MM.YYYY HH:mm'
+    }, {
+      "aTargets": [ 3 ],
+      "mData": momColData 3, 'DD.MM.YYYY HH:mm'
+    }, {
+      "aTargets": [ 4 ],
+      "mData": momColData 4, 'HH:mm'
+    } ],
     "oLanguage": {
       "sProcessing":   "Bitte warten...",
       "sLengthMenu":   "_MENU_ Einträge anzeigen",
@@ -43,15 +68,21 @@ $(document).ready ->
   } );
   socket = io.connect()
   socket.on 'connect', ->
-    query    = $ '#query'
-    fromKey  = query.attr 'fromKey'
-    toKey    = query.attr 'toKey'
-    fromName = query.attr 'fromName'
-    toName   = query.attr 'toName'
+    query     = $ '#query'
+    fromKey   = query.attr 'fromKey'
+    toKey     = query.attr 'toKey'
+    fromName  = query.attr 'fromName'
+    toName    = query.attr 'toName'
+    departure = parseInt query.attr 'departure'
+    leftcut   = parseInt query.attr('leftcut')
+    rightcut  = parseInt query.attr('cut')
+
     msg      =
       origin: fromKey
       destination: toKey
-      departure: query.attr 'departure'
+      departure: departure
+
+    moment.lang 'de'
 
     socket.on 'ride', (rideJson) ->
       ride = JSON.parse rideJson
@@ -66,15 +97,15 @@ $(document).ready ->
         console.log "Ride is not starting at #{fromKey}"
       else if ride.dest != toKey
         console.log "Ride is not leading to #{toKey}"
+      else if ride.dep < leftcut
+        console.log "Ride is too old: #{ride.dep} < #{leftcut}"
+      else if ride.arr > rightcut
+        console.log "Ride is to far out in the future: #{ride.arr} > #{rightcut}"
       else if Cache.default.addRide(ride)
         moment.lang 'de'
         dep     = moment.unix(ride.dep)
-        # TODO Add year
-        dep_str = dep.format 'DD.MM. HH:mm'
         arr     = moment.unix(ride.arr)
-        arr_str = arr.format 'DD.MM. HH:mm'
-        dur     = ride.arr - ride.dep
-        dur_str = moment.unix(dur).utc().format 'HH:mm'
+        dur     = moment.unix(ride.arr - ride.dep).utc()
         link    = ride.link
         link    = link && "<a href=\"#{link}\"><img class=\"logo\" src=\"/images/connectors/logo_#{ride.provider}.png\" /></a>"
         link    = '--' if !link
@@ -83,9 +114,9 @@ $(document).ready ->
         dataRow = [
           fromName,               # Start
           toName,                 # Ziel
-          dep_str,                # Abfahrt
-          arr_str,                # Ankunft
-          dur_str,                # Dauer
+          dep,                    # Abfahrt
+          arr,                    # Ankunft
+          dur,                    # Dauer
           ride.price || 't.b.d.', # Kosten
           link                    # Details
         ]

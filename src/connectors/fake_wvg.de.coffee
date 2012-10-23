@@ -36,8 +36,8 @@ if module.exports.enabled
       for month in [10]
         for day in [18, 19, 20, 21, 22]
           for route in routes
-            dep = moment().year(year).month(month-1).date(day).hours(route[0][0]-1).minutes(route[0][1])
-            arr = moment().year(year).month(month-1).date(day).hours(route[1][0]-1).minutes(route[1][1])
+            dep = moment.unix(0).year(year).month(month-1).date(day).hours(route[0][0]-1).minutes(route[0][1])
+            arr = moment.unix(0).year(year).month(month-1).date(day).hours(route[1][0]-1).minutes(route[1][1])
             key = "#{orig}->#{dest}"
             dep = dep.unix()
             arr = arr.unix()

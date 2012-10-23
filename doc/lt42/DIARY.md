@@ -1,18 +1,25 @@
 
 
+2012-10-23
+
+* DONE Better logging of rides (skips links)
+* TODO Standalone ui
+
+
+2012-10-22
+
+* DONE Filter times
+* DONE Abfahrtssort
+* DONE Correct sorting in datatable
+* DONE Arbitrary left/rightcut
+
 2012-10-18
 
-
-* TODO Fake Route @me
-* TODO BS - Wolfsburg
-* TODO Lokale Anbieter (?) - WVG
-
-* TODO Falsche Abfahrtszeit -> was kommt von fg
-* TODO Zeiten bei deinbus
-
+* DONE Zeiten bei deinbus
+* DONE Fake Route @me
+* DONE BS - Wolfsburg
+* DONE Lokale Anbieter (?) - WVG
 * DONE Filter wrong keys
-* POSTPONED Filter times
-* POSTPONED Abfahrtssort
 * DONE Dauer stimmt nicht (tbd.)
 * DONE Kosten tbd.
 * DONE Anbieter raus -> Logos

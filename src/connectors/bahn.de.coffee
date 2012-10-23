@@ -61,7 +61,7 @@ module.exports.findRides = new nodeio.Job
           #log.notice dest_url
           request dest_url, (err, req, body) =>
             if (err || req.statusCode != 200)
-              log.error "DOOF dest: #{err} #{req}"
+              log.error "bahn.de: failed sending request: #{err} #{req}"
               return false
             stations   = JSON.parse(body)
             dest_id    = stations[0].id
@@ -71,7 +71,7 @@ module.exports.findRides = new nodeio.Job
               log.debug fin_url
               run [fin_url]
             else
-              log.notice "skipped searching self-loop ride for #{orig_id}"
+              log.notice "bahn.de: skipped searching self-loop ride for #{orig_id}"
 #        run ["http://.../?"+"fromn=#{orig}&"+"to=#{dest}"]
 
   run: (url) ->
@@ -82,7 +82,7 @@ module.exports.findRides = new nodeio.Job
     orig     = Place.new(orig_key)
 
     @get url, (err, body) =>
-      log.error "DOOF conn: #{err}" if err
+      log.error "bahn.de: failed retrieving connections: #{err}" if err
       
       routes = JSON.parse body
 
@@ -112,5 +112,6 @@ module.exports.findRides = new nodeio.Job
             link: link
             id: "#{module.exports.details.mode}:#{orig_key}@#{arr_date}->#{dest_key}@#{dep_date}"
 
-      log.notice ">>>>> #{JSON.stringify(rides)}"
+      for ride in rides
+        log.notice "bahn.de: emitting: #{Ride.showcase(ride)}"
       @emit rides

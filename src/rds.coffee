@@ -42,7 +42,8 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
     @redis.hvals route, (err, rides) =>
       log.info "RDS has " + rides.length + " rides already in cache"
       for ride in rides
-        log.debug "found cached ride: #{ride}"
+        debugger;
+        log.debug "found cached ride: #{Ride.showcase(ride)}"
         @emit route, ride
 
     # schedule jobs to run and find even more matching RiDeS
@@ -51,13 +52,14 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
       io.start api[job].findRides, query, ((someerror, rides) =>
         log.error someerror if someerror
         i = 0
-        log.notice "RDS received "+ JSON.stringify(rides[0])
+        log.notice "RDS received "+ Ride.showcase(rides[0])
         for ride in (Ride.new(r) for r in rides) # store the RiDeS to cache #
-          console.log "scraped ride: "+ride.toJson()
-          @redis.hset route, ride.id, ride.toJson(), (anothererror, isNew) =>
+          val = ride.toJson()
+          log.debug "scraped ride: "+ Ride.showcase(val)
+          @redis.hset route, ride.id, val, (anothererror, isNew) =>
             log.error anothererror if anothererror
             if isNew
-              log.notice "discovered new ride: " + ride.toJson()
+              log.notice "discovered new ride: " + Ride.showcase(val)
               @emit route, Ride.new(rides[i]).toJson()  # ie. fiRst time DiScovered #
             i += 1
       ), true if @scraping # ToDo schedule some more smarter strategy #
