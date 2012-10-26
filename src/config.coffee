@@ -14,5 +14,5 @@ readConfig = (fname, defaults) ->
 
 module.exports = {
   apikeys: readConfig './config/apikeys.json', {}
-  server: readConfig './config/server.json', {port: 3000, tolerancedays: 3}
+  server: readConfig './config/server.json', {port: 3000, host: 'localhost', tolerancedays: 3}
 }

@@ -4,10 +4,12 @@
 * TODO Docs
 * TODO Subscribe to rides
 * TODO Ingest rides
-* TODO Minimalistic standalone ui (keys, coords)
 * TODO mail an sven, flo, t
 
 2012-10-26
+
+* DONE Enable swagger based docs
+* DONE Enable codo based docs
 
 2012-10-25
 

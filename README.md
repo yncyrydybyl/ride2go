@@ -109,16 +109,23 @@ this may require connector preparation as described before).
 * We recommend you to
 
     npm install -g node-inspector
-    npm install -g yuidocjs
     npm install -g forever
     npm install -g codo
+    npm install -g handlebars
 
 * Awhile back, we used pivotaltracker at https://www.pivotaltracker.com/projects/130935 for planning of next steps
 (use [fixes #storyid] in commit messages if you want to refer to it)
 
-### Building api docs ###
+### Building coffeescript api docs ###
 
 Run `npm run-script doc`
+
+
+### Enabling swagger support ###
+
+* Run `cake dist` in `components/swagger-ui` (requires globally installed handlebars)
+* Load swagger from `components/swagger-ui/dist/index.html` and point it to `http://localhost:3000/api/resources.json`
+  (make this value the default by manually editing `index.html`)
 
 ### Debugging using node-inspector ###
 

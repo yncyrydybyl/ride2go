@@ -23,7 +23,10 @@ app.use express.static 'public'
 
 log.notice "ride2go: starts with config: \n#{JSON.stringify(config, null, 2)}"
 server = app.listen config.server.port
-io     = socketIO.listen server
+
+# *** socket.io
+
+io = socketIO.listen server
 #io.set('log level', 1)
 
 io.sockets.on 'connection', (socket) ->
@@ -49,22 +52,37 @@ io.sockets.on 'connection', (socket) ->
     catch error
       log.notice "on connection: #{error}"
 
+# *** JSON API
+
+require('./server_docs') app, config
+
+# [X] documented in server_docs
+app.get "/api/connectors/_all", (req, res) ->
+  res.send JSON.stringify(RDS.api.all_connectors())
+
+# [X] documented in server_docs
+app.get "/api/connectors/_enabled", (req, res) ->
+  res.send JSON.stringify(RDS.api.enabled_connectors())
+
+# [X] documented in server_docs
+app.get "/api/connectors/_disabled", (req, res) ->
+  res.send JSON.stringify(RDS.api.disabled_connectors())
+
+# [X] documented in server_docs
+app.get "/api/connectors/:name", (req, res) ->
+  result = RDS.get_connector(req.params.name)
+  if result then res.send(result) else res.send 404, 'Unknown connector'
+
+
+
+
+# *** HTML / UI
+
 app.get "/", (req,res) ->
-  res.render 'index',  { layout: false, locals: {
-      from: req.params.from ? "rungestrasse berlin" ,
-      to: req.params.to ? "hauptstrasse 42 panketal"
+  res.render 'index', { layout: false, locals: {
+      fromStr: req.params.fromStr ? "DE:Berlin:Berlin" ,
+      toStr: req.params.toStr ? "DE:Hamburg:Hamburg"
   }}
-
-app.get "/connectors/:name", (req, res) ->
-  res.send RDS.get_connector(req.params.name)
-
-app.get "/rides/:from/:to", (req, res) ->
-  res.render 'index',  { layout: false, locals: {
-      from: req.params.from , to: req.params.to }}
-
-app.post "/rides", (req, res) ->
-  browser.emit 'ride', {some: req.body.ride}
-  res.send "foo"
 
 app.get '/ridestream', (req, res) ->
   q         = req.query
@@ -109,3 +127,7 @@ app.get '/ridestream', (req, res) ->
 
   from.resolve undefined, omqapi.default, sendOutput
   to.resolve undefined, omqapi.default, sendOutput
+
+
+
+

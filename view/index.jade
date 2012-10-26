@@ -1,0 +1,25 @@
+!!! 5
+html
+    head
+        title ride2go
+        meta(http-equiv='content-type', content='text/html; charset=iso-8859-1')
+
+        script(src='/js/underscore/underscore-min.js')
+        script(src='/js/jquery/jquery.js')
+        script(src='/js/jquery-ui/jquery-ui.min.js')
+        script(src='/js/DataTables/media/js/jquery.dataTables.js')
+        script(src='/js/moment/min/moment.min.pretty.js')
+        script(src='/js/moment/min/lang-all.min.js')
+        script(src='/socket.io/socket.io.js')
+        script(src='/js/ridestream.js')
+
+    body
+        form(method='get',action='ridestream')
+            p
+                | From:
+                input#from(type='text', name='fromStr')
+            p
+                | To:
+                input#to(type='text', name='toStr')
+            p
+                input(type='submit', value='rides2go')

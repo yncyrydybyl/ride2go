@@ -78,6 +78,7 @@ task "link", () ->
   updateLink '../../components/jquery-ui', './public/js/jquery-ui'
   updateLink '../../components/moment', './public/js/moment'
   updateLink '../../components/underscore', './public/js/underscore'
+  updateLink '../../components/swagger-ui/dist', './public/js/swagger'
 
 task "test", "run all tests", (options) ->
   watch_args = if options.watch then ['--watch'] else []
