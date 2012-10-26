@@ -111,10 +111,14 @@ this may require connector preparation as described before).
     npm install -g node-inspector
     npm install -g yuidocjs
     npm install -g forever
+    npm install -g codo
 
 * Awhile back, we used pivotaltracker at https://www.pivotaltracker.com/projects/130935 for planning of next steps
 (use [fixes #storyid] in commit messages if you want to refer to it)
 
+### Building api docs ###
+
+Run `npm run-script doc`
 
 ### Debugging using node-inspector ###
 
