@@ -50,7 +50,7 @@ module.exports.findRides = new nodeio.Job
       #log.notice orig_url
       request orig_url, (err, req, body) =>
         if (err || req.statusCode != 200)
-          log.error "DOOF orig: #{err} #{req}"
+          log.error "bahn.de: failed sending request: #{err} #{req}"
           return
         stations = JSON.parse(body)
         orig_id  = stations[0].id 

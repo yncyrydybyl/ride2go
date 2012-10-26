@@ -21,7 +21,7 @@ class Cache
 
 Cache.default = new Cache()
 
-initRidestreamTable = (query) ->
+initRidestreamTable = (query, table) ->
   # Builder for column renderers for column colNr that contain moments that should be displayed
   # using formatStr
   momColData = (colNr, formatStr) =>
@@ -35,7 +35,6 @@ initRidestreamTable = (query) ->
         else
           src[colNr]
 
-  table = $ '#rides'
   table.dataTable( {
     "sPaginationType": "full_numbers",
     "aaSorting": [[ 2, "asc" ]],
@@ -73,9 +72,10 @@ initRidestreamTable = (query) ->
     toKey     = query.attr 'toKey'
     fromName  = query.attr 'fromName'
     toName    = query.attr 'toName'
-    departure = parseInt query.attr 'departure'
+    departure = parseInt query.attr('departure')
     leftcut   = parseInt query.attr('leftcut')
-    rightcut  = parseInt query.attr('cut')
+    rightcut  = parseInt query.attr('rightcut')
+    logRides  = query.attr 'logRides'
 
     msg      =
       origin: fromKey
@@ -93,14 +93,16 @@ initRidestreamTable = (query) ->
         ride.dep = ride.arr
         ride.arr = swp
 
+      console.log "received ride: #{JSON.stringify(ride)}" if logRides
+
       if ride.orig != fromKey
         console.log "Ride is not starting at #{fromKey}"
       else if ride.dest != toKey
         console.log "Ride is not leading to #{toKey}"
       else if ride.dep < leftcut
         console.log "Ride is too old: #{ride.dep} < #{leftcut}"
-      else if ride.arr > rightcut
-        console.log "Ride is to far out in the future: #{ride.arr} > #{rightcut}"
+      else if ride.dep > rightcut
+        console.log "Ride is to far out in the future: #{ride.dep} > #{rightcut}"
       else if Cache.default.addRide(ride)
         moment.lang 'de'
         dep     = moment.unix(ride.dep)

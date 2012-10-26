@@ -35,7 +35,10 @@ class Place
       return s.length
     else
       return 0
-  
+
+  isPlace: ->
+    true
+
   isCountry: ->
     return @seperators() == 0
   isState: ->

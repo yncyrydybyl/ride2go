@@ -1,7 +1,7 @@
 !!! 5
 html
     head
-        title ride2go
+        title ride2go from #{locals.fromName} to #{locals.toName}
         meta(http-equiv='content-type', content='text/html; charset=iso-8859-1')
 
         script(src='/js/underscore/underscore-min.js')
@@ -14,7 +14,7 @@ html
         script(src='/js/ridestream.js')
         script
             $(document).ready(function() {
-                initRidestreamTable($('#query'));
+                initRidestreamTable($('#query'),$('#rides'));
             });
 
         link(type='text/css', href='http://yui.yahooapis.com/3.3.0/build/cssreset/reset-min.css', rel='stylesheet')

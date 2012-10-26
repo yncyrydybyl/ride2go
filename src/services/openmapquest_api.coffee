@@ -10,9 +10,11 @@ class OpenMapquestApi
   _valFn: (val) ->
     () -> val
 
-  reverseGeocode: (lat, lon, cb) ->
+  reverseGeocode: (pos, cb) ->
     host    = 'nominatim.openstreetmap.org'
     path    = 'reverse'
+    lat     = pos.lat
+    lon     = pos.lon
     url     = "http://#{host}/#{path}?format=json&lat=#{lat}&lon=#{lon}"
     options =
       url: url

@@ -42,7 +42,6 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
     @redis.hvals route, (err, rides) =>
       log.info "RDS has " + rides.length + " rides already in cache"
       for ride in rides
-        debugger;
         log.debug "found cached ride: #{Ride.showcase(ride)}"
         @emit route, ride
 

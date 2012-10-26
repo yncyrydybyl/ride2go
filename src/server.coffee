@@ -12,8 +12,7 @@ log      = require './logging'
 config   = require './config'
 omqapi   = require './services/openmapquest_api'
 Location = require('./location').Location
-
-intify   = (val, cb) -> if val then parseInt(val) else cb()
+helpers  = require('./input_helpers')
 
 app = express()
 app.set 'views', "view"
@@ -69,16 +68,20 @@ app.post "/rides", (req, res) ->
 
 app.get '/ridestream', (req, res) ->
   q         = req.query
-  departure = intify q.departure, () -> mom().utc().unix()
-  tdays     = intify q.tolerancedays, () -> config.server.tolerancedays
-  leftcut   = intify q.leftcut, () => mom.unix(departure).subtract('days', tdays).unix()
-  rightcut  = intify q.rightcut, () => mom.unix(departure).add('days', tdays).unix()
+  departure = helpers.intify q.departure, () -> mom().utc().unix()
+  tdays     = helpers.intify q.tolerancedays, () -> config.server.tolerancedays
+  leftcut   = helpers.intify q.leftcut, () => mom.unix(departure).subtract('days', tdays).unix()
+  rightcut  = helpers.intify q.rightcut, () => mom.unix(departure).add('days', tdays).unix()
 
-  placed = (key) -> if key then City.new(key) else undefined
-  from   = new Location placed(q.fromKey), q.fromLat, q.fromLon, q.fromplacemark
-  to     = new Location placed(q.toKey), q.toLat, q.toLon, q.toplacemark
+  fromObj   = Location.new q.fromKey || q.fromStr
+  fromPos   = Location.new helpers.mkPos q.fromLat, q.fromLon, q.fromStr, q.fromplacemark
+  from      = Location.choose [fromObj, fromPos]
 
-  locals =
+  toObj     = Location.new q.toKey || q.toStr
+  toPos     = Location.new helpers.mkPos q.toLat, q.toLon, q.toStr, q.toplacemark
+  to        = Location.choose [toObj, toPos]
+
+  locals    =
     departure: departure,
     leftcut: leftcut,
     rightcut: rightcut,
@@ -104,5 +107,5 @@ app.get '/ridestream', (req, res) ->
         }
         rendered = true
 
-  from.resolve omqapi.default, sendOutput
-  to.resolve omqapi.default, sendOutput
+  from.resolve undefined, omqapi.default, sendOutput
+  to.resolve undefined, omqapi.default, sendOutput

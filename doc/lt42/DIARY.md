@@ -1,10 +1,34 @@
 
 
+* TODO New place api
+* TODO Docs
+* TODO Subscribe to rides
+* TODO Ingest rides
+* TODO Minimalistic standalone ui (keys, coords)
+* TODO mail an sven, flo, t
+
+2012-10-26
+
+2012-10-25
+
+* DONE Proper input handling for minimalistic ui
+* DONE Fixing new resolution implementation
+
+2012-10-24
+
+* POSTPONED Nominatim completion for minimalistic ui
+* DONE Very minimalistic standalone ui
+* DONE Review documentation solutions for coffescript: coda, yui, docco, coffeedoc, jsdoc
+  * jsdoc: supported by webstorm, but needs java :-( #fail
+  * docco: feels to unstructured #fail
+  * coffeedoc: feels to unmaintained #maybe
+  * coda: feels to structured, but used by neo, chaplin, ... #try
+  * yuidoc: feels to structured and is not coffee friendly #fail
+
 2012-10-23
 
 * DONE Better logging of rides (skips links)
 * DONE Refactor ridestream code for separate use
-* TODO Standalone ui
 
 
 2012-10-22
