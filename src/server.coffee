@@ -2,6 +2,7 @@ socketIO = require 'socket.io'
 express  = require 'express'
 sys      = require 'util'
 mom      = require 'moment'
+__       = require 'underscore'
 
 Ride     = require './ride'
 Place    = require('./place').Place
@@ -65,15 +66,33 @@ app.get "/api/connectors/_enabled", (req, res) ->
   res.send JSON.stringify(RDS.api.enabled_connectors())
 
 # [X] documented in server_docs
+app.get "/api/connectors/_ingesting", (req, res) ->
+  res.send JSON.stringify(RDS.api.ingesting_connectors())
+
+# [X] documented in server_docs
 app.get "/api/connectors/_disabled", (req, res) ->
   res.send JSON.stringify(RDS.api.disabled_connectors())
 
 # [X] documented in server_docs
 app.get "/api/connectors/:name", (req, res) ->
-  result = RDS.get_connector(req.params.name)
+  result = RDS.get_connector_details(req.params.name)
   if result then res.send(result) else res.send 404, 'Unknown connector'
 
-
+# [X] documented in server_docs
+app.post "/api/connectors/:name/rides", (req, res) ->
+  debugger
+  name  = req.params.name
+  conn  = RDS.get_connector name
+  rides = req.body
+  if !conn
+    res.send 404, 'Unknown connector'
+  else if !conn.ingesting
+    res.send 500, 'Connector does not support ingestion'
+  else if !rides || !__.isArray(rides)
+    res.send 404, 'Missing or invalid rides'
+  else
+    RDS.ingest name, conn, rides, (err, result) ->
+      if err then res.send(500, err) else res.send(200, JSON.stringify(result))
 
 
 # *** HTML / UI
@@ -125,8 +144,8 @@ app.get '/ridestream', (req, res) ->
         }
         rendered = true
 
-  from.resolve undefined, omqapi.default, sendOutput
-  to.resolve undefined, omqapi.default, sendOutput
+  from.resolve undefined, omqapi.instance, sendOutput
+  to.resolve undefined, omqapi.instance, sendOutput
 
 
 

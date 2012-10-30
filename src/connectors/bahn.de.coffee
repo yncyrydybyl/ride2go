@@ -110,7 +110,7 @@ module.exports.findRides = new nodeio.Job
             dest: dest       # with better matches from your query result
             provider: "#{details.name}"
             link: link
-            id: "#{module.exports.details.mode}:#{orig_key}@#{arr_date}->#{dest_key}@#{dep_date}"
+            id: "#{module.exports.details.mode}:#{orig_key}@#{dep_date}->#{dest_key}@#{arr_date}"
 
       for ride in rides
         log.notice "bahn.de: emitting: #{Ride.showcase(ride)}"

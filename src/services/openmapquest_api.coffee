@@ -56,6 +56,6 @@ class OpenMapquestApi
       cb key
 
 
-module.exports         = OpenMapquestApi
-module.exports.default = new OpenMapquestApi()
+module.exports          = OpenMapquestApi
+module.exports.instance = new OpenMapquestApi()
 

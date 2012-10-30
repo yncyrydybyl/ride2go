@@ -16,6 +16,7 @@
 
 io   = require 'node.io' # spin off workers for searching the web for rides
 log  = require './logging' # logs nice to a console for seeing whats going on
+mom  = require 'moment'
 
 class RiDeStore extends require('events').EventEmitter # pubsub style msges #
 
@@ -26,7 +27,10 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
   scraping: on # only local RiDeStore is queried if scraping is switched OFF
 
   get_connector: (name) ->
-    if connector = @api.connectors[name]
+    @api.connectors[name]
+
+  get_connector_details: (name) ->
+    if connector = @get_connector(name)
       JSON.stringify
         name: name
         details: connector.details
@@ -75,7 +79,41 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
             i += 1
       ), true if @scraping # ToDo schedule some more smarter strategy #
 
+  ingest: (name, conn, rides, cb) ->
+    log.info "RDS ingesting rides for #{name}"
+    io.start conn.ingestRides, rides, ((err, rides) =>
+      if err
+        log.error err
+      else
+        i = 0
+        for r in rides
+          r.provider = name if !r.provider
+          r.orig     = City.new(r.orig) if r.orig && (!r.orig instanceof Place)
+          r.rest     = City.new(r.dest) if r.dest && (!r.dest instanceof Place)
+          r.orig     = City.new(r.orig_key) if !r.orig && r.orig_key
+          r.dest     = City.new(r.dest_key) if !r.dest && r.dest_key
+          r.dep      = moment.now().unix() if !r.dep
+          r.arr      = moment.now().unix() if !r.arr
+          r.price    = '' if !r.price
 
-Ride               = require './ride' # convenience
-RDS                = new RiDeStore # the single one instance
-module.exports     = RDS
+          if r.provider == name && r.orig && r.dest
+            if !r.id
+              r.id = "#{conn.details.mode}:#{r.orig.key}@#{r.dep}->#{r.dest.key}@#{r.arr}"
+            ride  = Ride.new(r)
+            val   = ride.toJson()
+            route = "#{ride.orig.key}->#{ride.dest.key}"
+            log.debug "ingesting new #{route} ride: #{Ride.showcase(val)}"
+            @redis.hset route, ride.id, val, (anothererror, isNew) =>
+              log.error anothererror if anothererror
+              if isNew
+                log.notce "discovered new ride: #{Ride.showcase(val)}"
+                @emit route, val
+              i += 1
+          else
+            log.info "skipping ride: #{Ride.showcase(r.toJson())}"
+      cb err, rides
+      ), true
+
+Ride           = require './ride' # convenience
+RDS            = new RiDeStore    # the single one instance
+module.exports = RDS

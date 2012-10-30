@@ -6,7 +6,8 @@ Place  = require('../place').Place
 moment = require 'moment'
 moment.lang 'de'
 
-module.exports.enabled = true
+module.exports.enabled   = true
+module.exports.ingesting = true
 module.exports.details = details =
   mode: "bus"
   name: "deinbus.de" # uniq primary key
@@ -87,6 +88,8 @@ module.exports.findRides = new nodeio.Job
     log.notice "deinbus found "+rides.length+" rides"
     @emit rides
 
+
+module.exports.ingestRides = new nodeio.Job
 
 # import city ids into redis
 

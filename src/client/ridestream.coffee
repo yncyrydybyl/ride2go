@@ -19,7 +19,7 @@ class Cache
       console.log 'cache: ignored ride without an id'
       false
 
-Cache.default = new Cache()
+Cache.instance = new Cache()
 
 initRidestreamTable = (query, table) ->
   # Builder for column renderers for column colNr that contain moments that should be displayed
@@ -102,8 +102,8 @@ initRidestreamTable = (query, table) ->
       else if ride.dep < leftcut
         console.log "Ride is too old: #{ride.dep} < #{leftcut}"
       else if ride.dep > rightcut
-        console.log "Ride is to far out in the future: #{ride.dep} > #{rightcut}"
-      else if Cache.default.addRide(ride)
+        console.log "Ride is too far out in the future: #{ride.dep} > #{rightcut}"
+      else if Cache.instance.addRide(ride)
         moment.lang 'de'
         dep     = moment.unix(ride.dep)
         arr     = moment.unix(ride.arr)

@@ -30,6 +30,12 @@ module.exports.enabled_connectors = () ->
     result.push(k) if v.enabled
   result
 
+module.exports.ingesting_connectors = () ->
+  result = []
+  for k, v of connectors
+    result.push(k) if v.ingesting
+  result
+
 module.exports.disabled_connectors = () ->
   result = []
   for k, v of connectors
