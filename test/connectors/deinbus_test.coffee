@@ -10,17 +10,17 @@ describe 'connectors', () ->
       query =
         orig: "DE:Nordrhein-Westfalen:Köln"
         dest: "DE:Bayern:Nürnberg"
-      nodeio.start connectors.deinbus.findRides, query, ((err, rides) ->
+      nodeio.start connectors.connectors.deinbus.findRides, query, ((err, rides) ->
         expect(err || rides.length == 0).to.be.true
         done()
       ), true
 
 
-    it.only 'should find rides', (done) ->
+    it 'should find rides', (done) ->
       query =
         orig: "DE:Nordrhein-Westfalen:Köln"
         dest: "DE:Hessen:Frankfurt am Main"
-      nodeio.start connectors.deinbus.findRides, query, ((err, rides) ->
+      nodeio.start connectors.connectors.deinbus.findRides, query, ((err, rides) ->
         console.log "RIDES #{rides}"
         expect(rides).to.be.ok
         expect(rides.length > 0).to.be.true

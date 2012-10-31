@@ -30,10 +30,16 @@ module.exports.enabled_connectors = () ->
     result.push(k) if v.enabled
   result
 
+module.exports.scraping_connectors = () ->
+  result = []
+  for k, v of connectors
+    result.push(k) if v.enabled && v.findRides
+  result
+
 module.exports.ingesting_connectors = () ->
   result = []
   for k, v of connectors
-    result.push(k) if v.ingesting
+    result.push(k) if v.enabled && v.ingesting && v.ingestRides
   result
 
 module.exports.disabled_connectors = () ->

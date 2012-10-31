@@ -1,4 +1,5 @@
 fs   = require 'fs'
+path = require 'path'
 log  = require './logging'
 
 ###
@@ -19,12 +20,17 @@ _readConfig = (fname, defaults) ->
     log.error "Error reading #{fname}: #{error}"
   defaults
 
+ROOT = path.resolve path.dirname(module.filename), '../'
+
+module.exports.ROOT = ROOT
+log.notice "ROOT is: #{ROOT}"
+
 ###
 apikeys config
 ###
-module.exports.apikeys = _readConfig './config/apikeys.json', {}
+module.exports.apikeys = _readConfig path.resolve(ROOT, './config/apikeys.json'), {}
 
 ###
 server config
 ###
-module.exports.server = _readConfig './config/server.json', {port: 3000, host: 'localhost', tolerancedays: 3}
+module.exports.server = _readConfig path.resolve(ROOT, './config/server.json'), {port: 3000, host: 'localhost', tolerancedays: 3}

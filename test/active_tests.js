@@ -4,7 +4,8 @@ var selected_tests = {
     place: true,
     ride: true,
     import: true,
-    connectors: true
+    connectors: true,
+    integration: true
 };
 
 // result
@@ -39,6 +40,10 @@ if (selected_tests.connectors) {
 //    active_tests.push("test/connectors/mapquest_test.coffee");
 //    active_tests.push("test/connectors/mitfahrzentrale_test.coffee");
 //    active_tests.push("test/connectors/raummobil_test.coffee");
+}
+
+if (selected_tests.integration) {
+    active_tests.push("test/integration/bus_ingestor_test.coffee")
 }
 
 // export
