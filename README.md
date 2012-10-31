@@ -118,7 +118,7 @@ this may require connector preparation as described before).
 
 ### Building coffeescript api docs ###
 
-Run `npm run-script doc`
+Run `npm run-script doc` and open the resulting documentation by pointing your browser to `doc/api/index.html`
 
 
 ### Enabling swagger support ###

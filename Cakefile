@@ -44,14 +44,6 @@ task 'build', 'compile coffee and stylus', (options) ->
   server_args = server_args.concat(['src'])
   run_proc 'compiling server code', bin_coffee, server_args
 
-  client_args = watch_args.concat(['--join', 'public/js/ride2go.js', '--compile', '--bare'])
-  client_args = client_args.concat(coffee_args)
-  client_args = client_args.concat([
-    'src/client/ride2go.coffee',
-    'src/client/ridestream.coffee',
-    'src/client/autocomplete.coffee'])
-  run_proc 'compiling joint client code', bin_coffee, client_args
-
   client_args = watch_args.concat(['--join', 'public/js/ridestream.js', '--compile', '--bare'])
   client_args = client_args.concat(coffee_args)
   client_args = client_args.concat(['src/client/ridestream.coffee'])

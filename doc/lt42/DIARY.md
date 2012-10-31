@@ -6,6 +6,19 @@
 * TODO Ingest rides
 * TODO mail an sven, flo, t
 
+2012-10-31
+
+* TODO Ride ingestion
+* TODO Ride subscription
+
+2012-10-30
+
+* DONE Sketch ride ingestion
+
+2012-10-29
+
+* DONE Write some codo docs
+
 2012-10-26
 
 * DONE Enable swagger based docs
@@ -20,7 +33,7 @@
 
 * POSTPONED Nominatim completion for minimalistic ui
 * DONE Very minimalistic standalone ui
-* DONE Review documentation solutions for coffescript: coda, yui, docco, coffeedoc, jsdoc
+* DONE Review documentation solutions for coffescript: codo, yui, docco, coffeedoc, jsdoc
   * jsdoc: supported by webstorm, but needs java :-( #fail
   * docco: feels to unstructured #fail
   * coffeedoc: feels to unmaintained #maybe

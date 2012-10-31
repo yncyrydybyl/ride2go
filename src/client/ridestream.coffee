@@ -1,11 +1,21 @@
-# Cache of rides that have been delivered to the browser before,
-# mainly used to filter out duplicates and rides that errorneously
-# do not have a unique id
-#
+###
+Cache of rides that have been delivered to the browser before,
+mainly used to filter out duplicates and rides that errorneously
+do not have a unique id
+###
 class Cache
+
+  ###
+  Construct an empty cache
+  ###
   constructor: () ->
     @cache = {}
 
+  ###
+  Add ride to cache
+  @param [Ride] ride to be added
+  @return [Booleam] true, if the ride was new
+  ###
   addRide: (ride) ->
     if ride.id
       if @cache[ride.id]
@@ -19,8 +29,17 @@ class Cache
       console.log 'cache: ignored ride without an id'
       false
 
+###
+Default cache singleton instance
+###
 Cache.instance = new Cache()
 
+###
+Builds up jquery ridestream table
+@param [String] query id of div containing ridestream query descriptor
+@param [String] table id of div containing jquery datable for results
+@return [Socket] socket.io socket used to deliver new rides to the table
+###
 initRidestreamTable = (query, table) ->
   # Builder for column renderers for column colNr that contain moments that should be displayed
   # using formatStr
