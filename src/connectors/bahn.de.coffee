@@ -50,7 +50,7 @@ module.exports.findRides = new nodeio.Job
       #log.notice orig_url
       request orig_url, (err, req, body) =>
         if (err || req.statusCode != 200)
-          log.error "DOOF orig: #{err} #{req}"
+          log.error "bahn.de: failed sending request: #{err} #{req}"
           return
         stations = JSON.parse(body)
         orig_id  = stations[0].id 
@@ -61,17 +61,17 @@ module.exports.findRides = new nodeio.Job
           #log.notice dest_url
           request dest_url, (err, req, body) =>
             if (err || req.statusCode != 200)
-              log.error "DOOF dest: #{err} #{req}"
+              log.error "bahn.de: failed sending request: #{err} #{req}"
               return false
             stations   = JSON.parse(body)
             dest_id    = stations[0].id
             #log.notice dest_id
             if orig_id != dest_id
-              fin_url = "http://#{details.url_host}:#{details.url_port}/#{details.url_path}/connection?fromId=#{orig_id}&toId=#{dest_id}&fromType=STATION&toType=STATION&num=1"
+              fin_url = "http://#{details.url_host}:#{details.url_port}/#{details.url_path}/connection?fromId=#{orig_id}&toId=#{dest_id}&fromType=STATION&toType=STATION&num=9"
               log.debug fin_url
               run [fin_url]
             else
-              log.notice "skipped searching self-loop ride for #{orig_id}"
+              log.notice "bahn.de: skipped searching self-loop ride for #{orig_id}"
 #        run ["http://.../?"+"fromn=#{orig}&"+"to=#{dest}"]
 
   run: (url) ->
@@ -82,7 +82,7 @@ module.exports.findRides = new nodeio.Job
     orig     = Place.new(orig_key)
 
     @get url, (err, body) =>
-      log.error "DOOF conn: #{err}" if err
+      log.error "bahn.de: failed retrieving connections: #{err}" if err
       
       routes = JSON.parse body
 
@@ -91,26 +91,27 @@ module.exports.findRides = new nodeio.Job
           dep_date = moment route.firstTripDepartureTime
           arr_date = moment route.lastTripArrivalTime
 
-        params   = qs.stringify {
-          country: 'DEU',
-          f: 2,
-          s: orig,
-          o: 2,
-          z: dest,
-          d: dep_date.format 'DDMMYY'
-          t: dep_date.format 'HHmm'
-        }
-				#        link     = "http://reiseauskunft.bahn.de/bin/query2.exe/dn?#{params}"
-        link = "http://reiseauskunft.bahn.de/bin/query.exe/dn?REQ0JourneyDate=#{dep_date.format('DDMMYY')}&REQ0JourneyTime=#{dep_date.format('HH')}%3A#{dep_date.format('mm')}&REQ0HafasSearchForw=1&REQ1JourneyDate=&REQ1JourneyTime=&REQ1HafasSearchForw=1&REQ0JourneyStopsSA=1&REQ0JourneyStopsSG=#{orig.cityName()}&REQ0JourneyStopsZA=1&REQ0JourneyStopsZG=#{dest.cityName()}&REQ0JourneyStops1A=1&REQ0JourneyStops1G=&REQ0JourneyStopover1=&REQ0JourneyStops2A=1&REQ0JourneyStops2G=&REQ0JourneyStopover2=&existReverseVias=yes&REQ0JourneyRevia=on&REQ0JourneyProduct_prod_section_0_list=1%3A11111111110000&REQ0JourneyProduct_opt_section_0_list=0%3A0000&REQ0JourneyProduct_prod_section_1_list=1%3A11111111110000&REQ0JourneyProduct_opt_section_1_list=0%3A0000&REQ0JourneyProduct_prod_section_2_list=1%3A11111111110000&REQ0JourneyProduct_opt_section_2_list=0%3A0000&existProductAutoReturn=yes&REQ0JourneyDep__enable=Foot&REQ0JourneyDest__enable=Foot&REQ0HafasChangeTime=0&REQ0Tariff_Class=2&REQ0Tariff_TravellerType.1=E&REQ0Tariff_TravellerReductionClass.1=0&REQ0Tariff_TravellerAge.1=&REQ0Tariff_TravellerType.2=NULL&REQ0Tariff_TravellerReductionClass.2=0&REQ0Tariff_TravellerAge.2=&REQ0Tariff_TravellerType.3=NULL&REQ0Tariff_TravellerReductionClass.3=0&REQ0Tariff_TravellerAge.3=&REQ0Tariff_TravellerType.4=NULL&REQ0Tariff_TravellerReductionClass.4=0&REQ0Tariff_TravellerAge.4=&REQ0Tariff_TravellerType.5=NULL&REQ0Tariff_TravellerReductionClass.5=0&REQ0Tariff_TravellerAge.5=&REQ0HafasOptimize1=1%3A2&existOptimizePrice=yes&start=+los+geht%27s+"
-        rides.push
-          dep: dep_date.unix()
-          arr: arr_date.unix()
-          price: ''
-          orig: orig       # you may want to replace this
-          dest: dest       # with better matches from your query result
-          provider: "#{details.name}"
-          link: link
-          id: "#{module.exports.details.mode}:#{orig_key}@#{arr_date}->#{dest_key}@#{dep_date}"
+          params   = qs.stringify {
+            country: 'DEU',
+            f: 2,
+            s: orig,
+            o: 2,
+            z: dest,
+            d: dep_date.format 'DDMMYY'
+            t: dep_date.format 'HHmm'
+          }
+          #        link     = "http://reiseauskunft.bahn.de/bin/query2.exe/dn?#{params}"
+          link = "http://reiseauskunft.bahn.de/bin/query.exe/dn?REQ0JourneyDate=#{dep_date.format('DDMMYY')}&REQ0JourneyTime=#{dep_date.format('HH')}%3A#{dep_date.format('mm')}&REQ0HafasSearchForw=1&REQ1JourneyDate=&REQ1JourneyTime=&REQ1HafasSearchForw=1&REQ0JourneyStopsSA=1&REQ0JourneyStopsSG=#{orig.cityName()}&REQ0JourneyStopsZA=1&REQ0JourneyStopsZG=#{dest.cityName()}&REQ0JourneyStops1A=1&REQ0JourneyStops1G=&REQ0JourneyStopover1=&REQ0JourneyStops2A=1&REQ0JourneyStops2G=&REQ0JourneyStopover2=&existReverseVias=yes&REQ0JourneyRevia=on&REQ0JourneyProduct_prod_section_0_list=1%3A11111111110000&REQ0JourneyProduct_opt_section_0_list=0%3A0000&REQ0JourneyProduct_prod_section_1_list=1%3A11111111110000&REQ0JourneyProduct_opt_section_1_list=0%3A0000&REQ0JourneyProduct_prod_section_2_list=1%3A11111111110000&REQ0JourneyProduct_opt_section_2_list=0%3A0000&existProductAutoReturn=yes&REQ0JourneyDep__enable=Foot&REQ0JourneyDest__enable=Foot&REQ0HafasChangeTime=0&REQ0Tariff_Class=2&REQ0Tariff_TravellerType.1=E&REQ0Tariff_TravellerReductionClass.1=0&REQ0Tariff_TravellerAge.1=&REQ0Tariff_TravellerType.2=NULL&REQ0Tariff_TravellerReductionClass.2=0&REQ0Tariff_TravellerAge.2=&REQ0Tariff_TravellerType.3=NULL&REQ0Tariff_TravellerReductionClass.3=0&REQ0Tariff_TravellerAge.3=&REQ0Tariff_TravellerType.4=NULL&REQ0Tariff_TravellerReductionClass.4=0&REQ0Tariff_TravellerAge.4=&REQ0Tariff_TravellerType.5=NULL&REQ0Tariff_TravellerReductionClass.5=0&REQ0Tariff_TravellerAge.5=&REQ0HafasOptimize1=1%3A2&existOptimizePrice=yes&start=+los+geht%27s+"
+          rides.push
+            dep: dep_date.unix()
+            arr: arr_date.unix()
+            price: ''
+            orig: orig       # you may want to replace this
+            dest: dest       # with better matches from your query result
+            provider: "#{details.name}"
+            link: link
+            id: "#{module.exports.details.mode}:#{orig_key}@#{dep_date}->#{dest_key}@#{arr_date}"
 
-      log.notice ">>>>> #{JSON.stringify(rides)}"
+      for ride in rides
+        log.notice "bahn.de: emitting: #{Ride.showcase(ride)}"
       @emit rides

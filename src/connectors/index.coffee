@@ -4,25 +4,44 @@ log     = require '../logging'
 # module.exports.mapquest = require('./mapquest').findRides
 
 # loading connectors
-files   = require('fs').readdirSync __dirname
+files      = require('fs').readdirSync __dirname
+connectors = {}
 
-load_connector = (connector_name) ->
-  log.debug "+ loading connector: #{connector_name}"
-  require "./#{connector_name}"
+load_connector = (fname) ->
+  log.debug "+ loading connector: #{fname}"
+  connector      = require "./#{fname}"
+  connector.name = fname if !connector.name
+  connector
 
-provide_connector = (connector_name, connector) ->
-  log.debug "+ providing connector: #{connector_name}"
-  module.exports[connector_name] = connector
+provide_connector = (connector) ->
+  log.debug "+ initially enabled connector: #{connector.name}" if connector.enabled
+  connectors[connector.name] = connector
 
 for file in files when file != "index.js"
   if (fname = file.match(/(.+)\.js$/))
-    connector_name = fname[1]
-    connector      = load_connector connector_name
-    provide_connector connector_name, connector if connector.enabled
+    provide_connector load_connector(fname[1])
 
-module.exports.active_connectors = __.keys module.exports
+module.exports.all_connectors = () ->
+  __.keys connectors
 
-# !!! overwrite list of active connectors manually here
-# module.exports.active_connectors = ['deinbus']
+module.exports.enabled_connectors = () ->
+  result = []
+  for k, v of connectors
+    result.push(k) if v.enabled
+  result
 
-log.notice "list of active connectors: [#{__.map(module.exports.active_connectors, (x) -> " '#{x}'" )} ]"
+module.exports.ingesting_connectors = () ->
+  result = []
+  for k, v of connectors
+    result.push(k) if v.ingesting
+  result
+
+module.exports.disabled_connectors = () ->
+  result = []
+  for k, v of connectors
+    result.push(k) if !v.enabled
+  result
+
+module.exports.connectors = connectors
+
+log.notice "list of initially enabled connectors: [#{module.exports.enabled_connectors()}]"

@@ -1,18 +1,65 @@
 
 
+* TODO New place api
+* TODO Docs
+* TODO Subscribe to rides
+* TODO Ingest rides
+* TODO mail an sven, flo, t
+
+2012-10-31
+
+* TODO Ride ingestion
+* TODO Ride subscription
+
+2012-10-30
+
+* DONE Sketch ride ingestion
+
+2012-10-29
+
+* DONE Write some codo docs
+
+2012-10-26
+
+* DONE Enable swagger based docs
+* DONE Enable codo based docs
+
+2012-10-25
+
+* DONE Proper input handling for minimalistic ui
+* DONE Fixing new resolution implementation
+
+2012-10-24
+
+* POSTPONED Nominatim completion for minimalistic ui
+* DONE Very minimalistic standalone ui
+* DONE Review documentation solutions for coffescript: codo, yui, docco, coffeedoc, jsdoc
+  * jsdoc: supported by webstorm, but needs java :-( #fail
+  * docco: feels to unstructured #fail
+  * coffeedoc: feels to unmaintained #maybe
+  * coda: feels to structured, but used by neo, chaplin, ... #try
+  * yuidoc: feels to structured and is not coffee friendly #fail
+
+2012-10-23
+
+* DONE Better logging of rides (skips links)
+* DONE Refactor ridestream code for separate use
+
+
+2012-10-22
+
+* DONE Filter times
+* DONE Abfahrtssort
+* DONE Correct sorting in datatable
+* DONE Arbitrary left/rightcut
+
 2012-10-18
 
-
-* TODO Fake Route @me
-* TODO BS - Wolfsburg
-* TODO Lokale Anbieter (?) - WVG
-
-* TODO Falsche Abfahrtszeit -> was kommt von fg
-* TODO Zeiten bei deinbus
-
+* DONE Zeiten bei deinbus
+* DONE Fake Route @me
+* DONE BS - Wolfsburg
+* DONE Lokale Anbieter (?) - WVG
 * DONE Filter wrong keys
-* POSTPONED Filter times
-* POSTPONED Abfahrtssort
 * DONE Dauer stimmt nicht (tbd.)
 * DONE Kosten tbd.
 * DONE Anbieter raus -> Logos

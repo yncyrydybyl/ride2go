@@ -1,6 +1,7 @@
 *~
 .rvmrc
 public/css/*
+public/js/*
 css/*
 logs
 .sass-cache

@@ -1,7 +1,14 @@
 fs   = require 'fs'
 log  = require './logging'
 
-readConfig = (fname, defaults) ->
+###
+Read json config file
+@private
+@param [String] fname file name of config file
+@param [Object] defaults defaults to be used for properties that are missing in the config file
+@return [Object] configuration
+###
+_readConfig = (fname, defaults) ->
   try
     content = fs.readFileSync fname
     result  = JSON.parse content
@@ -12,7 +19,12 @@ readConfig = (fname, defaults) ->
     log.error "Error reading #{fname}: #{error}"
   defaults
 
-module.exports = {
-  apikeys: readConfig './config/apikeys.json', {}
-  server: readConfig './config/server.json', {port: 3000, tolerancedays: 3}
-}
+###
+apikeys config
+###
+module.exports.apikeys = _readConfig './config/apikeys.json', {}
+
+###
+server config
+###
+module.exports.server = _readConfig './config/server.json', {port: 3000, host: 'localhost', tolerancedays: 3}

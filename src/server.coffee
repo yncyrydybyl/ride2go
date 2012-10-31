@@ -2,6 +2,7 @@ socketIO = require 'socket.io'
 express  = require 'express'
 sys      = require 'util'
 mom      = require 'moment'
+__       = require 'underscore'
 
 Ride     = require './ride'
 Place    = require('./place').Place
@@ -12,6 +13,7 @@ log      = require './logging'
 config   = require './config'
 omqapi   = require './services/openmapquest_api'
 Location = require('./location').Location
+helpers  = require('./input_helpers')
 
 app = express()
 app.set 'views', "view"
@@ -22,7 +24,10 @@ app.use express.static 'public'
 
 log.notice "ride2go: starts with config: \n#{JSON.stringify(config, null, 2)}"
 server = app.listen config.server.port
-io     = socketIO.listen server
+
+# *** socket.io
+
+io = socketIO.listen server
 #io.set('log level', 1)
 
 io.sockets.on 'connection', (socket) ->
@@ -39,7 +44,7 @@ io.sockets.on 'connection', (socket) ->
             try
               log.info "found dest: #{dest.key}"
               RDS.match Ride.new(orig:orig,dest:dest), (matching_ride) ->
-                log.debug "emitting ride to client: #{matching_ride}"
+                log.debug "emitting ride to client: #{Ride.showcase(matching_ride)}"
                 socket.emit 'ride', matching_ride
             catch error
               log.notice "on connection: found dest: #{error}"
@@ -48,37 +53,75 @@ io.sockets.on 'connection', (socket) ->
     catch error
       log.notice "on connection: #{error}"
 
+# *** JSON API
+
+require('./server_docs') app, config
+
+# [X] documented in server_docs
+app.get "/api/connectors/_all", (req, res) ->
+  res.send JSON.stringify(RDS.api.all_connectors())
+
+# [X] documented in server_docs
+app.get "/api/connectors/_enabled", (req, res) ->
+  res.send JSON.stringify(RDS.api.enabled_connectors())
+
+# [X] documented in server_docs
+app.get "/api/connectors/_ingesting", (req, res) ->
+  res.send JSON.stringify(RDS.api.ingesting_connectors())
+
+# [X] documented in server_docs
+app.get "/api/connectors/_disabled", (req, res) ->
+  res.send JSON.stringify(RDS.api.disabled_connectors())
+
+# [X] documented in server_docs
+app.get "/api/connectors/:name", (req, res) ->
+  result = RDS.get_connector_details(req.params.name)
+  if result then res.send(result) else res.send 404, 'Unknown connector'
+
+# [X] documented in server_docs
+app.post "/api/connectors/:name/rides", (req, res) ->
+  debugger
+  name  = req.params.name
+  conn  = RDS.get_connector name
+  rides = req.body
+  if !conn
+    res.send 404, 'Unknown connector'
+  else if !conn.ingesting
+    res.send 500, 'Connector does not support ingestion'
+  else if !rides || !__.isArray(rides)
+    res.send 404, 'Missing or invalid rides'
+  else
+    RDS.ingest name, conn, rides, (err, result) ->
+      if err then res.send(500, err) else res.send(200, JSON.stringify(result))
+
+
+# *** HTML / UI
+
 app.get "/", (req,res) ->
-  res.render 'index',  { layout: false, locals: {
-      from: req.params.from ? "rungestrasse berlin" ,
-      to: req.params.to ? "hauptstrasse 42 panketal"
+  res.render 'index', { layout: false, locals: {
+      fromStr: req.params.fromStr ? "DE:Berlin:Berlin" ,
+      toStr: req.params.toStr ? "DE:Hamburg:Hamburg"
   }}
 
-app.get "/connectors/:name", (req, res) ->
-  res.send RDS.get_connector(req.params.name)
-
-app.get "/rides/:from/:to", (req, res) ->
-  res.render 'index',  { layout: false, locals: {
-      from: req.params.from , to: req.params.to }}
-
-app.post "/rides", (req, res) ->
-  browser.emit 'ride', {some: req.body.ride}
-  res.send "foo"
-
 app.get '/ridestream', (req, res) ->
-  q             = req.query
-  departure     = q.departure
-  departure     = if departure then parseInt(departure) else mom().utc().unix()
-  tolerancedays = q.tolerancedays
-  tolerancedays = if tolerancedays then parseInt(tolerancedays) else config.tolerancedays
+  q         = req.query
+  departure = helpers.intify q.departure, () -> mom().utc().unix()
+  tdays     = helpers.intify q.tolerancedays, () -> config.server.tolerancedays
+  leftcut   = helpers.intify q.leftcut, () => mom.unix(departure).subtract('days', tdays).unix()
+  rightcut  = helpers.intify q.rightcut, () => mom.unix(departure).add('days', tdays).unix()
 
-  placed = (key) -> if key then City.new(key) else undefined
-  from   = new Location placed(q.fromKey), q.fromLat, q.fromLon, q.fromplacemark
-  to     = new Location placed(q.toKey), q.toLat, q.toLon, q.toplacemark
+  fromObj   = Location.new q.fromKey || q.fromStr
+  fromPos   = Location.new helpers.mkPos q.fromLat, q.fromLon, q.fromStr, q.fromplacemark
+  from      = Location.choose [fromObj, fromPos]
 
-  locals =
+  toObj     = Location.new q.toKey || q.toStr
+  toPos     = Location.new helpers.mkPos q.toLat, q.toLon, q.toStr, q.toplacemark
+  to        = Location.choose [toObj, toPos]
+
+  locals    =
     departure: departure,
-    tolerancedays: tolerancedays
+    leftcut: leftcut,
+    rightcut: rightcut,
 
   rendered   = false
   sendOutput = () ->
@@ -91,7 +134,7 @@ app.get '/ridestream', (req, res) ->
         from.putIntoLocals locals, 'fromKey', 'fromLat', 'fromLon'
         to.putIntoLocals locals, 'toKey', 'toLat', 'toLon'
 
-        # console.log "server/ridestream: locals: #{JSON.stringify(locals)}"
+        log.notice "server/ridestream: locals: #{JSON.stringify(locals)}"
 
         locals.fromName = from.obj.cityName()
         locals.toName   = to.obj.cityName()
@@ -101,5 +144,9 @@ app.get '/ridestream', (req, res) ->
         }
         rendered = true
 
-  from.resolve omqapi.default, sendOutput
-  to.resolve omqapi.default, sendOutput
+  from.resolve undefined, omqapi.instance, sendOutput
+  to.resolve undefined, omqapi.instance, sendOutput
+
+
+
+

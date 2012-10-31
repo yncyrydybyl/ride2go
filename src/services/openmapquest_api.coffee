@@ -10,9 +10,11 @@ class OpenMapquestApi
   _valFn: (val) ->
     () -> val
 
-  reverseGeocode: (lat, lon, cb) ->
+  reverseGeocode: (pos, cb) ->
     host    = 'nominatim.openstreetmap.org'
     path    = 'reverse'
+    lat     = pos.lat
+    lon     = pos.lon
     url     = "http://#{host}/#{path}?format=json&lat=#{lat}&lon=#{lon}"
     options =
       url: url
@@ -54,6 +56,6 @@ class OpenMapquestApi
       cb key
 
 
-module.exports         = OpenMapquestApi
-module.exports.default = new OpenMapquestApi()
+module.exports          = OpenMapquestApi
+module.exports.instance = new OpenMapquestApi()
 

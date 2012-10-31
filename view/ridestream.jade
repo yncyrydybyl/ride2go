@@ -1,7 +1,7 @@
 !!! 5
 html
     head
-        title ride2go
+        title ride2go from #{locals.fromName} to #{locals.toName}
         meta(http-equiv='content-type', content='text/html; charset=iso-8859-1')
 
         script(src='/js/underscore/underscore-min.js')
@@ -12,12 +12,18 @@ html
         script(src='/js/moment/min/lang-all.min.js')
         script(src='/socket.io/socket.io.js')
         script(src='/js/ridestream.js')
+        script
+            $(document).ready(function() {
+                initRidestreamTable($('#query'),$('#rides'));
+            });
 
         link(type='text/css', href='http://yui.yahooapis.com/3.3.0/build/cssreset/reset-min.css', rel='stylesheet')
         link(type='text/css', href='/css/ridestream.css', rel='stylesheet')
 
     body
-        #query(fromName=locals.fromName, fromKey=locals.fromKey, toName=locals.toName, toKey=locals.toKey, depature=locals.departure)
+        #query(fromName=locals.fromName, fromKey=locals.fromKey,
+            toName=locals.toName, toKey=locals.toKey, departure=locals.departure,
+            leftcut=locals.leftcut, rightcut=locals.rightcut)
 
         table#rides.pretty(padding=0, cellspacing=0, cellpadding=2, border=0)
             thead
