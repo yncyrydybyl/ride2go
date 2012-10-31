@@ -70,6 +70,10 @@ app.get "/api/connectors/_ingesting", (req, res) ->
   res.send JSON.stringify(RDS.api.ingesting_connectors())
 
 # [X] documented in server_docs
+app.get "/api/connectors/_scraping", (req, res) ->
+  res.send JSON.stringify(RDS.api.scraping_connectors())
+
+# [X] documented in server_docs
 app.get "/api/connectors/_disabled", (req, res) ->
   res.send JSON.stringify(RDS.api.disabled_connectors())
 
@@ -86,10 +90,10 @@ app.post "/api/connectors/:name/rides", (req, res) ->
   rides = req.body
   if !conn
     res.send 404, 'Unknown connector'
-  else if !conn.ingesting
+  else if !conn.details.ingesting
     res.send 500, 'Connector does not support ingestion'
   else if !rides || !__.isArray(rides)
-    res.send 404, 'Missing or invalid rides'
+    res.send 404, "Missing or invalid rides (body = #{req.body})"
   else
     RDS.ingest name, conn, rides, (err, result) ->
       if err then res.send(500, err) else res.send(200, JSON.stringify(result))
@@ -148,5 +152,8 @@ app.get '/ridestream', (req, res) ->
   to.resolve undefined, omqapi.instance, sendOutput
 
 
-
+module.exports =
+  app: app
+  server: server
+  io: io
 

@@ -18,6 +18,9 @@ io   = require 'node.io' # spin off workers for searching the web for rides
 log  = require './logging' # logs nice to a console for seeing whats going on
 mom  = require 'moment'
 
+City  = require('./place').City
+Place = require('./place').Place
+
 class RiDeStore extends require('events').EventEmitter # pubsub style msges #
 
   constructor: () ->
@@ -62,7 +65,7 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
         @emit route, ride
 
     # schedule jobs to run and find even more matching RiDeS
-    for job in @api.enabled_connectors()
+    for job in @api.scraping_connectors()
       log.info "RDS starts connector for " + job
       io.start @api.connectors[job].findRides, query, ((someerror, rides) =>
         log.error someerror if someerror
@@ -81,37 +84,43 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
 
   ingest: (name, conn, rides, cb) ->
     log.info "RDS ingesting rides for #{name}"
-    io.start conn.ingestRides, rides, ((err, rides) =>
+    io.start conn.ingestRides(rides), {}, ((err, rides) =>
       if err
         log.error err
       else
-        i = 0
+        i    = 0
+        ret  = []
+        done = (ride = undefined) =>
+          i += 1
+          ret.push ride if ride
+          cb err, ret if i == rides.length
         for r in rides
           r.provider = name if !r.provider
           r.orig     = City.new(r.orig) if r.orig && (!r.orig instanceof Place)
           r.rest     = City.new(r.dest) if r.dest && (!r.dest instanceof Place)
           r.orig     = City.new(r.orig_key) if !r.orig && r.orig_key
           r.dest     = City.new(r.dest_key) if !r.dest && r.dest_key
-          r.dep      = moment.now().unix() if !r.dep
-          r.arr      = moment.now().unix() if !r.arr
+          r.dep      = mom().unix() if !r.dep
+          r.arr      = mom().unix() if !r.arr
           r.price    = '' if !r.price
 
           if r.provider == name && r.orig && r.dest
-            if !r.id
-              r.id = "#{conn.details.mode}:#{r.orig.key}@#{r.dep}->#{r.dest.key}@#{r.arr}"
-            ride  = Ride.new(r)
-            val   = ride.toJson()
-            route = "#{ride.orig.key}->#{ride.dest.key}"
-            log.debug "ingesting new #{route} ride: #{Ride.showcase(val)}"
-            @redis.hset route, ride.id, val, (anothererror, isNew) =>
+            r.orig     = r.orig.key
+            r.dest     = r.dest.key
+            r.orig_key = undefined
+            r.dest_key = undefined
+            r.id       = "#{conn.details.mode}:#{r.orig}@#{r.dep}->#{r.dest}@#{r.arr}" if !r.id
+            ride       = Ride.new(r)
+            route      = "#{ride.orig}->#{ride.dest}"
+            log.debug "ingesting new #{route} ride: #{Ride.showcase(r)}"
+            @redis.hset route, ride.id, ride.toJson(), (anothererror, isNew) =>
               log.error anothererror if anothererror
               if isNew
-                log.notce "discovered new ride: #{Ride.showcase(val)}"
-                @emit route, val
-              i += 1
+                log.notice "discovered new ride: #{Ride.showcase(r)}"
+              done(r)
           else
-            log.info "skipping ride: #{Ride.showcase(r.toJson())}"
-      cb err, rides
+            log.info "skipping ride: #{Ride.showcase(r)}"
+            done()
       ), true
 
 Ride           = require './ride' # convenience

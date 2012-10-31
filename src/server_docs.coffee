@@ -85,6 +85,21 @@ module.exports = (app, config) ->
           ]
         },
         {
+          path: '/api/connectors/_scraping'
+          description: 'Scraping connectors'
+          operations: [
+            {
+              httpMethod: 'GET'
+              nickname: 'getScrapingConnectorNames'
+              parameters: []
+              notes: ''
+              errorResponses: []
+              responseClass: 'void'
+              summary: 'Get list of scraping connectors'
+            }
+          ]
+        },
+        {
           path: '/api/connectors/{connName}'
           description: 'Named connectors'
           operations: [
@@ -123,9 +138,9 @@ module.exports = (app, config) ->
                   required: true
                 },
                 {
-                  name: 'rideArray'
+                  name: 'rideArrayBody'
                   paramType: 'body'
-                  description: 'JSON Array of ride objects'
+                  description: 'JSON Array of ride objects [body]'
                   dataType: 'string'
                   required: true
                 }
