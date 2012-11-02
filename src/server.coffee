@@ -106,6 +106,9 @@ app.get "/", (req,res) ->
       toStr: req.params.toStr ? "DE:Hamburg:Hamburg"
   }}
 
+app.get "/welcome", (req,res) ->
+  res.render 'welcome', {layout: false}
+
 app.get '/ridestream', (req, res) ->
   q         = req.query
   departure = helpers.intify q.departure, () -> mom().utc().unix()
