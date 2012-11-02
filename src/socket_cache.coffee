@@ -1,4 +1,5 @@
 __       = require 'underscore'
+Ride     = require './server'
 log      = require './logging'
 
 class SocketCache
@@ -28,9 +29,11 @@ class SocketCache
     sockets.splice index, 1 if index >= 0
     log.debug "Removed #{key} socket"
 
-  dispatchRide: (key, ride) ->
+  dispatchRide: (key, r) ->
     for socket in @registeredSockets(key)
-      socket.emit('ride', ride)
+      json = r.toJson()
+      log.debug "dispatching ride to client: #{json}"
+      socket.emit 'ride', json
 
   registeredSockets: (key) ->
     @cache[key] || (@cache[key] = [])

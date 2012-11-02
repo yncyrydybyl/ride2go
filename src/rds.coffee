@@ -95,29 +95,36 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
           ret.push ride if ride
           cb err, ret if i == rides.length
         for r in rides
-          r.provider = name if !r.provider
-          r.orig     = City.new(r.orig) if r.orig && (!r.orig instanceof Place)
-          r.rest     = City.new(r.dest) if r.dest && (!r.dest instanceof Place)
-          r.orig     = City.new(r.orig_key) if !r.orig && r.orig_key
-          r.dest     = City.new(r.dest_key) if !r.dest && r.dest_key
-          r.dep      = mom().unix() if !r.dep
-          r.arr      = mom().unix() if !r.arr
-          r.price    = '' if !r.price
+          ride = null
 
-          if r.provider == name && r.orig && r.dest
-            r.orig     = r.orig.key
-            r.dest     = r.dest.key
-            delete r.orig_key
-            delete r.dest_key
-            r.id       = "#{conn.details.mode}:#{r.orig}@#{r.dep}->#{r.dest}@#{r.arr}" if !r.id
-            ride       = Ride.new(r)
-            route      = "#{ride.orig}->#{ride.dest}"
-            log.debug "ingesting new #{route} ride: #{Ride.showcase(r)}"
+          if r instanceof Ride
+            ride       = r
+          else
+            r.provider = name if !r.provider
+            r.orig     = City.new(r.orig) if r.orig && (!r.orig instanceof Place)
+            r.rest     = City.new(r.dest) if r.dest && (!r.dest instanceof Place)
+            r.orig     = City.new(r.orig_key) if !r.orig && r.orig_key
+            r.dest     = City.new(r.dest_key) if !r.dest && r.dest_key
+            r.dep      = mom().unix() if !r.dep
+            r.arr      = mom().unix() if !r.arr
+            r.price    = '' if !r.price
+
+            if r.provider == name && r.orig && r.dest
+              r.orig     = r.orig.key
+              r.dest     = r.dest.key
+              delete r.orig_key
+              delete r.dest_key
+              r.id       = "#{conn.details.mode}:#{r.orig}@#{r.dep}->#{r.dest}@#{r.arr}" if !r.id
+              ride       = Ride.new(r)
+
+          if ride
+            route = "#{ride.orig}->#{ride.dest}"
+            log.debug "ingesting new #{route} ride: #{Ride.showcase(ride)}"
             @redis.hset route, ride.id, ride.toJson(), (anothererror, isNew) =>
               log.error anothererror if anothererror
               if isNew
-                log.notice "discovered new ride: #{Ride.showcase(r)}"
-              done(r)
+                log.notice "discovered new ride: #{Ride.showcase(ride)}"
+              done(ride)
           else
             log.info "skipping ride: #{Ride.showcase(r)}"
             done()

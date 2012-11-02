@@ -109,7 +109,6 @@ app.post "/api/connectors/:name/rides", (req, res) ->
       if err
         res.send(500, err)
       else
-        debugger
         cache.dispatchRide("#{r.orig}->#{r.dest}", r) for r in result
         res.send JSON.stringify(result)
 
@@ -147,7 +146,9 @@ app.get '/ridestream', (req, res) ->
   locals    =
     departure: departure,
     leftcut: leftcut,
-    rightcut: rightcut,
+    rightcut: rightcut
+
+  locals.logRides = q.logRides if q.logRides
 
   rendered   = false
   sendOutput = () ->
