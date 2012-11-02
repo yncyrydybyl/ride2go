@@ -1,11 +1,10 @@
 * TODO Document future of place api
-
-* TODO List of current socket.io subscribers
-* TODO Send incoming rides to subscribers
+* TODO Fix test breakage
 
 2012-11-02
 
-* TODO Fix test breakage
+* TODO Send incoming rides to subscribers
+* DONE List of current socket.io subscribers
 
 2012-11-01
 

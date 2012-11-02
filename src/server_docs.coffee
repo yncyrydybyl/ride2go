@@ -14,8 +14,64 @@ module.exports = (app, config) ->
           description: 'Access connectors in various ways'
         },
         {
+          path: '/api/sockets.{format}'
+          description: 'Access connectors in various ways'
+        },
+        {
           path: '/ridestream.{format}'
           description: 'Display a stream of continously updated rides'
+        }
+      ]
+    }
+
+  app.get '/api/sockets.json', (req, res) ->
+    describe res, {
+      resourcePath: '/api/sockets'
+      apis: [
+        {
+          path: '/api/sockets/_all'
+          description: 'Open socket statistics'
+          operations: [
+            {
+              httpMethod: 'GET'
+              nickname: 'getSocketStatistics'
+              parameters: []
+              notes: ''
+              errorResponses: []
+              responseClass: 'void'
+              summary: 'Get statistics for all open sockets'
+            }
+          ]
+        },
+        {
+          path: '/api/sockets/{from}/to/{to}'
+          description: 'Open socket statistics constrained by route'
+          operations: [
+            {
+              httpMethod: 'GET'
+              nickname: 'getRouteSocketStatistics'
+              parameters: [
+                {
+                  name: 'from'
+                  paramType: 'path'
+                  description: 'Route origin'
+                  dataType: 'string'
+                  required: true
+                },
+                {
+                  name: 'to'
+                  paramType: 'path'
+                  description: 'Route destination'
+                  dataType: 'string'
+                  required: true
+                }
+              ]
+              notes: ''
+              errorResponses: []
+              responseClass: 'void'
+              summary: 'Get statistics for all open sockets for a given route'
+            }
+          ]
         }
       ]
     }
