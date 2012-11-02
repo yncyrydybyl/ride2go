@@ -27,6 +27,8 @@ server = app.listen config.server.port
 
 # *** socket.io
 
+cache = require('./socket_cache').instance
+
 io = socketIO.listen server
 #io.set('log level', 1)
 
@@ -43,7 +45,8 @@ io.sockets.on 'connection', (socket) ->
           City.find query.destination, (dest) ->
             try
               log.info "found dest: #{dest.key}"
-              RDS.match Ride.new(orig:orig,dest:dest), (matching_ride) ->
+              cache.registerSocket "#{orig.key}->#{dest.key}", socket
+              RDS.match Ride.new(orig:orig, dest:dest), (matching_ride) ->
                 log.debug "emitting ride to client: #{Ride.showcase(matching_ride)}"
                 socket.emit 'ride', matching_ride
             catch error
@@ -56,6 +59,14 @@ io.sockets.on 'connection', (socket) ->
 # *** JSON API
 
 require('./server_docs') app, config
+
+# [X] documented in server_docs
+app.get "/api/sockets/_all", (req, res) ->
+  res.send JSON.stringify cache.asJson()
+
+# [X] documented in server_docs
+app.get "/api/sockets/:from/to/:to", (req, res) ->
+  res.send JSON.stringify cache.asJson("#{req.params.from}->#{req.params.to}")
 
 # [X] documented in server_docs
 app.get "/api/connectors/_all", (req, res) ->

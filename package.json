@@ -28,7 +28,7 @@
     "sinon-chai": "~2.1.2",
     "chai-as-promised": "~3.2.2",
     "chai-factories": "~0.1.0",
-    "chai-http": "0.3.0"
+    "chai-http": "~0.3.0"
   },
   "directories": {
     "lib": "./lib"
