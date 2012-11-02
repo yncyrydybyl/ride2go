@@ -126,7 +126,7 @@ app.get "/welcome", (req,res) ->
   res.render 'welcome', {layout: false}
 
 app.get "/", (req,res) ->
-  res.redirect "301", "/welcome"
+  res.render 'welcome', {layout: false}
 
 
 app.get '/ridestream', (req, res) ->
