@@ -3,7 +3,7 @@
 
 2012-11-02
 
-* TODO Send incoming rides to subscribers
+* DONE Send incoming rides to subscribers
 * DONE List of current socket.io subscribers
 
 2012-11-01

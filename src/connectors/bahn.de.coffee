@@ -67,7 +67,7 @@ module.exports.findRides = new nodeio.Job
             dest_id    = stations[0].id
             #log.notice dest_id
             if orig_id != dest_id
-              fin_url = "http://#{details.url_host}:#{details.url_port}/#{details.url_path}/connection?fromId=#{orig_id}&toId=#{dest_id}&fromType=STATION&toType=STATION&num=9"
+              fin_url = "http://#{details.url_host}:#{details.url_port}/#{details.url_path}/connection?fromId=#{orig_id}&toId=#{dest_id}&fromType=STATION&toType=STATION&num=6"
               log.debug fin_url
               run [fin_url]
             else

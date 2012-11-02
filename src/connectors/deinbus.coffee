@@ -6,7 +6,7 @@ Place  = require('../place').Place
 moment = require 'moment'
 moment.lang 'de'
 
-module.exports.enabled   = true
+module.exports.enabled = true
 module.exports.details = details =
   mode: "bus"
   name: "deinbus.de" # uniq primary key
