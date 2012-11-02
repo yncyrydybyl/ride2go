@@ -84,7 +84,6 @@ app.get "/api/connectors/:name", (req, res) ->
 
 # [X] documented in server_docs
 app.post "/api/connectors/:name/rides", (req, res) ->
-  debugger
   name  = req.params.name
   conn  = RDS.get_connector name
   rides = req.body
@@ -96,7 +95,7 @@ app.post "/api/connectors/:name/rides", (req, res) ->
     res.send 404, "Missing or invalid rides (body = #{req.body})"
   else
     RDS.ingest name, conn, rides, (err, result) ->
-      if err then res.send(500, err) else res.send(200, JSON.stringify(result))
+      if err then res.send(500, err) else res.send(JSON.stringify(result))
 
 
 # *** HTML / UI
