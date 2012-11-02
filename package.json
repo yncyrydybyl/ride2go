@@ -34,7 +34,7 @@
     "lib": "./lib"
   },
   "scripts": {
-    "build": "./node_modules/.bin/cake build",
+    "build": "(cd ./components/bootstrap && lessc ./less/bootstrap.less > bootstrap.css) && ./node_modules/.bin/cake build",
     "doc": "codo -n 'ride2go' -o './doc/api' --cautious --title 'ride2go api documentation' ./src - AUTHORS LICENSE doc/text/REDIS.md",
     "test": "./node_modules/.bin/cake  -M -t -M 10000 test",
     "start": "node lib/server.js"
