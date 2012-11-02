@@ -5,7 +5,7 @@ fs                = require 'fs'
 active_tests      = require './test/active_tests.js'
 
 # css config
-css_sources       = ['styl/main.styl', 'styl/ridestream.styl']
+css_sources       = ['styl/main.styl', 'styl/ridestream.styl', 'styl/welcome.styl']
 css_target        = 'public/css'
 
 # binaries

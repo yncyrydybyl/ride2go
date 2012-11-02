@@ -116,14 +116,18 @@ app.post "/api/connectors/:name/rides", (req, res) ->
 
 # *** HTML / UI
 
-app.get "/", (req,res) ->
-  res.render 'index', { layout: false, locals: {
+app.get "/ridequery", (req,res) ->
+  res.render 'ridequery', { layout: false, locals: {
       fromStr: req.params.fromStr ? "DE:Berlin:Berlin" ,
       toStr: req.params.toStr ? "DE:Hamburg:Hamburg"
   }}
 
 app.get "/welcome", (req,res) ->
   res.render 'welcome', {layout: false}
+
+app.get "/", (req,res) ->
+  res.redirect "301", "/welcome"
+
 
 app.get '/ridestream', (req, res) ->
   q         = req.query
