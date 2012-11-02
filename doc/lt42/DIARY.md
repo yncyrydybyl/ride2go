@@ -3,6 +3,7 @@
 
 2012-11-02
 
+* DONE Adds bootstrap
 * DONE Send incoming rides to subscribers
 * DONE List of current socket.io subscribers
 
