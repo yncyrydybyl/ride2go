@@ -28,6 +28,10 @@ class SocketCache
     sockets.splice index, 1 if index >= 0
     log.debug "Removed #{key} socket"
 
+  dispatchRide: (key, ride) ->
+    for socket in @registeredSockets(key)
+      socket.emit('ride', ride)
+
   registeredSockets: (key) ->
     @cache[key] || (@cache[key] = [])
 

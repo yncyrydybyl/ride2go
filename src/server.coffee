@@ -106,7 +106,12 @@ app.post "/api/connectors/:name/rides", (req, res) ->
     res.send 404, "Missing or invalid rides (body = #{req.body})"
   else
     RDS.ingest name, conn, rides, (err, result) ->
-      if err then res.send(500, err) else res.send(JSON.stringify(result))
+      if err
+        res.send(500, err)
+      else
+        debugger
+        cache.dispatchRide("#{r.orig}->#{r.dest}", r) for r in result
+        res.send JSON.stringify(result)
 
 
 # *** HTML / UI
