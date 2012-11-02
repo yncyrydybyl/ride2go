@@ -37,7 +37,7 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
       JSON.stringify
         name: name
         details: connector.details
-        enabled: connector.enabled
+        enabled: if connector.enabled then true else false
     else
       undefined
 
@@ -107,8 +107,8 @@ class RiDeStore extends require('events').EventEmitter # pubsub style msges #
           if r.provider == name && r.orig && r.dest
             r.orig     = r.orig.key
             r.dest     = r.dest.key
-            r.orig_key = undefined
-            r.dest_key = undefined
+            delete r.orig_key
+            delete r.dest_key
             r.id       = "#{conn.details.mode}:#{r.orig}@#{r.dep}->#{r.dest}@#{r.arr}" if !r.id
             ride       = Ride.new(r)
             route      = "#{ride.orig}->#{ride.dest}"

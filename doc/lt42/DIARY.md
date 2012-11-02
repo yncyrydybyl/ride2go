@@ -1,15 +1,19 @@
+* TODO Document future of place api
 
+* TODO List of current socket.io subscribers
+* TODO Send incoming rides to subscribers
 
-* TODO New place api
-* TODO Docs
-* TODO Subscribe to rides
-* TODO Ingest rides
-* TODO mail an sven, flo, t
+2012-11-02
+
+* TODO Fix test breakage
+
+2012-11-01
+
+* DONE Ride ingestion testing
 
 2012-10-31
 
-* TODO Ride ingestion
-* TODO Ride subscription
+* DONE Ride ingestion
 
 2012-10-30
 
