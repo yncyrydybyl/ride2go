@@ -1,5 +1,8 @@
-* TODO Document future of place api
 * TODO Fix test breakage
+
+2012-11-03
+
+* DONE Write down future roadmap (FUTURE.md)
 
 2012-11-02
 
