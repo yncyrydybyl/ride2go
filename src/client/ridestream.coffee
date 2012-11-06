@@ -91,10 +91,12 @@ initRidestreamTable = (query, table) ->
     toKey     = query.attr 'toKey'
     fromName  = query.attr 'fromName'
     toName    = query.attr 'toName'
+    logRides  = query.attr 'logRides'
     departure = parseInt query.attr('departure')
     leftcut   = parseInt query.attr('leftcut')
     rightcut  = parseInt query.attr('rightcut')
-    logRides  = query.attr 'logRides'
+
+    console.log "logRides is #{logRides}"
 
     msg      =
       origin: fromKey

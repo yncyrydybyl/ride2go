@@ -44,6 +44,10 @@ in order for the modules and their executables to be available.
 
 * Switch back to the regular node.js via `nvm use $VERSION`
 
+* Install additional commandline tools
+
+    npm install -g less jshint recess uglify-js
+
 
 ## Compile coffeescript files ##
 
