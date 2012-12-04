@@ -4,14 +4,45 @@ html
     body
     .container-narrow
         ul.nav.nav-pills.pull-right
-            li.active
-                a(href='#') Home
             li
-                a(href='#') About
+                a(href='#ModalAbout', role='button', data-toggle='modal') About Us
             li
-                a(href='#') Contact
+                a(href='#ModalDemo', role='button', data-toggle='modal') Demonstrator
+            li
+                a(href='#ModalContact', role='button', data-toggle='modal') Contact
         h3.muted Ride2Go
             .jumbotron
-                h1 marketplace for mobility as commodity
+                h1 mobility as a commodity
           p.lead
-                  | ... soon, we can find, store and distribute rides in every mode.
+                  | We provide information about rides by every mean of transport for you and your clients.
+              
+    #ModalAbout.modal.hide.fade(tabindex='-1', role='dialog', aria-labelledby='ModalAboutLabel', aria-hidden='true')
+      .modal-header
+        button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+        h3#ModalAboutLabel ride2go
+      .modal-body
+        p We work on a future of mobility, which can combine every mode of transport. We believe in advantageous partnerships between all stakeholders in the world of logistics and transportation. 
+      .modal-footer
+        button.btn.btn-primary(data-dismiss='modal', aria-hidden='true') Close
+    #ModalDemo.modal.hide.fade(tabindex='-1', role='dialog', aria-labelledby='ModalDemoLabel', aria-hidden='true')
+      .modal-header
+        button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+        h3#ModalDemoLabel Demonstrator german cities: try "Hamburg" to "Berlin"
+      .modal-body
+        p
+          iframe(src='http://www.fahrgemeinschaft.de/embed/r2go/tripsearch.php?renew=1', width='100%')
+      .modal-footer
+        button.btn.btn-primary(data-dismiss='modal', aria-hidden='true') Close
+    #ModalContact.modal.hide.fade(tabindex='-1', role='dialog', aria-labelledby='ModalContactLabel', aria-hidden='true')
+      .modal-header
+        button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+        h3#ModalContatcLabel Contact us
+      .modal-body
+        p
+          h1  Ride2Go
+          h2  Yan 't' Minagawa
+          .address Prenzlauer Allee 26 | 10405 Berlin
+          .telphone phone:+49175 555 05 64
+      .modal-footer
+        button.btn.btn-primary(data-dismiss='modal', aria-hidden='true') Close
+
