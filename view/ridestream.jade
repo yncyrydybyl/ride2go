@@ -4,14 +4,7 @@ html
         title ride2go from #{locals.fromName} to #{locals.toName}
         meta(http-equiv='content-type', content='text/html; charset=iso-8859-1')
 
-        script(src='/js/underscore/underscore-min.js')
-        script(src='/js/jquery/jquery.js')
-        script(src='/js/jquery-ui/jquery-ui.min.js')
-        script(src='/js/DataTables/media/js/jquery.dataTables.js')
-        script(src='/js/moment/min/moment.min.pretty.js')
-        script(src='/js/moment/min/lang-all.min.js')
-        script(src='/socket.io/socket.io.js')
-        script(src='/js/ridestream.js')
+        include includes/scripts
         script
             $(document).ready(function() {
                 initRidestreamTable($('#query'),$('#rides'));
