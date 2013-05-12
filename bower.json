@@ -8,6 +8,6 @@
     "datatables": "˜1.9.4",
     "moment": "˜1.7.2",
     "swagger-ui": "git://github.com/wordnik/swagger-ui.git#v1.1",
-    "bootstrap": "git://github.com/twitter/bootstrap.git#v2.2.1"
+    "bootstrap": "http://twitter.github.com/bootstrap/assets/bootstrap.zip"
   }
 }
